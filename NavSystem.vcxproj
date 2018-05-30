@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4D17CF2E-C2D8-47F4-8089-AFDF0222DFA7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>NavSystem</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>./Temp/</IntDir>
+    <OutDir>./Bin_Debug/</OutDir>
+    <IncludePath>.\DirectX\Include;.\FBX\include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\DirectX\Lib\x86;.\FBX\lib\vs2013\x86\debug;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;winmm.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\FBXCommon.h" />
+    <ClInclude Include="Src\FBXHelper.h" />
+    <ClInclude Include="Src\imgui\imconfig.h" />
+    <ClInclude Include="Src\imgui\imgui.h" />
+    <ClInclude Include="Src\imgui\imgui_internal.h" />
+    <ClInclude Include="Src\imgui\stb_rect_pack.h" />
+    <ClInclude Include="Src\imgui\stb_textedit.h" />
+    <ClInclude Include="Src\imgui\stb_truetype.h" />
+    <ClInclude Include="Src\imgui_impl_dx9.h" />
+    <ClInclude Include="Src\inc.h" />
+    <ClInclude Include="Src\math\Vector2.h" />
+    <ClInclude Include="Src\math\Vector3.h" />
+    <ClInclude Include="Src\MeshRenderer.h" />
+    <ClInclude Include="Src\micropather\micropather.h" />
+    <ClInclude Include="Src\NavInc.h" />
+    <ClInclude Include="Src\NavMesh.h" />
+    <ClInclude Include="Src\NavPathFinder.h" />
+    <ClInclude Include="Src\NavPhysics.h" />
+    <ClInclude Include="Src\Test.h" />
+    <ClInclude Include="Src\NavTriangle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\FBXCommon.cpp" />
+    <ClCompile Include="Src\FBXHelper.cpp" />
+    <ClCompile Include="Src\imgui\imgui.cpp" />
+    <ClCompile Include="Src\imgui\imgui_demo.cpp" />
+    <ClCompile Include="Src\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Src\imgui_impl_dx9.cpp" />
+    <ClCompile Include="Src\inc.cpp" />
+    <ClCompile Include="Src\Main.cpp" />
+    <ClCompile Include="Src\math\Vector2.cpp" />
+    <ClCompile Include="Src\math\Vector3.cpp" />
+    <ClCompile Include="Src\MeshRenderer.cpp" />
+    <ClCompile Include="Src\micropather\micropather.cpp" />
+    <ClCompile Include="Src\NavMesh.cpp" />
+    <ClCompile Include="Src\NavPathFinder.cpp" />
+    <ClCompile Include="Src\NavPhysics.cpp" />
+    <ClCompile Include="Src\NavTriangle.cpp" />
+    <ClCompile Include="Src\Test.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

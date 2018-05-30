@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{67e43b0c-dfc6-4fd2-8b92-c093d169e842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{dc5a0377-f9ce-413c-9753-eeef14f989f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="micropather">
+      <UniqueIdentifier>{45446abd-45e7-4dff-8ef4-e7e97a600317}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{3e31018c-c820-4816-9775-52321f009934}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nav">
+      <UniqueIdentifier>{721b9c2d-c7c0-431d-8383-9ed588990845}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\imgui\stb_rect_pack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\imgui\stb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\imgui\stb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\inc.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Test.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\imgui_impl_dx9.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FBXHelper.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FBXCommon.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\MeshRenderer.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\micropather\micropather.h">
+      <Filter>micropather</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\math\Vector3.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\math\Vector2.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavTriangle.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavInc.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavMesh.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavPathFinder.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavPhysics.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\inc.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Main.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Test.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\imgui_impl_dx9.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FBXCommon.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FBXHelper.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MeshRenderer.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\micropather\micropather.cpp">
+      <Filter>micropather</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\math\Vector2.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\math\Vector3.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavTriangle.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavMesh.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavPathFinder.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavPhysics.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
