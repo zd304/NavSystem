@@ -57,7 +57,7 @@ bool NavMesh::IsTriangleAdjacent(NavTriangle* tri1, NavTriangle* tri2)
 			Vector3& p2 = tri2->mPoint[j];
 			if (p1 == p2)
 			{
-				if (firstIndex > 0)
+				if (firstIndex >= 0)
 					return true;
 				else
 					firstIndex = j;
