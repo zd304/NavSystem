@@ -152,14 +152,16 @@ void NavMesh::UpdateAdjacent()
 				tri1->mShareEdgeIndices.push_back(aep.EncodeFirstEdgeIndex());
 				ptIndex1 = aep.firstTriIndex1;
 				ptIndex2 = aep.firstTriIndex2;
-				edge = (tri1->mPoint[ptIndex1] + tri1->mPoint[ptIndex2]) * 0.5f;
+				Vector3 edgeCenter1 = (tri1->mPoint[ptIndex1] + tri1->mPoint[ptIndex2]) * 0.5f;
+				tri1->mEdgeCenter.push_back(edgeCenter1);
 
 				tri2->mNeighbors.push_back(tri1);
 				tri2->mDistance.push_back(distance);
 				tri2->mShareEdgeIndices.push_back(aep.EncodeSecondEdgeIndex());
 				ptIndex1 = aep.secondTriIndex1;
 				ptIndex2 = aep.secondTriIndex2;
-				edge = (tri2->mPoint[ptIndex1] + tri2->mPoint[ptIndex2]) * 0.5f;
+				Vector3 edgeCenter2 = (tri2->mPoint[ptIndex1] + tri2->mPoint[ptIndex2]) * 0.5f;
+				tri2->mEdgeCenter.push_back(edgeCenter2);
 			}
 		}
 	}

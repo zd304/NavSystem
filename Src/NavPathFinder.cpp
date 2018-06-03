@@ -78,7 +78,7 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 				NavTriangle* triNext = triPath[i + 1];
 				for (size_t j = 0; j < tri->mNeighbors.size(); ++j)
 				{
-					if (tri->mNeighbors[j] != tri)
+					if (tri->mNeighbors[j] != triNext)
 						continue;
 					path->push_back(tri->mEdgeCenter[j]);
 					break;
