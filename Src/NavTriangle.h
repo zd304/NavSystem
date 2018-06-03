@@ -22,6 +22,8 @@ public:
 	std::vector<int> mShareEdgeIndices;
 	// 到邻接三角形的距离;
 	std::vector<float> mDistance;
+	// 邻接边的中点;
+	std::vector<Vector3> mEdgeCenter;
 };
 
 #endif
