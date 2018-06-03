@@ -4,6 +4,7 @@
 #include "imgui_impl_dx9.h"
 
 static D3DPRESENT_PARAMETERS    g_d3dpp;
+static Test test;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -21,8 +22,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	AllocConsole();
 	freopen("conout$", "w", stdout);
 #endif
-
-	Test test;
 
 	WNDCLASS wc = { 0 };
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -178,7 +177,8 @@ LRESULT CALLBACK WndProc(
 	LPARAM lParam)
 {
 	if (ImGui_ImplDX9_WndProcHandler(hwnd, msg, wParam, lParam))
-		return true;
+	{
+	}// return true;
 	
 	switch (msg)
 	{
@@ -195,6 +195,11 @@ LRESULT CALLBACK WndProc(
 		//	ImGui_ImplDX9_CreateDeviceObjects();
 		//}
 		return 0;
+	}
+	case WM_LBUTTONDOWN:
+	{
+		test.Pick(LOWORD(lParam), HIWORD(lParam));
+		break;
 	}
 	case WM_DESTROY:
 		::PostQuitMessage(0);

@@ -35,7 +35,7 @@ void NavPathFinder::AdjacentCost(void* state, std::vector<micropather::StateCost
 		NavTriangle* neighbor = tri->mNeighbors[i];
 		
 		micropather::StateCost cost;
-		cost.cost = neighbor->mDistance[i];
+		cost.cost = tri->mDistance[i];
 		cost.state = (void*)neighbor;
 
 		adjacent->push_back(cost);

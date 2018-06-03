@@ -4,6 +4,16 @@
 #include "inc.h"
 
 class MeshRenderer;
+class NavMesh;
+class NavTriangle;
+class NavPathFinder;
+
+enum eClickMode
+{
+	None,
+	Start,
+	End
+};
 
 class Test
 {
@@ -18,6 +28,18 @@ public:
 	void OnGUI();
 
 	void OnQuit();
+
+	void Pick(int x, int y);
+
+	void AddSelectedTriangle(NavTriangle* tri);
+private:
+	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir);
+
+	bool IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavPathFinder*& outFinder);
+
+	void SetPointMesh(NavTriangle* tri, bool isStart);
+
+	void ClearPath();
 public:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;
@@ -25,6 +47,17 @@ public:
 	int mHeight;
 	MeshRenderer* mRenderer;
 	D3DMATERIAL9 mMatNav;
+
+	std::vector<NavPathFinder*> mNavMeshes;
+	std::vector<NavTriangle*> mSelectedTriangles;
+	ID3DXMesh* mSelectedMesh;
+
+	ID3DXMesh* mStartMesh;
+	ID3DXMesh* mEndMesh;
+	NavTriangle* mStartTri;
+	NavTriangle* mEndTri;
+
+	eClickMode mClickMode;
 };
 
 #endif
