@@ -82,6 +82,9 @@
     <ClInclude Include="Src\NavPhysics.h">
       <Filter>nav</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Camera.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">

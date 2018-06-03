@@ -8,11 +8,11 @@ class NavMesh;
 class NavTriangle;
 class NavPathFinder;
 
-enum eClickMode
+enum eClickState
 {
-	None,
-	Start,
-	End
+	eClickState_None,
+	eClickState_Start,
+	eClickState_End
 };
 
 class Test
@@ -30,8 +30,6 @@ public:
 	void OnQuit();
 
 	void Pick(int x, int y);
-
-	void AddSelectedTriangle(NavTriangle* tri);
 private:
 	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir);
 
@@ -39,7 +37,13 @@ private:
 
 	void SetPointMesh(NavTriangle* tri, bool isStart);
 
+	void AddSelectedTriangle(NavTriangle* tri);
+
 	void ClearPath();
+
+	void UpdateView();
+
+	void TransformPos(Vector3& pos);
 public:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;
@@ -57,7 +61,15 @@ public:
 	NavTriangle* mStartTri;
 	NavTriangle* mEndTri;
 
-	eClickMode mClickMode;
+	eClickState mClickMode;
+
+	// Camera
+	float mCameraDistance;
+	float mCameraHeight;
+	float mCameraX;// -boxSize;
+
+	D3DXMATRIX mWorldMtrix;
+	float rot;
 };
 
 #endif

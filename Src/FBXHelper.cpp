@@ -73,8 +73,8 @@ namespace FBXHelper
 			D3DXVECTOR3 v;
 			FbxVector4 currentVertex = controlPoints[i];
 			v.x = -(float)currentVertex[0];
-			v.y = -(float)currentVertex[1];
-			v.z = -(float)currentVertex[2];
+			v.y = (float)currentVertex[2];
+			v.z = -(float)currentVertex[1];
 			UpdateBox(v);
 			data->pos.push_back(v);
 		}

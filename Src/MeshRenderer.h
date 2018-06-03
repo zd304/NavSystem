@@ -13,6 +13,7 @@ public:
 public:
 	IDirect3DDevice9* mDevice;
 	std::vector<ID3DXMesh*> mMeshes;
+	std::vector<ID3DXMesh*> mWireMeshes;
 };
 
 #endif

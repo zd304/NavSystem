@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\FBXCommon.h" />
     <ClInclude Include="Src\FBXHelper.h" />
     <ClInclude Include="Src\imgui\imconfig.h" />
