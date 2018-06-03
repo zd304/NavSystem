@@ -4,6 +4,8 @@
 #include "NavInc.h"
 
 class NavTriangle;
+struct NavEdge;
+struct AdjacentEdgePair;
 
 class NavMesh
 {
@@ -13,9 +15,10 @@ public:
 
 	void UpdateAdjacent();
 private:
-	bool IsTriangleAdjacent(NavTriangle* tri1, NavTriangle* tri2);
+	bool IsTriangleAdjacent(NavTriangle* tri1, NavTriangle* tri2, AdjacentEdgePair* aep);
 public:
 	std::vector<NavTriangle*> mTriangles;
+	std::vector<NavEdge*> mBounds;
 };
 
 #endif

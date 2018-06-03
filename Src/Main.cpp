@@ -10,8 +10,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //º¯Êý¿ªÊ¼;
 
-const int width = 800;
-const int height = 600;
+const int width = 1366;
+const int height = 768;
 IDirect3DDevice9* Device = NULL;
 D3DDEVTYPE deviceType = D3DDEVTYPE_HAL;
 

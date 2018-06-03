@@ -53,7 +53,6 @@ MeshRenderer::MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mD
 			for (size_t j = 0; j < data->pos.size(); ++j)
 			{
 				vb[j].pos = data->pos[j];
-				vb[j].pos.y += 0.1f;
 				vb[j].color = 0xff000000;
 			}
 			//memcpy(vb, &data->pos[0], vertexNum * sizeof(D3DXVECTOR3));
@@ -87,6 +86,18 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render()
 {
+	for (size_t i = 0; i < mMeshes.size(); ++i)
+	{
+		ID3DXMesh* mesh = mMeshes[i];
+		if (!mesh)
+		{
+			continue;
+		}
+		mesh->DrawSubset(0);
+	}
+
+	mDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+	mDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 	mDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	for (size_t i = 0; i < mWireMeshes.size(); ++i)
 	{
@@ -97,14 +108,7 @@ void MeshRenderer::Render()
 		}
 		mesh->DrawSubset(0);
 	}
+	mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+	mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	mDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	for (size_t i = 0; i < mMeshes.size(); ++i)
-	{
-		ID3DXMesh* mesh = mMeshes[i];
-		if (!mesh)
-		{
-			continue;
-		}
-		mesh->DrawSubset(0);
-	}
 }

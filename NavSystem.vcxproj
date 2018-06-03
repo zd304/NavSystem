@@ -96,6 +96,7 @@
     <ClInclude Include="Src\math\Vector3.h" />
     <ClInclude Include="Src\MeshRenderer.h" />
     <ClInclude Include="Src\micropather\micropather.h" />
+    <ClInclude Include="Src\NavEdge.h" />
     <ClInclude Include="Src\NavInc.h" />
     <ClInclude Include="Src\NavMesh.h" />
     <ClInclude Include="Src\NavPathFinder.h" />

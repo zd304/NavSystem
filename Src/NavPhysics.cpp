@@ -64,4 +64,53 @@ namespace NavPhysics
 
 		return t > 0.f;
 	}
+
+	bool RayIntersectSegment(const Vector2& orig, const Vector2& dir,
+		const Vector2& lineBegin, const Vector2& lineEnd,
+		NavHit* hit)
+	{
+		// 射线方向向量不能为零向量;
+		if (dir == Vector2::ZERO)
+		{
+			return false;
+		}
+		//线段两端点不能相同;
+		if (lineBegin == lineEnd)
+		{
+			return false;
+		}
+
+		//记线段两端点为A(Xa, Ya) B(Xb, Yb)，所在直线为AB;
+		const float Xa = lineBegin.x, Ya = lineBegin.y, Xb = lineEnd.x, Yb = lineEnd.y;
+		//记射线起点为C(Xc, Yc);
+		const float Xc = orig.x, Yc = orig.y;
+		//记射线方向向量为dir(dirx,diry);
+		const float dirx = dir.x, diry = dir.y;
+		//射线方向向量、线段所在直线的方向向量平行;
+		//rayDirection.Cross(lineAB) == 0
+		//时，没有交点;
+		Vector2 lAB = lineEnd - lineBegin;
+
+		float tmp = dir.x * lAB.y - dir.y * lAB.x;
+		if (tmp == 0.0f)
+			return false;
+		//由A + k·AB = C + d·dir解出λ，其中A AB C dir均为向量，k d为数值;
+		float d = (Xa * Yb - Xb * Ya + Yc * lAB.x - Xc * lAB.y) / tmp;
+		if (d < 0.0f || d > 1.0f) // 不相交 没有撞击点;
+		{
+			return false;
+		}
+
+		Vector2 intersection = orig + dir * d;
+		Vector2 lAI = intersection - lineBegin;
+		float k = lAI.Dot(lAB) / lAB.LengthSquared();
+		if (k < 0.0f || k > 1.0f)
+			return false;
+		if (hit)
+		{
+			hit->distance = d;
+			hit->hitPoint = intersection;
+		}
+		return true;
+	}
 }
