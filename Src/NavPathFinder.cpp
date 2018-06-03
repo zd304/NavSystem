@@ -30,6 +30,7 @@ float NavPathFinder::LeastCostEstimate(void* stateStart, void* stateEnd)
 
 void NavPathFinder::AdjacentCost(void* state, std::vector<micropather::StateCost> *adjacent)
 {
+	if (!state) return;
 	NavTriangle* tri = (NavTriangle*)state;
 	for (size_t i = 0; i < tri->mNeighbors.size(); ++i)
 	{
@@ -65,7 +66,7 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 	bool rst = Solve(triStart, triEnd, &triPath, cost);
 	if (rst)
 	{
-		path->push_back(start);
+		//path->push_back(start);
 		size_t nodeCount = triPath.size();
 		for (size_t i = 0; i < nodeCount; ++i)
 		{
@@ -84,7 +85,7 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 				}
 			}
 		}
-		path->push_back(end);
+		//path->push_back(end);
 	}
 	return rst;
 }

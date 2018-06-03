@@ -18,6 +18,8 @@ Test::Test()
 {
 	mRenderer = NULL;
 	mSelectedMesh = NULL;
+	mSelectedVB = NULL;
+	mSelectedIB = NULL;
 	mStartTri = NULL;
 	mEndTri = NULL;
 	mStartMesh = NULL;
@@ -211,6 +213,15 @@ void Test::OnUpdate()
 			mStartMesh->DrawSubset(0);
 		if (mEndMesh)
 			mEndMesh->DrawSubset(0);
+		if (mSelectedPath.size() > 0)
+		{
+			mDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+			mDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+			mDevice->SetFVF(D3DFVF_XYZ);
+			mDevice->DrawPrimitiveUP(D3DPT_LINELIST, mSelectedPath.size() / 2, (void*)&mSelectedPath[0], sizeof(Vector3));
+			mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		}
 	}
 }
 
@@ -309,12 +320,12 @@ void Test::Pick(int x, int y)
 			//AddSelectedTriangle(tri);
 			if (mClickMode == eClickState_Start)
 			{
-				SetPointMesh(tri, true);
+				SetPointMesh(tri, hitInfo.hitPoint, true);
 				return;
 			}
 			else if (mClickMode == eClickState_End)
 			{
-				SetPointMesh(tri, false);
+				SetPointMesh(tri, hitInfo.hitPoint, false);
 
 				NavPathFinder* finder = NULL;
 				if (mStartTri != NULL && mEndTri != NULL && IsTriangleInSameMesh(mStartTri, mEndTri, finder))
@@ -327,6 +338,18 @@ void Test::Pick(int x, int y)
 						{
 							NavTriangle* tri = findPath[i];
 							AddSelectedTriangle(tri);
+						}
+					}
+					std::vector<Vector3> findVectorPath;
+					mSelectedPath.clear();
+					if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost))
+					{
+						for (size_t i = 0; i < findVectorPath.size() - 1; ++i)
+						{
+							Vector3 v0 = findVectorPath[i];
+							Vector3 v1 = findVectorPath[i + 1];
+							mSelectedPath.push_back(v0);
+							mSelectedPath.push_back(v1);
 						}
 					}
 				}
@@ -376,7 +399,7 @@ void Test::AddSelectedTriangle(NavTriangle* tri)
 	mSelectedMesh->UnlockIndexBuffer();
 }
 
-void Test::SetPointMesh(NavTriangle* tri, bool isStart)
+void Test::SetPointMesh(NavTriangle* tri, const Vector3& point, bool isStart)
 {
 	ID3DXMesh** ppMesh = NULL;
 	DWORD color = 0;
@@ -386,6 +409,7 @@ void Test::SetPointMesh(NavTriangle* tri, bool isStart)
 		mStartTri = tri;
 		ppMesh = &mStartMesh;
 		color = 0xffff00ff;
+		mStartPoint = point;
 	}
 	else
 	{
@@ -393,6 +417,7 @@ void Test::SetPointMesh(NavTriangle* tri, bool isStart)
 		mEndTri = tri;
 		ppMesh = &mEndMesh;
 		color = 0xff0000ff;
+		mEndPoint = point;
 	}
 	HRESULT hr = D3DXCreateMeshFVF(1, 3, D3DXMESH_32BIT, SelectedMeshVertex::fvf, mDevice, ppMesh);
 	if (FAILED(hr))
@@ -431,6 +456,8 @@ void Test::ClearPath()
 	SAFE_RELEASE(mSelectedMesh);
 	mSelectedTriangles.clear();
 	mClickMode = eClickState_None;
+
+	mSelectedPath.clear();
 }
 
 void Test::TransformPos(Vector3& pos)

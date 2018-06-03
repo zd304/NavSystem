@@ -35,7 +35,7 @@ private:
 
 	bool IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavPathFinder*& outFinder);
 
-	void SetPointMesh(NavTriangle* tri, bool isStart);
+	void SetPointMesh(NavTriangle* tri, const Vector3& point, bool isStart);
 
 	void AddSelectedTriangle(NavTriangle* tri);
 
@@ -55,11 +55,16 @@ public:
 	std::vector<NavPathFinder*> mNavMeshes;
 	std::vector<NavTriangle*> mSelectedTriangles;
 	ID3DXMesh* mSelectedMesh;
+	IDirect3DVertexBuffer9* mSelectedVB;
+	IDirect3DIndexBuffer9* mSelectedIB;
+	std::vector<Vector3> mSelectedPath;
 
 	ID3DXMesh* mStartMesh;
 	ID3DXMesh* mEndMesh;
 	NavTriangle* mStartTri;
 	NavTriangle* mEndTri;
+	Vector3 mStartPoint;
+	Vector3 mEndPoint;
 
 	eClickState mClickMode;
 
