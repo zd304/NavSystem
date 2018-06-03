@@ -32,7 +32,10 @@ public:
 	~Vector3(void)
 	{}
 public:
+	static const Vector3 ONE;
 	static const Vector3 ZERO;
+	static const Vector3 UP;
+	static const Vector3 DOWN;
 public:
 	inline Vector3 operator-() const;
 	inline Vector3 operator+(const Vector3 &V) const;

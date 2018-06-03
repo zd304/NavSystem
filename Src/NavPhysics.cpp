@@ -130,4 +130,21 @@ namespace NavPhysics
 			return false;
 		return true;
 	}
+
+	bool TriangleIntersect2DPoint(const Vector3& v0, const Vector3& v1, const Vector3& v2,
+		const Vector3& point2D)
+	{
+		float x = point2D.x;
+		if (x < v0.x && x < v1.x && x < v2.x)
+			return false;
+		if (x > v0.x && x > v1.x && x > v2.x)
+			return false;
+
+		float z = point2D.z;
+		if (z < v0.z && z < v1.z && z < v2.z)
+			return false;
+		if (z > v0.z && z > v1.z && z > v2.z)
+			return false;
+		return true;
+	}
 }

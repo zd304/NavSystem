@@ -24,6 +24,9 @@ public:
 	~Vector2(void)
 	{}
 public:
+	static const Vector2 ZERO;
+	static const Vector2 ONE;
+public:
 	inline Vector2 operator-() const;
 	inline Vector2 operator+(const Vector2& V) const;
 	inline Vector2 operator-(const Vector2& V) const;
@@ -51,8 +54,6 @@ public:
 	void Set(float fX, float fY);
 	inline float Dot(const Vector2 &V) const;
 	inline static float Vector2Dot(const Vector2 &V1, const Vector2 &V2);
-
-	static Vector2 ZERO;
 };
 
 Vector2 Vector2::operator-() const

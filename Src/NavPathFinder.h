@@ -12,12 +12,16 @@ public:
 	NavPathFinder(NavMesh* mesh);
 	~NavPathFinder();
 
-	bool Solve(NavTriangle* start, NavTriangle* end, std::vector<NavTriangle*>* path, float* cost);
+	bool Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost);
+
+	bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost);
 public:
 	// Inherit;
 	float LeastCostEstimate(void* stateStart, void* stateEnd);
 	void AdjacentCost(void* state, std::vector<micropather::StateCost> *adjacent);
 	void PrintStateInfo(void* state);
+private:
+	NavTriangle* GetTriangleByPoint(const Vector3& point);
 public:
 	NavMesh* mMesh;
 	micropather::MicroPather* mPather;
