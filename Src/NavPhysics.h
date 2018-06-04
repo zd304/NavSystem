@@ -33,7 +33,7 @@ namespace NavPhysics
 	 * 参数:				返回碰撞信息;
 	 * 返回值：				true为相交，false为没相交;
 	*************************************************************************/
-	bool RayIntersectSegment(const Vector2& orig, const Vector2& dir,
+	bool RayIntersectSegment2D(const Vector2& orig, const Vector2& dir,
 		const Vector2& lineBegin, const Vector2& lineEnd,
 		NavHit* hit);
 
@@ -43,17 +43,26 @@ namespace NavPhysics
 	 * 参数:				二维点;
 	 * 返回值：				true为相交，false为没相交;
 	*************************************************************************/
-	bool TriangleIntersect2DPoint(const Vector2& v0, const Vector2& v1, const Vector2& v2,
+	bool TriangleAABBPoint2D(const Vector2& v0, const Vector2& v1, const Vector2& v2,
 		const Vector2& point2D);
 
 	/************************************************************************
-	* 功能:				TriangleIntersect2DPoint的3D参数版本;
-	* 参数:				三角形三个点;
-	* 参数:				二维点;
+	* 功能:					TriangleIntersect2DPoint的3D参数版本;
+	* 参数:					三角形三个点;
+	* 参数:					二维点;
 	* 返回值：				true为相交，false为没相交;
 	*************************************************************************/
-	bool TriangleIntersect2DPoint(const Vector3& v0, const Vector3& v1, const Vector3& v2,
+	bool TriangleAABBPoint2D(const Vector3& v0, const Vector3& v1, const Vector3& v2,
 		const Vector3& point2D);
+
+	/************************************************************************
+	* 功能:					两条线段的AABB做相交检测;
+	* 参数:					线段1;
+	* 参数:					线段2;
+	* 返回值：				true为相交，false为没相交;
+	*************************************************************************/
+	bool SegmentAABBSegment2D(const Vector3& line1Begin, const Vector3& line1End,
+		const Vector3& line2Begin, const Vector3& line2End);
 }
 
 #endif

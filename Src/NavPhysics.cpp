@@ -65,7 +65,7 @@ namespace NavPhysics
 		return t > 0.f;
 	}
 
-	bool RayIntersectSegment(const Vector2& orig, const Vector2& dir,
+	bool RayIntersectSegment2D(const Vector2& orig, const Vector2& dir,
 		const Vector2& lineBegin, const Vector2& lineEnd,
 		NavHit* hit)
 	{
@@ -114,7 +114,7 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool TriangleIntersect2DPoint(const Vector2& v0, const Vector2& v1, const Vector2& v2,
+	bool TriangleAABBPoint2D(const Vector2& v0, const Vector2& v1, const Vector2& v2,
 		const Vector2& point2D)
 	{
 		float x = point2D.x;
@@ -131,7 +131,7 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool TriangleIntersect2DPoint(const Vector3& v0, const Vector3& v1, const Vector3& v2,
+	bool TriangleAABBPoint2D(const Vector3& v0, const Vector3& v1, const Vector3& v2,
 		const Vector3& point2D)
 	{
 		float x = point2D.x;
@@ -144,6 +144,25 @@ namespace NavPhysics
 		if (z < v0.z && z < v1.z && z < v2.z)
 			return false;
 		if (z > v0.z && z > v1.z && z > v2.z)
+			return false;
+		return true;
+	}
+
+	bool SegmentAABBSegment2D(const Vector3& line1Begin, const Vector3& line1End,
+		const Vector3& line2Begin, const Vector3& line2End)
+	{
+		float minx = line1Begin.x > line1End.x ? line1End.x : line1Begin.x;
+		if (minx > line2Begin.x && minx > line2End.x)
+			return false;
+		float maxx = line1Begin.x < line1End.x ? line1End.x : line1Begin.x;
+		if (maxx < line2Begin.x && maxx < line2End.x)
+			return false;
+
+		float minz = line1Begin.z > line1End.z ? line1End.z : line1Begin.z;
+		if (minz > line2Begin.z && minz > line2End.z)
+			return false;
+		float maxz = line1Begin.z < line1End.z ? line1End.z : line1Begin.z;
+		if (maxz < line2Begin.z && maxz < line2End.z)
 			return false;
 		return true;
 	}

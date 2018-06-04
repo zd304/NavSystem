@@ -15,6 +15,8 @@ public:
 	bool Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost);
 
 	bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost);
+
+	bool LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint);
 public:
 	// Inherit;
 	float LeastCostEstimate(void* stateStart, void* stateEnd);
@@ -22,6 +24,8 @@ public:
 	void PrintStateInfo(void* state);
 private:
 	NavTriangle* GetTriangleByPoint(const Vector3& point);
+
+	void SmoothPath(std::vector<Vector3>* path);
 public:
 	NavMesh* mMesh;
 	micropather::MicroPather* mPather;

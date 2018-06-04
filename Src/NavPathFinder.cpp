@@ -1,4 +1,5 @@
 #include "NavPathFinder.h"
+#include "NavEdge.h"
 #include "NavTriangle.h"
 #include "NavMesh.h"
 #include "NavPhysics.h"
@@ -86,8 +87,69 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 			}
 		}
 		//path->push_back(end);
+
+		SmoothPath(path);
 	}
 	return rst;
+}
+
+bool NavPathFinder::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint)
+{
+	Vector2 start2D(start.x, start.z);
+	Vector2 end2D(end.x, end.z);
+
+	Vector2 dir = end2D - start2D;
+	float distance = dir.Length();
+	dir.Normalize();
+	
+	for (size_t i = 0; i < mMesh->mBounds.size(); ++i)
+	{
+		NavEdge* edge = mMesh->mBounds[i];
+		if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+			continue;
+		Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+		Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+		NavPhysics::NavHit hitInfo;
+		if (!NavPhysics::RayIntersectSegment2D(start2D, dir, v0, v1, &hitInfo))
+			continue;
+		if (hitInfo.distance > distance)
+			continue;
+		hitPoint = hitInfo.hitPoint;
+		return true;
+	}
+	return false;
+}
+
+void NavPathFinder::SmoothPath(std::vector<Vector3>* path)
+{
+	size_t pathSize = path->size();
+	Vector3* oldPath = new Vector3[pathSize];
+	memcpy(oldPath, &((*path)[0]), pathSize * sizeof(Vector3));
+
+	path->clear();
+	path->push_back(oldPath[0]);
+
+	int endIndex = pathSize - 1;
+	while (endIndex > 0)
+	{
+		Vector3 end = oldPath[endIndex];
+		Vector3 hitPoint;
+		if (LineTest((*path)[0], end, hitPoint))
+		{
+			--endIndex;
+			continue;
+		}
+
+		path->push_back(end);
+		
+		pathSize = pathSize - endIndex - 1;
+		Vector3* temp = new Vector3[pathSize];
+		memcpy(oldPath, &(oldPath[endIndex]), pathSize * sizeof(Vector3));
+		SAFE_DELETE_ARRAY(oldPath);
+		oldPath = temp;
+		endIndex = pathSize - 1;
+	}
+	SAFE_DELETE_ARRAY(oldPath);
 }
 
 NavTriangle* NavPathFinder::GetTriangleByPoint(const Vector3& point)
@@ -99,7 +161,7 @@ NavTriangle* NavPathFinder::GetTriangleByPoint(const Vector3& point)
 		Vector3 v1 = tri->mPoint[1];
 		Vector3 v2 = tri->mPoint[2];
 
-		if (!NavPhysics::TriangleIntersect2DPoint(v0, v1, v2, point))
+		if (!NavPhysics::TriangleAABBPoint2D(v0, v1, v2, point))
 			continue;
 		NavPhysics::NavHit hitInfo;
 		Vector3 orig(point.x, 1000.0f, point.z);
