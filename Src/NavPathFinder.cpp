@@ -56,6 +56,7 @@ bool NavPathFinder::Solve(const NavTriangle* start, const NavTriangle* end, std:
 	if (rst == micropather::MicroPather::SOLVED
 		|| rst == micropather::MicroPather::START_END_SAME)
 		return true;
+	mPather->Reset();
 	return false;
 }
 
@@ -67,7 +68,7 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 	bool rst = Solve(triStart, triEnd, &triPath, cost);
 	if (rst)
 	{
-		//path->push_back(start);
+		path->push_back(start);
 		size_t nodeCount = triPath.size();
 		for (size_t i = 0; i < nodeCount; ++i)
 		{
@@ -86,7 +87,7 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 				}
 			}
 		}
-		//path->push_back(end);
+		path->push_back(end);
 
 		SmoothPath(path);
 	}
@@ -109,12 +110,33 @@ bool NavPathFinder::LineTest(const Vector3& start, const Vector3& end, Vector3& 
 			continue;
 		Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 		Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-		NavPhysics::NavHit hitInfo;
-		if (!NavPhysics::RayIntersectSegment2D(start2D, dir, v0, v1, &hitInfo))
+		Vector2 hitInfo;
+		if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 			continue;
-		if (hitInfo.distance > distance)
+		hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+		return true;
+	}
+	return false;
+}
+
+bool NavPathFinder::IsLineTest(const Vector3& start, const Vector3& end)
+{
+	Vector2 start2D(start.x, start.z);
+	Vector2 end2D(end.x, end.z);
+
+	Vector2 dir = end2D - start2D;
+	float distance = dir.Length();
+	dir.Normalize();
+
+	for (size_t i = 0; i < mMesh->mBounds.size(); ++i)
+	{
+		NavEdge* edge = mMesh->mBounds[i];
+		if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 			continue;
-		hitPoint = hitInfo.hitPoint;
+		Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+		Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+		if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
+			continue;
 		return true;
 	}
 	return false;
@@ -133,8 +155,7 @@ void NavPathFinder::SmoothPath(std::vector<Vector3>* path)
 	while (endIndex > 0)
 	{
 		Vector3 end = oldPath[endIndex];
-		Vector3 hitPoint;
-		if (LineTest((*path)[0], end, hitPoint))
+		if (IsLineTest(oldPath[0], end))
 		{
 			--endIndex;
 			continue;
@@ -142,9 +163,9 @@ void NavPathFinder::SmoothPath(std::vector<Vector3>* path)
 
 		path->push_back(end);
 		
-		pathSize = pathSize - endIndex - 1;
+		pathSize = pathSize - endIndex;
 		Vector3* temp = new Vector3[pathSize];
-		memcpy(oldPath, &(oldPath[endIndex]), pathSize * sizeof(Vector3));
+		memcpy(temp, &(oldPath[endIndex]), pathSize * sizeof(Vector3));
 		SAFE_DELETE_ARRAY(oldPath);
 		oldPath = temp;
 		endIndex = pathSize - 1;
@@ -163,9 +184,15 @@ NavTriangle* NavPathFinder::GetTriangleByPoint(const Vector3& point)
 
 		if (!NavPhysics::TriangleAABBPoint2D(v0, v1, v2, point))
 			continue;
-		NavPhysics::NavHit hitInfo;
-		Vector3 orig(point.x, 1000.0f, point.z);
-		if (!NavPhysics::RayIntersectTriangle(orig, Vector3::DOWN, v0, v1, v2, &hitInfo))
+		//NavPhysics::NavHit hitInfo;
+		//Vector3 orig(point.x, 1000.0f, point.z);
+		//if (!NavPhysics::RayIntersectTriangle(orig, Vector3::DOWN, v0, v1, v2, &hitInfo))
+		//	continue;
+		Vector2 v02D(v0.x, v0.z);
+		Vector2 v12D(v1.x, v1.z);
+		Vector2 v22D(v2.x, v2.z);
+		Vector2 vp(point.x, point.z);
+		if (!NavPhysics::IsPointInTriangle(v02D, v12D, v22D, vp))
 			continue;
 		return tri;
 	}

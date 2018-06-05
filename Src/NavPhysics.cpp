@@ -166,4 +166,60 @@ namespace NavPhysics
 			return false;
 		return true;
 	}
+
+	bool IsPointInTriangle(const Vector2& v0, const Vector2& v1, const Vector2& v2, const Vector2& point)
+	{
+		Vector2 e1(v1 - v0);
+		Vector2 e2(v2 - v1);
+		Vector2 e3(v0 - v2);
+		float fn = e1.Cross(e3);
+		float en;
+		en = e1.Cross(v0 - point);
+		if (en * fn < 0)
+			return false;
+
+		en = e2.Cross(v1 - point);
+		if (en * fn < 0)
+			return false;
+
+		en = e3.Cross(v2 - point);
+		if (en * fn < 0)
+			return false;
+
+		return true;
+	}
+
+	bool IsSegmentsInterct(const Vector2& p1, const Vector2& p2,
+		const Vector2& q1, const Vector2& q2)
+	{
+		//跨立判断
+		float multi1 = ((q1.x - p1.x)*(q1.y - q2.y) - (q1.y - p1.y)*(q1.x - q2.x)) * ((q1.x - p2.x)*(q1.y - q2.y) - (q1.y - p2.y)*(q1.x - q2.x));
+		float multi2 = ((p1.x - q1.x)*(p1.y - p2.y) - (p1.y - q1.y)*(p1.x - p2.x)) * ((p1.x - q2.x)*(p1.y - p2.y) - (p1.y - q2.y)*(p1.x - p2.x));
+		if (multi1 >= 0 || multi2 >= 0)
+			return false;
+		return true;
+	}
+
+	bool SegmentIntersectSegment(const Vector2& p1, const Vector2& p2,
+		const Vector2& q1, const Vector2& q2,
+		Vector2* hitPoint)
+	{
+		//跨立判断
+		float multi1 = ((q1.x - p1.x)*(q1.y - q2.y) - (q1.y - p1.y)*(q1.x - q2.x)) * ((q1.x - p2.x)*(q1.y - q2.y) - (q1.y - p2.y)*(q1.x - q2.x));
+		float multi2 = ((p1.x - q1.x)*(p1.y - p2.y) - (p1.y - q1.y)*(p1.x - p2.x)) * ((p1.x - q2.x)*(p1.y - p2.y) - (p1.y - q2.y)*(p1.x - p2.x));
+		if (multi1 >= 0 || multi2 >= 0)
+			return false;
+
+		//求交点
+		float tmpLeft, tmpRight;
+		tmpLeft = (q2.x - q1.x) * (p1.y - p2.y) - (p2.x - p1.x) * (q1.y - q2.y);
+		tmpRight = (p1.y - q1.y) * (p2.x - p1.x) * (q2.x - q1.x) + q1.x * (q2.y - q1.y) * (p2.x - p1.x) - p1.x * (p2.y - p1.y) * (q2.x - q1.x);
+
+		hitPoint->x = (int)((double)tmpRight / (double)tmpLeft);
+
+		tmpLeft = (p1.x - p2.x) * (q2.y - q1.y) - (p2.y - p1.y) * (q1.x - q2.x);
+		tmpRight = p2.y * (p1.x - p2.x) * (q2.y - q1.y) + (q2.x - p2.x) * (q2.y - q1.y) * (p1.y - p2.y) - q2.y * (q1.x - q2.x) * (p2.y - p1.y);
+		hitPoint->y = (int)((double)tmpRight / (double)tmpLeft);
+		return true;
+	}
 }

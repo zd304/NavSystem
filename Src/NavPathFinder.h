@@ -17,6 +17,8 @@ public:
 	bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost);
 
 	bool LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint);
+
+	bool IsLineTest(const Vector3& start, const Vector3& end);
 public:
 	// Inherit;
 	float LeastCostEstimate(void* stateStart, void* stateEnd);

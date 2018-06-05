@@ -53,6 +53,7 @@ public:
 	inline void Normalize();
 	void Set(float fX, float fY);
 	inline float Dot(const Vector2 &V) const;
+	inline float Cross(const Vector2& V) const;
 	inline static float Vector2Dot(const Vector2 &V1, const Vector2 &V2);
 };
 
@@ -194,6 +195,11 @@ inline float Vector2::Vector2Dot(const Vector2 &V1, const Vector2 &V2)
 inline float Vector2::Dot(const Vector2 &V) const
 {
 	return V.x * x + V.y * y;
+}
+
+float Vector2::Cross(const Vector2& V) const
+{
+	return x * V.y - y * V.x;
 }
 
 #endif
