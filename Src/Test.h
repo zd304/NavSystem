@@ -7,6 +7,7 @@ class MeshRenderer;
 class NavMesh;
 class NavTriangle;
 class NavGraph;
+class NavSystem;
 class FileDialog;
 class PathFindLogic;
 
@@ -25,6 +26,8 @@ public:
 	void OnQuit();
 
 	void Pick(int x, int y);
+public:
+	static Test* GetInstance();
 private:
 	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir);
 
@@ -42,17 +45,19 @@ private:
 
 	void CloseFile();
 public:
+	MeshRenderer* mRenderer;
+
+private:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;
 	int mWidth;
 	int mHeight;
-	MeshRenderer* mRenderer;
-	std::vector<NavGraph*> mNavGraphs;
-
+	NavSystem* mNavSystem;
 	PathFindLogic* mPathFindLogic;
 
 	// FileDialog
 	FileDialog* mOpenFBX;
+	FileDialog* mSaveNav;
 
 	// Camera
 	float mCameraDistance;
@@ -60,6 +65,8 @@ public:
 	float mCameraX;// -boxSize;
 	D3DXMATRIX mWorldMtrix;
 	float rot;
+
+	static Test* mInstance;
 };
 
 #endif

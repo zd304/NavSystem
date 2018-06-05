@@ -6,6 +6,7 @@
 class NavTriangle;
 class MeshRenderer;
 class NavGraph;
+class Test;
 
 enum eClickState
 {
@@ -17,7 +18,8 @@ enum eClickState
 class PathFindLogic
 {
 public:
-	PathFindLogic(MeshRenderer* renderer);
+	PathFindLogic(Test* test);
+	~PathFindLogic();
 
 	void OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph);
 private:
@@ -25,7 +27,7 @@ private:
 
 	void SetPointMesh(const NavTriangle* tri, const Vector3& point, bool isStart);
 private:
-	MeshRenderer* mRenderer;
+	Test* mTest;
 
 	NavTriangle* mStartTri;
 	NavTriangle* mEndTri;

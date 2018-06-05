@@ -8,6 +8,7 @@ static const float MAX_COST = 1e4f;
 
 NavGraph::NavGraph(NavMesh* mesh)
 {
+	mID = 0;
 	mPather = new micropather::MicroPather(this);
 	mMesh = mesh;
 }
@@ -15,6 +16,7 @@ NavGraph::NavGraph(NavMesh* mesh)
 NavGraph::~NavGraph()
 {
 	SAFE_DELETE(mPather);
+	SAFE_DELETE(mMesh);
 }
 
 float NavGraph::LeastCostEstimate(void* stateStart, void* stateEnd)

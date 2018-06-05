@@ -110,6 +110,11 @@ void DecodeEdgeIndex(int edgeIndex, int* pointIndex1, int* pointIndex2)
 	}
 }
 
+NavMesh::NavMesh()
+{
+
+}
+
 NavMesh::NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int indicesNum)
 {
 	for (int i = 0; i < indicesNum; i+=3)
@@ -124,7 +129,7 @@ NavMesh::NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int in
 	UpdateAdjacent();
 }
 
-void NavMesh::UpdateAdjacent()
+void NavMesh::UpdateAdjacent(bool calcBounds)
 {
 	for (size_t i = 0; i < mTriangles.size(); ++i)
 	{
@@ -165,6 +170,8 @@ void NavMesh::UpdateAdjacent()
 			}
 		}
 	}
+	if (!calcBounds)
+		return;
 	for (size_t i = 0; i < mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mTriangles[i];
@@ -238,4 +245,82 @@ NavMesh::~NavMesh()
 		SAFE_DELETE(edge);
 	}
 	mBounds.clear();
+}
+
+unsigned int NavMesh::GetSize()
+{
+	unsigned int size = sizeof(unsigned int);
+	for (size_t i = 0; i < mTriangles.size(); ++i)
+	{
+		NavTriangle* tri = mTriangles[i];
+		size += tri->GetSize();
+	}
+	size += sizeof(unsigned int);
+	for (size_t i = 0; i < mBounds.size(); ++i)
+	{
+		NavEdge* edge = mBounds[i];
+		size += (sizeof(Vector3) * 2);
+	}
+	return size;
+}
+
+unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
+{
+	size_t triCount = mTriangles.size();
+	memcpy(dest, &triCount, sizeof(unsigned int));
+	ptr += sizeof(unsigned int);
+
+	for (size_t i = 0; i < triCount; ++i)
+	{
+		NavTriangle* tri = mTriangles[i];
+		ptr = tri->WriteTo(dest, ptr);
+	}
+
+	size_t boundsCount = mBounds.size();
+	memcpy(dest, &boundsCount, sizeof(unsigned int));
+	ptr += sizeof(unsigned int);
+
+	unsigned int edgeSize = sizeof(Vector3) * 2;
+	for (size_t i = 0; i < mBounds.size(); ++i)
+	{
+		NavEdge* edge = mBounds[i];
+		memcpy(dest, edge->mPoint, edgeSize);
+		ptr += edgeSize;
+	}
+	return ptr;
+}
+
+unsigned int NavMesh::ReadFrom(char* src, unsigned int ptr)
+{
+	size_t triCount = 0;
+	memcpy(&triCount, src, ptr);
+	ptr += sizeof(unsigned int);
+
+	for (size_t i = 0; i < triCount; ++i)
+	{
+		NavTriangle* tri = new NavTriangle();
+		ptr = tri->ReadFrom(src, ptr);
+		mTriangles.push_back(tri);
+	}
+
+	UpdateAdjacent(false);
+
+	size_t boundsCount = 0;
+	memcpy(&boundsCount, src, ptr);
+	ptr += sizeof(unsigned int);
+	unsigned int edgeSize = sizeof(Vector3) * 2;
+	for (size_t i = 0; i < mBounds.size(); ++i)
+	{
+		NavEdge* edge = new NavEdge();
+		Vector3 v0, v1;
+		memcpy(v0.mem, src, ptr);
+		ptr += sizeof(Vector3);
+		memcpy(v1.mem, src, ptr);
+		ptr += sizeof(Vector3);
+		edge->mPoint[0] = v0;
+		edge->mPoint[1] = v1;
+		mBounds.push_back(edge);
+	}
+
+	return ptr;
 }

@@ -1,15 +1,24 @@
 #include "PathFindLogic.h"
+#include "Test.h"
 #include "NavTriangle.h"
 #include "NavGraph.h"
 #include "MeshRenderer.h"
 
-PathFindLogic::PathFindLogic(MeshRenderer* renderer)
+PathFindLogic::PathFindLogic(Test* test)
 {
-	mRenderer = renderer;
+	mTest = test;
+}
+
+PathFindLogic::~PathFindLogic()
+{
+	if (mTest->mRenderer)
+		mTest->mRenderer->ClearPath();
 }
 
 void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph)
 {
+	if (mTest->mRenderer == NULL)
+		return;
 	if (tri == NULL)
 	{
 		mClickMode = eClickState::eClickState_None;
@@ -46,12 +55,12 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 			float cost;
 			if (finder->Solve(mStartTri, mEndTri, &findPath, &cost))
 			{
-				mRenderer->SetSelectedPath(findPath);
+				mTest->mRenderer->SetSelectedPath(findPath);
 			}
 			std::vector<Vector3> findVectorPath;
 			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost))
 			{
-				mRenderer->SetSelectedPath(findVectorPath);
+				mTest->mRenderer->SetSelectedPath(findVectorPath);
 			}
 		}
 
@@ -61,6 +70,8 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 
 void PathFindLogic::SetPointMesh(const NavTriangle* tri, const Vector3& point, bool isStart)
 {
+	if (mTest->mRenderer == NULL)
+		return;
 	ID3DXMesh** ppMesh = NULL;
 	DWORD color = 0;
 	if (isStart)
@@ -73,7 +84,7 @@ void PathFindLogic::SetPointMesh(const NavTriangle* tri, const Vector3& point, b
 		mEndTri = (NavTriangle*)tri;
 		mEndPoint = point;
 	}
-	mRenderer->SetPointMesh(tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], point, isStart);
+	mTest->mRenderer->SetPointMesh(tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], point, isStart);
 }
 
 void PathFindLogic::ClearPath()
@@ -82,5 +93,6 @@ void PathFindLogic::ClearPath()
 	mEndTri = NULL;
 	mClickMode = eClickState_None;
 
-	mRenderer->ClearPath();
+	if (mTest->mRenderer)
+		mTest->mRenderer->ClearPath();
 }

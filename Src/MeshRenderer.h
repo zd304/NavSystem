@@ -25,8 +25,8 @@ public:
 	IDirect3DDevice9* mDevice;
 	std::vector<ID3DXMesh*> mMeshes;
 	std::vector<ID3DXMesh*> mWireMeshes;
-	std::vector<MeshVertex> mSelectedPath;
 
+	std::vector<MeshVertex> mSelectedPath;
 	ID3DXMesh* mStartMesh;
 	ID3DXMesh* mEndMesh;
 	ID3DXMesh* mSelectedMesh;

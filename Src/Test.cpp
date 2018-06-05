@@ -5,6 +5,7 @@
 #include "NavTriangle.h"
 #include "NavPhysics.h"
 #include "NavGraph.h"
+#include "NavSystem.h"
 #include "FileDialog.h"
 #include "PathFindLogic.h"
 
@@ -16,10 +17,18 @@ struct SelectedMeshVertex
 	static const int fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 };
 
+Test* Test::mInstance = NULL;
+Test* Test::GetInstance()
+{
+	return mInstance;
+}
+
 Test::Test()
 {
 	mRenderer = NULL;
+	mNavSystem = new NavSystem();
 	mPathFindLogic = NULL;
+	mInstance = this;
 
 	char szPath[MAX_PATH] = { 0 };
 	GetCurrentDirectory(MAX_PATH, szPath);
@@ -28,19 +37,17 @@ Test::Test()
 
 	mOpenFBX = new FileDialog("打开FBX", "fbx", eFileDialogUsage_OpenFile);
 	mOpenFBX->SetDefaultDirectory(sCurPath);
+	mSaveNav = new FileDialog("保存导航文件", "nav", eFileDialogUsage_SaveFile);
+	mSaveNav->SetDefaultDirectory(sCurPath);
 }
 
 Test::~Test()
 {
-	for (size_t i = 0; i < mNavGraphs.size(); ++i)
-	{
-		NavGraph* mesh = mNavGraphs[i];
-		SAFE_DELETE(mesh);
-	}
-	mNavGraphs.clear();
+	SAFE_DELETE(mNavSystem);
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
 	SAFE_DELETE(mOpenFBX);
+	SAFE_DELETE(mSaveNav);
 }
 
 void LoadTextures(IDirect3DDevice9* device)
@@ -145,6 +152,13 @@ void Test::OnGUI()
 		path += mOpenFBX->GetFileName();
 		OpenFBX(path.c_str());
 	}
+	if (mSaveNav->DoModal())
+	{
+		std::string path;
+		path += mSaveNav->GetDirectory();
+		path += mSaveNav->GetFileName();
+		mNavSystem->SaveAs(path.c_str());
+	}
 
 	ImGui::End();
 }
@@ -164,6 +178,7 @@ void Test::OnQuit()
 void Test::OnMenu()
 {
 	bool openFlag = false;
+	bool saveFlag = false;
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -172,6 +187,10 @@ void Test::OnMenu()
 			if (ImGui::MenuItem(STU("打开模型").c_str(), NULL))
 			{
 				openFlag = true;
+			}
+			if (ImGui::MenuItem(STU("保存文件").c_str(), NULL))
+			{
+				saveFlag = true;
 			}
 			if (ImGui::MenuItem(STU("清除").c_str(), NULL))
 			{
@@ -191,6 +210,11 @@ void Test::OnMenu()
 	{
 		mOpenFBX->Open();
 		openFlag = false;
+	}
+	if (saveFlag)
+	{
+		mSaveNav->Open();
+		saveFlag = false;
 	}
 }
 
@@ -251,14 +275,16 @@ void Test::OpenFBX(const char* filePath)
 	UpdateView();
 
 	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
+
 	mRenderer = new MeshRenderer(mDevice, meshDatas);
-	mPathFindLogic = new PathFindLogic(mRenderer);
+	mPathFindLogic = new PathFindLogic(this);
+
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
 		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
 		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
 		NavGraph* pathFinder = new NavGraph(navMesh);
-		mNavGraphs.push_back(pathFinder);
+		mNavSystem->AddGraph(pathFinder);
 	}
 
 	FBXHelper::EndFBXHelper();
@@ -266,23 +292,18 @@ void Test::OpenFBX(const char* filePath)
 
 void Test::CloseFile()
 {
-	for (size_t i = 0; i < mNavGraphs.size(); ++i)
-	{
-		NavGraph* mesh = mNavGraphs[i];
-		SAFE_DELETE(mesh);
-	}
-	mNavGraphs.clear();
+	mNavSystem->Clear();
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
 }
 
 bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)
 {
-	for (size_t i = 0; i < mNavGraphs.size(); ++i)
+	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
 		bool exist1 = false;
 		bool exist2 = false;
-		NavGraph* finder = mNavGraphs[i];
+		NavGraph* finder = mNavSystem->GetGraphByID(i);
 		for (size_t j = 0; j < finder->mMesh->mTriangles.size(); ++j)
 		{
 			NavTriangle* tri = finder->mMesh->mTriangles[j];
@@ -340,9 +361,9 @@ void Test::Pick(int x, int y)
 	NavGraph* hitGraph = NULL;
 	Vector3 hitPoint = Vector3::ZERO;
 
-	for (size_t i = 0; i < mNavGraphs.size(); ++i)
+	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		NavGraph* navPathFinder = mNavGraphs[i];
+		NavGraph* navPathFinder = mNavSystem->GetGraphByID(i);
 		NavMesh* navMesh = navPathFinder->mMesh;
 		for (size_t j = 0; j < navMesh->mTriangles.size(); ++j)
 		{

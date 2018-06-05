@@ -31,6 +31,7 @@ private:
 public:
 	NavMesh* mMesh;
 	micropather::MicroPather* mPather;
+	unsigned int mID;
 };
 
 #endif

@@ -91,6 +91,12 @@
     <ClInclude Include="Src\FileDialog.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\NavSystem.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Nav.h">
+      <Filter>nav</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -149,6 +155,9 @@
     </ClCompile>
     <ClCompile Include="Src\FileDialog.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSystem.cpp">
+      <Filter>nav</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
