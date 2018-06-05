@@ -177,6 +177,7 @@ void Test::OnMenu()
 			{
 				CloseFile();
 			}
+			ImGui::Separator();
 			if (ImGui::MenuItem(STU("¹Ø±Õ").c_str(), NULL))
 			{
 				::PostQuitMessage(0);
