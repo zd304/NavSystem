@@ -5,6 +5,7 @@
 #include "NavTriangle.h"
 #include "NavPhysics.h"
 #include "NavGraph.h"
+#include "PathFindLogic.h"
 
 struct SelectedMeshVertex
 {
@@ -17,25 +18,19 @@ struct SelectedMeshVertex
 Test::Test()
 {
 	mRenderer = NULL;
-	mSelectedMesh = NULL;
-	mSelectedVB = NULL;
-	mSelectedIB = NULL;
-	mStartTri = NULL;
-	mEndTri = NULL;
-	mStartMesh = NULL;
-	mEndMesh = NULL;
-	mClickMode = eClickState::eClickState_None;
+	mPathFindLogic = NULL;
 }
 
 Test::~Test()
 {
-	for (size_t i = 0; i < mNavMeshes.size(); ++i)
+	for (size_t i = 0; i < mNavGraphs.size(); ++i)
 	{
-		NavGraph* mesh = mNavMeshes[i];
+		NavGraph* mesh = mNavGraphs[i];
 		SAFE_DELETE(mesh);
 	}
-	mNavMeshes.clear();
+	mNavGraphs.clear();
 	SAFE_DELETE(mRenderer);
+	SAFE_DELETE(mPathFindLogic);
 }
 
 void LoadTextures(IDirect3DDevice9* device)
@@ -124,17 +119,16 @@ void Test::OnInit(HWND hwnd, IDirect3DDevice9* device)
 
 	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
 	mRenderer = new MeshRenderer(mDevice, meshDatas);
+	mPathFindLogic = new PathFindLogic(mRenderer);
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
 		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
 		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
 		NavGraph* pathFinder = new NavGraph(navMesh);
-		mNavMeshes.push_back(pathFinder);
+		mNavGraphs.push_back(pathFinder);
 	}
 
 	FBXHelper::EndFBXHelper();
-
-	mMatNav.Diffuse = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Test::UpdateView()
@@ -142,9 +136,6 @@ void Test::UpdateView()
 	D3DXMATRIX matView;
 	D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(-mCameraX, mCameraHeight, mCameraDistance),
 		&D3DXVECTOR3(-mCameraX, 0.0f, 0.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-
-	//D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(mCameraX, 1000.0f, 0.1f),
-	//	&D3DXVECTOR3(mCameraX, 0.0f, 0.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 	mDevice->SetTransform(D3DTS_VIEW, &matView);
 
 	D3DXMatrixRotationYawPitchRoll(&mWorldMtrix, -rot, 0.0f, 0.0f);
@@ -195,33 +186,13 @@ void Test::OnGUI()
 	ImGui::Begin(STU("µ¼º½±à¼­Æ÷").c_str(), NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar);
 
 	ImGui::End();
-
-	//ImGui::PopStyleColor();
 }
 
 void Test::OnUpdate()
 {
 	if (mRenderer)
 	{
-		mDevice->SetMaterial(&mMatNav);
-
 		mRenderer->Render();
-		
-		if (mSelectedMesh)
-			mSelectedMesh->DrawSubset(0);
-		if (mStartMesh)
-			mStartMesh->DrawSubset(0);
-		if (mEndMesh)
-			mEndMesh->DrawSubset(0);
-		if (mSelectedPath.size() > 0)
-		{
-			mDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-			mDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-			mDevice->SetFVF(D3DFVF_XYZ);
-			mDevice->DrawPrimitiveUP(D3DPT_LINELIST, mSelectedPath.size() / 2, (void*)&mSelectedPath[0], sizeof(Vector3));
-			mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-			mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-		}
 	}
 }
 
@@ -231,11 +202,11 @@ void Test::OnQuit()
 
 bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)
 {
-	for (size_t i = 0; i < mNavMeshes.size(); ++i)
+	for (size_t i = 0; i < mNavGraphs.size(); ++i)
 	{
 		bool exist1 = false;
 		bool exist2 = false;
-		NavGraph* finder = mNavMeshes[i];
+		NavGraph* finder = mNavGraphs[i];
 		for (size_t j = 0; j < finder->mMesh->mTriangles.size(); ++j)
 		{
 			NavTriangle* tri = finder->mMesh->mTriangles[j];
@@ -280,20 +251,6 @@ void Test::GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, lo
 
 void Test::Pick(int x, int y)
 {
-	if (mStartTri == NULL && mEndTri == NULL)
-	{
-		mClickMode = eClickState::eClickState_Start;
-	}
-	if (mStartTri != NULL && mEndTri == NULL)
-	{
-		mClickMode = eClickState::eClickState_End;
-	}
-	if (mStartTri != NULL && mEndTri != NULL)
-	{
-		mClickMode = eClickState::eClickState_Start;
-		ClearPath();
-	}
-
 	RECT rect;
 	GetClientRect(mHwnd, &rect);
 	long w = rect.right - rect.left;
@@ -302,9 +259,14 @@ void Test::Pick(int x, int y)
 	Vector3 orig;
 	Vector3 dir;
 	GetWorldRay(mDevice, x, y, w, h, orig, dir);
-	for (size_t i = 0; i < mNavMeshes.size(); ++i)
+
+	NavTriangle* hitTri = NULL;
+	NavGraph* hitGraph = NULL;
+	Vector3 hitPoint = Vector3::ZERO;
+
+	for (size_t i = 0; i < mNavGraphs.size(); ++i)
 	{
-		NavGraph* navPathFinder = mNavMeshes[i];
+		NavGraph* navPathFinder = mNavGraphs[i];
 		NavMesh* navMesh = navPathFinder->mMesh;
 		for (size_t j = 0; j < navMesh->mTriangles.size(); ++j)
 		{
@@ -317,147 +279,17 @@ void Test::Pick(int x, int y)
 			TransformPos(v0); TransformPos(v1); TransformPos(v2);
 			if (!NavPhysics::RayIntersectTriangle(orig, dir, v0, v1, v2, &hitInfo))
 				continue;
-			//AddSelectedTriangle(tri);
-			if (mClickMode == eClickState_Start)
-			{
-				SetPointMesh(tri, hitInfo.hitPoint, true);
-				return;
-			}
-			else if (mClickMode == eClickState_End)
-			{
-				SetPointMesh(tri, hitInfo.hitPoint, false);
-
-				NavGraph* finder = NULL;
-				if (mStartTri != NULL && mEndTri != NULL && IsTriangleInSameMesh(mStartTri, mEndTri, finder))
-				{
-					std::vector<NavTriangle*> findPath;
-					float cost;
-					if (finder->Solve(mStartTri, mEndTri, &findPath, &cost))
-					{
-						for (size_t i = 0; i < findPath.size(); ++i)
-						{
-							NavTriangle* tri = findPath[i];
-							AddSelectedTriangle(tri);
-						}
-					}
-					std::vector<Vector3> findVectorPath;
-					mSelectedPath.clear();
-					if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost))
-					{
-						for (size_t i = 0; i < findVectorPath.size() - 1; ++i)
-						{
-							Vector3 v0 = findVectorPath[i];
-							Vector3 v1 = findVectorPath[i + 1];
-							mSelectedPath.push_back(v0);
-							mSelectedPath.push_back(v1);
-						}
-					}
-				}
-
-				return;
-			}
+			hitPoint = hitInfo.hitPoint;
+			hitTri = tri;
+			hitGraph = navPathFinder;
 			break;
 		}
+		if (hitGraph != NULL)
+			break;
 	}
-}
 
-void Test::AddSelectedTriangle(NavTriangle* tri)
-{
-	SAFE_RELEASE(mSelectedMesh);
-
-	mSelectedTriangles.push_back(tri);
-	size_t count = mSelectedTriangles.size() * 3;
-	HRESULT hr = D3DXCreateMeshFVF(mSelectedTriangles.size(), count, D3DXMESH_32BIT, SelectedMeshVertex::fvf, mDevice, &mSelectedMesh);
-	if (FAILED(hr))
-		return;
-
-	SelectedMeshVertex* vb = NULL;
-	mSelectedMesh->LockVertexBuffer(NULL, (void**)&vb);
-	for (size_t i = 0; i < mSelectedTriangles.size(); ++i)
-	{
-		NavTriangle* t = mSelectedTriangles[i];
-		SelectedMeshVertex& v0 = vb[i * 3];
-		v0.color = 0xffff0000;
-		v0.pos = t->mPoint[0];
-		SelectedMeshVertex& v1 = vb[i * 3 + 1];
-		v1.color = 0xffff0000;
-		v1.pos = t->mPoint[1];
-		SelectedMeshVertex& v2 = vb[i * 3 + 2];
-		v2.color = 0xffff0000;
-		v2.pos = t->mPoint[2];
-	}
-	mSelectedMesh->UnlockVertexBuffer();
-
-	unsigned int* ib = NULL;
-	mSelectedMesh->LockIndexBuffer(NULL, (void**)&ib);
-	for (size_t i = 0; i < mSelectedTriangles.size(); ++i)
-	{
-		ib[i * 3] = i * 3;
-		ib[i * 3 + 1] = i * 3 + 1;
-		ib[i * 3 + 2] = i * 3 + 2;
-	}
-	mSelectedMesh->UnlockIndexBuffer();
-}
-
-void Test::SetPointMesh(NavTriangle* tri, const Vector3& point, bool isStart)
-{
-	ID3DXMesh** ppMesh = NULL;
-	DWORD color = 0;
-	if (isStart)
-	{
-		SAFE_RELEASE(mStartMesh);
-		mStartTri = tri;
-		ppMesh = &mStartMesh;
-		color = 0xffff00ff;
-		mStartPoint = point;
-	}
-	else
-	{
-		SAFE_RELEASE(mEndMesh);
-		mEndTri = tri;
-		ppMesh = &mEndMesh;
-		color = 0xff0000ff;
-		mEndPoint = point;
-	}
-	HRESULT hr = D3DXCreateMeshFVF(1, 3, D3DXMESH_32BIT, SelectedMeshVertex::fvf, mDevice, ppMesh);
-	if (FAILED(hr))
-		return;
-	SelectedMeshVertex* vb = NULL;
-	(*ppMesh)->LockVertexBuffer(NULL, (void**)&vb);
-	{
-		SelectedMeshVertex& v0 = vb[0];
-		v0.color = color;
-		v0.pos = tri->mPoint[0];
-		SelectedMeshVertex& v1 = vb[1];
-		v1.color = color;
-		v1.pos = tri->mPoint[1];
-		SelectedMeshVertex& v2 = vb[2];
-		v2.color = color;
-		v2.pos = tri->mPoint[2];
-	}
-	(*ppMesh)->UnlockVertexBuffer();
-
-	unsigned int* ib = NULL;
-	(*ppMesh)->LockIndexBuffer(NULL, (void**)&ib);
-	{
-		ib[0] = 0;
-		ib[1] = 1;
-		ib[2] = 2;
-	}
-	(*ppMesh)->UnlockIndexBuffer();
-}
-
-void Test::ClearPath()
-{
-	SAFE_RELEASE(mStartMesh);
-	mStartTri = NULL;
-	SAFE_RELEASE(mEndMesh);
-	mEndTri = NULL;
-	SAFE_RELEASE(mSelectedMesh);
-	mSelectedTriangles.clear();
-	mClickMode = eClickState_None;
-
-	mSelectedPath.clear();
+	if (mPathFindLogic)
+		mPathFindLogic->OnPick(hitTri, hitPoint, hitGraph);
 }
 
 void Test::TransformPos(Vector3& pos)

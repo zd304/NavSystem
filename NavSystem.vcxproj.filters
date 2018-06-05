@@ -88,6 +88,9 @@
     <ClInclude Include="Src\NavGraph.h">
       <Filter>nav</Filter>
     </ClInclude>
+    <ClInclude Include="Src\PathFindLogic.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -140,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="Src\NavGraph.cpp">
       <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\PathFindLogic.cpp">
+      <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

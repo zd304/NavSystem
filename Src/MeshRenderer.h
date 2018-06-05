@@ -3,6 +3,9 @@
 
 #include "FBXHelper.h"
 
+class NavTriangle;
+struct MeshVertex;
+
 class MeshRenderer
 {
 public:
@@ -10,10 +13,23 @@ public:
 	~MeshRenderer();
 
 	void Render();
+
+	void SetPointMesh(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& point, bool isStart);
+
+	void SetSelectedPath(const std::vector<NavTriangle*>& tris);
+
+	void SetSelectedPath(const std::vector<Vector3>& path);
+
+	void ClearPath();
 public:
 	IDirect3DDevice9* mDevice;
 	std::vector<ID3DXMesh*> mMeshes;
 	std::vector<ID3DXMesh*> mWireMeshes;
+	std::vector<MeshVertex> mSelectedPath;
+
+	ID3DXMesh* mStartMesh;
+	ID3DXMesh* mEndMesh;
+	ID3DXMesh* mSelectedMesh;
 };
 
 #endif

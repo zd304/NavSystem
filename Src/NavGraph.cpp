@@ -50,7 +50,7 @@ void NavGraph::PrintStateInfo(void* state)
 
 }
 
-bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost)
+bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost) const
 {
 	int rst = mPather->Solve((void*)start, (void*)end, (std::vector<void*>*)path, cost);
 	if (rst == micropather::MicroPather::SOLVED
@@ -60,7 +60,7 @@ bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vect
 	return false;
 }
 
-bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost)
+bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost) const
 {
 	NavTriangle* triStart = GetTriangleByPoint(start);
 	NavTriangle* triEnd = GetTriangleByPoint(end);
@@ -94,7 +94,7 @@ bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vecto
 	return rst;
 }
 
-bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint)
+bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint) const
 {
 	Vector2 start2D(start.x, start.z);
 	Vector2 end2D(end.x, end.z);
@@ -119,7 +119,7 @@ bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPo
 	return false;
 }
 
-bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end)
+bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end) const
 {
 	Vector2 start2D(start.x, start.z);
 	Vector2 end2D(end.x, end.z);
@@ -142,7 +142,7 @@ bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end)
 	return false;
 }
 
-void NavGraph::SmoothPath(std::vector<Vector3>* path)
+void NavGraph::SmoothPath(std::vector<Vector3>* path) const
 {
 	size_t pathSize = path->size();
 	Vector3* oldPath = new Vector3[pathSize];
@@ -173,7 +173,7 @@ void NavGraph::SmoothPath(std::vector<Vector3>* path)
 	SAFE_DELETE_ARRAY(oldPath);
 }
 
-NavTriangle* NavGraph::GetTriangleByPoint(const Vector3& point)
+NavTriangle* NavGraph::GetTriangleByPoint(const Vector3& point) const
 {
 	for (size_t i = 0; i < mMesh->mTriangles.size(); ++i)
 	{

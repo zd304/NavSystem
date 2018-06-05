@@ -7,13 +7,7 @@ class MeshRenderer;
 class NavMesh;
 class NavTriangle;
 class NavGraph;
-
-enum eClickState
-{
-	eClickState_None,
-	eClickState_Start,
-	eClickState_End
-};
+class PathFindLogic;
 
 class Test
 {
@@ -35,12 +29,6 @@ private:
 
 	bool IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder);
 
-	void SetPointMesh(NavTriangle* tri, const Vector3& point, bool isStart);
-
-	void AddSelectedTriangle(NavTriangle* tri);
-
-	void ClearPath();
-
 	void UpdateView();
 
 	void TransformPos(Vector3& pos);
@@ -50,23 +38,10 @@ public:
 	int mWidth;
 	int mHeight;
 	MeshRenderer* mRenderer;
-	D3DMATERIAL9 mMatNav;
 
-	std::vector<NavGraph*> mNavMeshes;
-	std::vector<NavTriangle*> mSelectedTriangles;
-	ID3DXMesh* mSelectedMesh;
-	IDirect3DVertexBuffer9* mSelectedVB;
-	IDirect3DIndexBuffer9* mSelectedIB;
-	std::vector<Vector3> mSelectedPath;
+	std::vector<NavGraph*> mNavGraphs;
 
-	ID3DXMesh* mStartMesh;
-	ID3DXMesh* mEndMesh;
-	NavTriangle* mStartTri;
-	NavTriangle* mEndTri;
-	Vector3 mStartPoint;
-	Vector3 mEndPoint;
-
-	eClickState mClickMode;
+	PathFindLogic* mPathFindLogic;
 
 	// Camera
 	float mCameraDistance;

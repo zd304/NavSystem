@@ -101,6 +101,7 @@
     <ClInclude Include="Src\NavMesh.h" />
     <ClInclude Include="Src\NavGraph.h" />
     <ClInclude Include="Src\NavPhysics.h" />
+    <ClInclude Include="Src\PathFindLogic.h" />
     <ClInclude Include="Src\Test.h" />
     <ClInclude Include="Src\NavTriangle.h" />
   </ItemGroup>
@@ -121,6 +122,7 @@
     <ClCompile Include="Src\NavGraph.cpp" />
     <ClCompile Include="Src\NavPhysics.cpp" />
     <ClCompile Include="Src\NavTriangle.cpp" />
+    <ClCompile Include="Src\PathFindLogic.cpp" />
     <ClCompile Include="Src\Test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
