@@ -39,6 +39,8 @@ Test::Test()
 	mOpenFBX->SetDefaultDirectory(sCurPath);
 	mSaveNav = new FileDialog("保存导航文件", "nav", eFileDialogUsage_SaveFile);
 	mSaveNav->SetDefaultDirectory(sCurPath);
+	mOpenNav = new FileDialog("打开导航", "nav", eFileDialogUsage_OpenFile);
+	mOpenNav->SetDefaultDirectory(sCurPath);
 }
 
 Test::~Test()
@@ -48,6 +50,7 @@ Test::~Test()
 	SAFE_DELETE(mPathFindLogic);
 	SAFE_DELETE(mOpenFBX);
 	SAFE_DELETE(mSaveNav);
+	SAFE_DELETE(mOpenNav);
 }
 
 void LoadTextures(IDirect3DDevice9* device)
@@ -159,6 +162,15 @@ void Test::OnGUI()
 		path += mSaveNav->GetFileName();
 		mNavSystem->SaveAs(path.c_str());
 	}
+	if (mOpenNav->DoModal())
+	{
+		CloseFile();
+
+		std::string path;
+		path += mOpenNav->GetDirectory();
+		path += mOpenNav->GetFileName();
+		mNavSystem->LoadFromFile(path.c_str());
+	}
 
 	ImGui::End();
 }
@@ -178,6 +190,7 @@ void Test::OnQuit()
 void Test::OnMenu()
 {
 	bool openFlag = false;
+	bool open1Flag = false;
 	bool saveFlag = false;
 
 	if (ImGui::BeginMenuBar())
@@ -188,11 +201,15 @@ void Test::OnMenu()
 			{
 				openFlag = true;
 			}
+			if (ImGui::MenuItem(STU("打开导航").c_str(), NULL))
+			{
+				open1Flag = true;
+			}
 			if (ImGui::MenuItem(STU("保存文件").c_str(), NULL))
 			{
 				saveFlag = true;
 			}
-			if (ImGui::MenuItem(STU("清除").c_str(), NULL))
+			if (ImGui::MenuItem(STU("清除导航").c_str(), NULL))
 			{
 				CloseFile();
 			}
@@ -210,6 +227,11 @@ void Test::OnMenu()
 	{
 		mOpenFBX->Open();
 		openFlag = false;
+	}
+	if (open1Flag)
+	{
+		mOpenNav->Open();
+		open1Flag = false;
 	}
 	if (saveFlag)
 	{

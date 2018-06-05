@@ -59,10 +59,10 @@ void NavSystem::LoadFromFile(const char* path)
 	mGraphs.clear();
 
 	unsigned int ptr = 0;
-	memcpy(&mVersion, data, sizeof(unsigned int));
+	memcpy(&mVersion, data + ptr, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 	unsigned int graphCount = 0;
-	memcpy(&graphCount, data, sizeof(unsigned int));
+	memcpy(&graphCount, data + ptr, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 	for (unsigned int i = 0; i < graphCount; ++i)
 	{

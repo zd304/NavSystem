@@ -25,7 +25,7 @@ unsigned int NavTriangle::GetSize()
 
 unsigned int NavTriangle::WriteTo(char* dest, unsigned int ptr)
 {
-	memcpy(dest, &mPoint[0], sizeof(Vector3) * 3);
+	memcpy(dest + ptr, &mPoint[0], sizeof(Vector3)* 3);
 	ptr += sizeof(Vector3) * 3;
 	return ptr;
 }
@@ -33,11 +33,11 @@ unsigned int NavTriangle::WriteTo(char* dest, unsigned int ptr)
 unsigned int NavTriangle::ReadFrom(char* src, unsigned int ptr)
 {
 	Vector3 v0, v1, v2;
-	memcpy(v0.mem, src, ptr);
+	memcpy(v0.mem, &src[ptr], sizeof(Vector3));
 	ptr += sizeof(Vector3);
-	memcpy(v1.mem, src, ptr);
+	memcpy(v1.mem, &src[ptr], sizeof(Vector3));
 	ptr += sizeof(Vector3);
-	memcpy(v2.mem, src, ptr);
+	memcpy(v2.mem, &src[ptr], sizeof(Vector3));
 	ptr += sizeof(Vector3);
 
 	mCenter.Set(0.0f, 0.0f, 0.0f);

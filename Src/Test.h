@@ -57,6 +57,7 @@ private:
 
 	// FileDialog
 	FileDialog* mOpenFBX;
+	FileDialog* mOpenNav;
 	FileDialog* mSaveNav;
 
 	// Camera

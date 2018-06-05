@@ -267,7 +267,7 @@ unsigned int NavMesh::GetSize()
 unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
 {
 	size_t triCount = mTriangles.size();
-	memcpy(dest, &triCount, sizeof(unsigned int));
+	memcpy(dest + ptr, &triCount, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 
 	for (size_t i = 0; i < triCount; ++i)
@@ -277,14 +277,14 @@ unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
 	}
 
 	size_t boundsCount = mBounds.size();
-	memcpy(dest, &boundsCount, sizeof(unsigned int));
+	memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 
 	unsigned int edgeSize = sizeof(Vector3) * 2;
 	for (size_t i = 0; i < mBounds.size(); ++i)
 	{
 		NavEdge* edge = mBounds[i];
-		memcpy(dest, edge->mPoint, edgeSize);
+		memcpy(dest + ptr, edge->mPoint, edgeSize);
 		ptr += edgeSize;
 	}
 	return ptr;
@@ -293,7 +293,7 @@ unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
 unsigned int NavMesh::ReadFrom(char* src, unsigned int ptr)
 {
 	size_t triCount = 0;
-	memcpy(&triCount, src, ptr);
+	memcpy(&triCount, &src[ptr], sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 
 	for (size_t i = 0; i < triCount; ++i)
@@ -306,16 +306,16 @@ unsigned int NavMesh::ReadFrom(char* src, unsigned int ptr)
 	UpdateAdjacent(false);
 
 	size_t boundsCount = 0;
-	memcpy(&boundsCount, src, ptr);
+	memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 	unsigned int edgeSize = sizeof(Vector3) * 2;
-	for (size_t i = 0; i < mBounds.size(); ++i)
+	for (size_t i = 0; i < boundsCount; ++i)
 	{
 		NavEdge* edge = new NavEdge();
 		Vector3 v0, v1;
-		memcpy(v0.mem, src, ptr);
+		memcpy(v0.mem, &src[ptr], sizeof(Vector3));
 		ptr += sizeof(Vector3);
-		memcpy(v1.mem, src, ptr);
+		memcpy(v1.mem, &src[ptr], sizeof(Vector3));
 		ptr += sizeof(Vector3);
 		edge->mPoint[0] = v0;
 		edge->mPoint[1] = v1;
