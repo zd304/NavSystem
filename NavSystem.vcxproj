@@ -81,9 +81,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\FBXCommon.h" />
     <ClInclude Include="Src\FBXHelper.h" />
+    <ClInclude Include="Src\FileDialog.h" />
     <ClInclude Include="Src\imgui\imconfig.h" />
     <ClInclude Include="Src\imgui\imgui.h" />
     <ClInclude Include="Src\imgui\imgui_internal.h" />
@@ -108,6 +108,7 @@
   <ItemGroup>
     <ClCompile Include="Src\FBXCommon.cpp" />
     <ClCompile Include="Src\FBXHelper.cpp" />
+    <ClCompile Include="Src\FileDialog.cpp" />
     <ClCompile Include="Src\imgui\imgui.cpp" />
     <ClCompile Include="Src\imgui\imgui_demo.cpp" />
     <ClCompile Include="Src\imgui\imgui_draw.cpp" />

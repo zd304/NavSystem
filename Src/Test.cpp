@@ -5,6 +5,7 @@
 #include "NavTriangle.h"
 #include "NavPhysics.h"
 #include "NavGraph.h"
+#include "FileDialog.h"
 #include "PathFindLogic.h"
 
 struct SelectedMeshVertex
@@ -19,6 +20,14 @@ Test::Test()
 {
 	mRenderer = NULL;
 	mPathFindLogic = NULL;
+
+	char szPath[MAX_PATH] = { 0 };
+	GetCurrentDirectory(MAX_PATH, szPath);
+	std::string sCurPath = szPath;
+	sCurPath = sCurPath.append("\\");
+
+	mOpenFBX = new FileDialog("打开FBX", "fbx", eFileDialogUsage_OpenFile);
+	mOpenFBX->SetDefaultDirectory(sCurPath);
 }
 
 Test::~Test()
@@ -31,6 +40,7 @@ Test::~Test()
 	mNavGraphs.clear();
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
+	SAFE_DELETE(mOpenFBX);
 }
 
 void LoadTextures(IDirect3DDevice9* device)
@@ -146,6 +156,66 @@ void Test::OnGUI()
 {
 	//ImGui::ShowTestWindow();
 
+	OnInput();
+
+	ImGui::SetNextWindowPos(ImVec2(0, 0));
+	ImGui::SetNextWindowSize(ImVec2(256, (float)mHeight));
+	ImGui::Begin(STU("导航编辑器").c_str(), NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar);
+
+	OnMenu();
+
+	if (mOpenFBX->DoModal())
+	{
+		printf(mOpenFBX->GetDirectory());
+		printf(" + ");
+		printf(mOpenFBX->GetFileName());
+		printf("\n");
+	}
+
+	ImGui::End();
+}
+
+void Test::OnUpdate()
+{
+	if (mRenderer)
+	{
+		mRenderer->Render();
+	}
+}
+
+void Test::OnQuit()
+{
+}
+
+void Test::OnMenu()
+{
+	bool openFlag = false;
+
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu(STU("文件").c_str()))
+		{
+			if (ImGui::MenuItem(STU("打开模型").c_str(), NULL))
+			{
+				openFlag = true;
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
+	if (openFlag)
+	{
+		mOpenFBX->Open();
+		openFlag = false;
+	}
+}
+
+void Test::OnInput()
+{
+	if (mOpenFBX && mOpenFBX->IsOpen())
+		return;
+
 	if (ImGui::IsKeyPressed('A'))
 	{
 		mCameraX -= (mCameraDistance * 0.01f);
@@ -180,24 +250,6 @@ void Test::OnGUI()
 
 		ImGui::ResetMouseDragDelta(0);
 	}
-
-	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::SetNextWindowSize(ImVec2(256, (float)mHeight));
-	ImGui::Begin(STU("导航编辑器").c_str(), NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar);
-
-	ImGui::End();
-}
-
-void Test::OnUpdate()
-{
-	if (mRenderer)
-	{
-		mRenderer->Render();
-	}
-}
-
-void Test::OnQuit()
-{
 }
 
 bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)

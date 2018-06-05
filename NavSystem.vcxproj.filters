@@ -79,9 +79,6 @@
     <ClInclude Include="Src\NavPhysics.h">
       <Filter>nav</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Camera.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\NavEdge.h">
       <Filter>nav</Filter>
     </ClInclude>
@@ -89,6 +86,9 @@
       <Filter>nav</Filter>
     </ClInclude>
     <ClInclude Include="Src\PathFindLogic.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\FileDialog.h">
       <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>
@@ -145,6 +145,9 @@
       <Filter>nav</Filter>
     </ClCompile>
     <ClCompile Include="Src\PathFindLogic.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\FileDialog.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
