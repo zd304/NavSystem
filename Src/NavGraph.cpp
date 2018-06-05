@@ -1,4 +1,4 @@
-#include "NavPathFinder.h"
+#include "NavGraph.h"
 #include "NavEdge.h"
 #include "NavTriangle.h"
 #include "NavMesh.h"
@@ -6,18 +6,18 @@
 
 static const float MAX_COST = 1e4f;
 
-NavPathFinder::NavPathFinder(NavMesh* mesh)
+NavGraph::NavGraph(NavMesh* mesh)
 {
 	mPather = new micropather::MicroPather(this);
 	mMesh = mesh;
 }
 
-NavPathFinder::~NavPathFinder()
+NavGraph::~NavGraph()
 {
 	SAFE_DELETE(mPather);
 }
 
-float NavPathFinder::LeastCostEstimate(void* stateStart, void* stateEnd)
+float NavGraph::LeastCostEstimate(void* stateStart, void* stateEnd)
 {
 	if (!stateStart || !stateEnd)
 		return MAX_COST;
@@ -29,7 +29,7 @@ float NavPathFinder::LeastCostEstimate(void* stateStart, void* stateEnd)
 	return cost;
 }
 
-void NavPathFinder::AdjacentCost(void* state, std::vector<micropather::StateCost> *adjacent)
+void NavGraph::AdjacentCost(void* state, std::vector<micropather::StateCost> *adjacent)
 {
 	if (!state) return;
 	NavTriangle* tri = (NavTriangle*)state;
@@ -45,12 +45,12 @@ void NavPathFinder::AdjacentCost(void* state, std::vector<micropather::StateCost
 	}
 }
 
-void NavPathFinder::PrintStateInfo(void* state)
+void NavGraph::PrintStateInfo(void* state)
 {
 
 }
 
-bool NavPathFinder::Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost)
+bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost)
 {
 	int rst = mPather->Solve((void*)start, (void*)end, (std::vector<void*>*)path, cost);
 	if (rst == micropather::MicroPather::SOLVED
@@ -60,7 +60,7 @@ bool NavPathFinder::Solve(const NavTriangle* start, const NavTriangle* end, std:
 	return false;
 }
 
-bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost)
+bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost)
 {
 	NavTriangle* triStart = GetTriangleByPoint(start);
 	NavTriangle* triEnd = GetTriangleByPoint(end);
@@ -94,7 +94,7 @@ bool NavPathFinder::Solve(const Vector3& start, const Vector3& end, std::vector<
 	return rst;
 }
 
-bool NavPathFinder::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint)
+bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint)
 {
 	Vector2 start2D(start.x, start.z);
 	Vector2 end2D(end.x, end.z);
@@ -119,7 +119,7 @@ bool NavPathFinder::LineTest(const Vector3& start, const Vector3& end, Vector3& 
 	return false;
 }
 
-bool NavPathFinder::IsLineTest(const Vector3& start, const Vector3& end)
+bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end)
 {
 	Vector2 start2D(start.x, start.z);
 	Vector2 end2D(end.x, end.z);
@@ -142,7 +142,7 @@ bool NavPathFinder::IsLineTest(const Vector3& start, const Vector3& end)
 	return false;
 }
 
-void NavPathFinder::SmoothPath(std::vector<Vector3>* path)
+void NavGraph::SmoothPath(std::vector<Vector3>* path)
 {
 	size_t pathSize = path->size();
 	Vector3* oldPath = new Vector3[pathSize];
@@ -173,7 +173,7 @@ void NavPathFinder::SmoothPath(std::vector<Vector3>* path)
 	SAFE_DELETE_ARRAY(oldPath);
 }
 
-NavTriangle* NavPathFinder::GetTriangleByPoint(const Vector3& point)
+NavTriangle* NavGraph::GetTriangleByPoint(const Vector3& point)
 {
 	for (size_t i = 0; i < mMesh->mTriangles.size(); ++i)
 	{

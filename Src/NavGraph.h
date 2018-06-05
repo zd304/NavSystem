@@ -6,11 +6,11 @@
 class NavMesh;
 class NavTriangle;
 
-class NavPathFinder : public micropather::Graph
+class NavGraph : public micropather::Graph
 {
 public:
-	NavPathFinder(NavMesh* mesh);
-	~NavPathFinder();
+	NavGraph(NavMesh* mesh);
+	~NavGraph();
 
 	bool Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost);
 

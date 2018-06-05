@@ -6,7 +6,7 @@
 class MeshRenderer;
 class NavMesh;
 class NavTriangle;
-class NavPathFinder;
+class NavGraph;
 
 enum eClickState
 {
@@ -33,7 +33,7 @@ public:
 private:
 	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir);
 
-	bool IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavPathFinder*& outFinder);
+	bool IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder);
 
 	void SetPointMesh(NavTriangle* tri, const Vector3& point, bool isStart);
 
@@ -52,7 +52,7 @@ public:
 	MeshRenderer* mRenderer;
 	D3DMATERIAL9 mMatNav;
 
-	std::vector<NavPathFinder*> mNavMeshes;
+	std::vector<NavGraph*> mNavMeshes;
 	std::vector<NavTriangle*> mSelectedTriangles;
 	ID3DXMesh* mSelectedMesh;
 	IDirect3DVertexBuffer9* mSelectedVB;

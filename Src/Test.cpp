@@ -4,7 +4,7 @@
 #include "NavMesh.h"
 #include "NavTriangle.h"
 #include "NavPhysics.h"
-#include "NavPathFinder.h"
+#include "NavGraph.h"
 
 struct SelectedMeshVertex
 {
@@ -31,7 +31,7 @@ Test::~Test()
 {
 	for (size_t i = 0; i < mNavMeshes.size(); ++i)
 	{
-		NavPathFinder* mesh = mNavMeshes[i];
+		NavGraph* mesh = mNavMeshes[i];
 		SAFE_DELETE(mesh);
 	}
 	mNavMeshes.clear();
@@ -128,7 +128,7 @@ void Test::OnInit(HWND hwnd, IDirect3DDevice9* device)
 	{
 		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
 		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
-		NavPathFinder* pathFinder = new NavPathFinder(navMesh);
+		NavGraph* pathFinder = new NavGraph(navMesh);
 		mNavMeshes.push_back(pathFinder);
 	}
 
@@ -229,13 +229,13 @@ void Test::OnQuit()
 {
 }
 
-bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavPathFinder*& outFinder)
+bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)
 {
 	for (size_t i = 0; i < mNavMeshes.size(); ++i)
 	{
 		bool exist1 = false;
 		bool exist2 = false;
-		NavPathFinder* finder = mNavMeshes[i];
+		NavGraph* finder = mNavMeshes[i];
 		for (size_t j = 0; j < finder->mMesh->mTriangles.size(); ++j)
 		{
 			NavTriangle* tri = finder->mMesh->mTriangles[j];
@@ -304,7 +304,7 @@ void Test::Pick(int x, int y)
 	GetWorldRay(mDevice, x, y, w, h, orig, dir);
 	for (size_t i = 0; i < mNavMeshes.size(); ++i)
 	{
-		NavPathFinder* navPathFinder = mNavMeshes[i];
+		NavGraph* navPathFinder = mNavMeshes[i];
 		NavMesh* navMesh = navPathFinder->mMesh;
 		for (size_t j = 0; j < navMesh->mTriangles.size(); ++j)
 		{
@@ -327,7 +327,7 @@ void Test::Pick(int x, int y)
 			{
 				SetPointMesh(tri, hitInfo.hitPoint, false);
 
-				NavPathFinder* finder = NULL;
+				NavGraph* finder = NULL;
 				if (mStartTri != NULL && mEndTri != NULL && IsTriangleInSameMesh(mStartTri, mEndTri, finder))
 				{
 					std::vector<NavTriangle*> findPath;

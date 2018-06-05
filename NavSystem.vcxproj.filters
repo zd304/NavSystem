@@ -76,9 +76,6 @@
     <ClInclude Include="Src\NavMesh.h">
       <Filter>nav</Filter>
     </ClInclude>
-    <ClInclude Include="Src\NavPathFinder.h">
-      <Filter>nav</Filter>
-    </ClInclude>
     <ClInclude Include="Src\NavPhysics.h">
       <Filter>nav</Filter>
     </ClInclude>
@@ -86,6 +83,9 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\NavEdge.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavGraph.h">
       <Filter>nav</Filter>
     </ClInclude>
   </ItemGroup>
@@ -135,10 +135,10 @@
     <ClCompile Include="Src\NavMesh.cpp">
       <Filter>nav</Filter>
     </ClCompile>
-    <ClCompile Include="Src\NavPathFinder.cpp">
+    <ClCompile Include="Src\NavPhysics.cpp">
       <Filter>nav</Filter>
     </ClCompile>
-    <ClCompile Include="Src\NavPhysics.cpp">
+    <ClCompile Include="Src\NavGraph.cpp">
       <Filter>nav</Filter>
     </ClCompile>
   </ItemGroup>
