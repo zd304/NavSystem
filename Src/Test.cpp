@@ -105,40 +105,14 @@ void Test::OnInit(HWND hwnd, IDirect3DDevice9* device)
 	io.Fonts->AddFontFromFileTTF("./Font/msyh.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesChinese());
 	LoadTextures(device);
 
-	FBXHelper::BeginFBXHelper("./Res/nav.FBX");
-
-	
+	rot = 0.0f;
 	D3DXMATRIX matProj;
 	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0f, (float)mWidth / (float)mHeight, 0.1f, 10000.0f);
 	device->SetTransform(D3DTS_PROJECTION, &matProj);
 
-	rot = 0.0f;
-
-	D3DXVECTOR3 max, min;
-	FBXHelper::GetBox(max, min);
-	float boxSize = D3DXVec3Length(&(max - min));
-	mCameraDistance = 2.0f * boxSize;
-	mCameraHeight = 2.0f * boxSize;
-	mCameraX = 0.0f;// -boxSize;
-
-	UpdateView();
-
 	device->SetRenderState(D3DRS_LIGHTING, TRUE);
 	device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	mDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
-	mRenderer = new MeshRenderer(mDevice, meshDatas);
-	mPathFindLogic = new PathFindLogic(mRenderer);
-	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
-	{
-		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
-		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
-		NavGraph* pathFinder = new NavGraph(navMesh);
-		mNavGraphs.push_back(pathFinder);
-	}
-
-	FBXHelper::EndFBXHelper();
 }
 
 void Test::UpdateView()
@@ -166,10 +140,10 @@ void Test::OnGUI()
 
 	if (mOpenFBX->DoModal())
 	{
-		printf(mOpenFBX->GetDirectory());
-		printf(" + ");
-		printf(mOpenFBX->GetFileName());
-		printf("\n");
+		std::string path;
+		path += mOpenFBX->GetDirectory();
+		path += mOpenFBX->GetFileName();
+		OpenFBX(path.c_str());
 	}
 
 	ImGui::End();
@@ -198,6 +172,14 @@ void Test::OnMenu()
 			if (ImGui::MenuItem(STU("打开模型").c_str(), NULL))
 			{
 				openFlag = true;
+			}
+			if (ImGui::MenuItem(STU("清除").c_str(), NULL))
+			{
+				CloseFile();
+			}
+			if (ImGui::MenuItem(STU("关闭").c_str(), NULL))
+			{
+				::PostQuitMessage(0);
 			}
 			ImGui::EndMenu();
 		}
@@ -250,6 +232,47 @@ void Test::OnInput()
 
 		ImGui::ResetMouseDragDelta(0);
 	}
+}
+
+void Test::OpenFBX(const char* filePath)
+{
+	CloseFile();
+
+	FBXHelper::BeginFBXHelper(filePath);
+
+	D3DXVECTOR3 max, min;
+	FBXHelper::GetBox(max, min);
+	float boxSize = D3DXVec3Length(&(max - min));
+	mCameraDistance = 2.0f * boxSize;
+	mCameraHeight = 2.0f * boxSize;
+	mCameraX = 0.0f;// -boxSize;
+
+	UpdateView();
+
+	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
+	mRenderer = new MeshRenderer(mDevice, meshDatas);
+	mPathFindLogic = new PathFindLogic(mRenderer);
+	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
+	{
+		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
+		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
+		NavGraph* pathFinder = new NavGraph(navMesh);
+		mNavGraphs.push_back(pathFinder);
+	}
+
+	FBXHelper::EndFBXHelper();
+}
+
+void Test::CloseFile()
+{
+	for (size_t i = 0; i < mNavGraphs.size(); ++i)
+	{
+		NavGraph* mesh = mNavGraphs[i];
+		SAFE_DELETE(mesh);
+	}
+	mNavGraphs.clear();
+	SAFE_DELETE(mRenderer);
+	SAFE_DELETE(mPathFindLogic);
 }
 
 bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)

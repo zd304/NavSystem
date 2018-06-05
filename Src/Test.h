@@ -37,6 +37,10 @@ private:
 	void OnMenu();
 
 	void OnInput();
+
+	void OpenFBX(const char* filePath);
+
+	void CloseFile();
 public:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;
