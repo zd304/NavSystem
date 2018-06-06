@@ -7,6 +7,7 @@
 PathFindLogic::PathFindLogic(Test* test)
 {
 	mTest = test;
+	mShowTriPath = true;
 }
 
 PathFindLogic::~PathFindLogic()
@@ -53,9 +54,12 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 		{
 			std::vector<NavTriangle*> findPath;
 			float cost;
-			if (finder->Solve(mStartTri, mEndTri, &findPath, &cost))
+			if (mShowTriPath)
 			{
-				mTest->mRenderer->SetSelectedPath(findPath);
+				if (finder->Solve(mStartTri, mEndTri, &findPath, &cost))
+				{
+					mTest->mRenderer->SetSelectedPath(findPath);
+				}
 			}
 			std::vector<Vector3> findVectorPath;
 			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost))

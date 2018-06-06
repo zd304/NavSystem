@@ -26,6 +26,8 @@ private:
 	void ClearPath();
 
 	void SetPointMesh(const NavTriangle* tri, const Vector3& point, bool isStart);
+public:
+	bool mShowTriPath;
 private:
 	Test* mTest;
 

@@ -219,7 +219,7 @@ void Test::OnMenu()
 			}
 			ImGui::EndMenu();
 		}
-		if (ImGui::BeginMenu(STU("模型").c_str()))
+		if (ImGui::BeginMenu(STU("显示").c_str()))
 		{
 			if (ImGui::MenuItem(STU("显示导航模型").c_str(), NULL, &mRenderer->mShowNavMesh))
 			{
@@ -229,6 +229,12 @@ void Test::OnMenu()
 			}
 			if (ImGui::MenuItem(STU("显示导航网格").c_str(), NULL, &mRenderer->mShowWireMesh))
 			{
+			}
+			if (mPathFindLogic)
+			{
+				if (ImGui::MenuItem(STU("显示三角形路径").c_str(), NULL, &mPathFindLogic->mShowTriPath))
+				{
+				}
 			}
 			ImGui::EndMenu();
 		}
@@ -444,6 +450,11 @@ void Test::Pick(int x, int y)
 	Vector3 orig;
 	Vector3 dir;
 	GetWorldRay(mDevice, x, y, w, h, orig, dir);
+	
+	D3DXMATRIX worldInv;
+	D3DXMatrixInverse(&worldInv, NULL, &mWorldMtrix);
+	D3DXVec3TransformCoord((D3DXVECTOR3*)&orig, (D3DXVECTOR3*)&orig, &worldInv);
+	D3DXVec3TransformNormal((D3DXVECTOR3*)&dir, (D3DXVECTOR3*)&dir, &worldInv);
 
 	NavTriangle* hitTri = NULL;
 	NavGraph* hitGraph = NULL;
@@ -461,7 +472,7 @@ void Test::Pick(int x, int y)
 			Vector3 v0 = tri->mPoint[0];
 			Vector3 v1 = tri->mPoint[1];
 			Vector3 v2 = tri->mPoint[2];
-			TransformPos(v0); TransformPos(v1); TransformPos(v2);
+			//TransformPos(v0); TransformPos(v1); TransformPos(v2);
 			if (!NavPhysics::RayIntersectTriangle(orig, dir, v0, v1, v2, &hitInfo))
 				continue;
 			hitPoint = hitInfo.hitPoint;
