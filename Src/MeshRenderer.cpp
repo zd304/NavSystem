@@ -1,5 +1,6 @@
 #include "MeshRenderer.h"
 #include "NavTriangle.h"
+#include "NavHeightmap.h"
 
 struct MeshVertex
 {
@@ -12,6 +13,10 @@ struct MeshVertex
 MeshRenderer::MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mDatas)
 {
 	mDevice = device;
+	mShowNavMesh = true;
+	mShowWireMesh = true;
+	mShowHeightmap = false;
+
 	if (mDatas == NULL)
 		return;
 	for (size_t i = 0; i < mDatas->datas.size(); ++i)
@@ -26,6 +31,7 @@ MeshRenderer::MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mD
 			if (FAILED(hr))
 				continue;
 			mMeshes.push_back(mesh);
+			mHeightMeshes.push_back(NULL);
 
 			MeshVertex* vb = NULL;
 			mesh->LockVertexBuffer(NULL, (void**)&vb);
@@ -88,6 +94,13 @@ MeshRenderer::~MeshRenderer()
 	}
 	mWireMeshes.clear();
 
+	for (size_t i = 0; i < mHeightMeshes.size(); ++i)
+	{
+		ID3DXMesh* mesh = mHeightMeshes[i];
+		SAFE_RELEASE(mesh);
+	}
+	mHeightMeshes.clear();
+
 	SAFE_RELEASE(mStartMesh);
 	SAFE_RELEASE(mEndMesh);
 	SAFE_RELEASE(mSelectedMesh);
@@ -96,31 +109,50 @@ MeshRenderer::~MeshRenderer()
 
 void MeshRenderer::Render()
 {
-	for (size_t i = 0; i < mMeshes.size(); ++i)
+	if (mShowNavMesh)
 	{
-		ID3DXMesh* mesh = mMeshes[i];
-		if (!mesh)
+		for (size_t i = 0; i < mMeshes.size(); ++i)
 		{
-			continue;
+			ID3DXMesh* mesh = mMeshes[i];
+			if (!mesh)
+			{
+				continue;
+			}
+			mesh->DrawSubset(0);
 		}
-		mesh->DrawSubset(0);
+	}
+	
+	if (mShowHeightmap)
+	{
+		for (size_t i = 0; i < mHeightMeshes.size(); ++i)
+		{
+			ID3DXMesh* mesh = mHeightMeshes[i];
+			if (!mesh)
+			{
+				continue;
+			}
+			mesh->DrawSubset(0);
+		}
 	}
 
-	mDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-	mDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
-	mDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	for (size_t i = 0; i < mWireMeshes.size(); ++i)
+	if (mShowWireMesh)
 	{
-		ID3DXMesh* mesh = mWireMeshes[i];
-		if (!mesh)
+		mDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+		mDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		mDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		for (size_t i = 0; i < mWireMeshes.size(); ++i)
 		{
-			continue;
+			ID3DXMesh* mesh = mWireMeshes[i];
+			if (!mesh)
+			{
+				continue;
+			}
+			mesh->DrawSubset(0);
 		}
-		mesh->DrawSubset(0);
+		mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+		mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+		mDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
-	mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-	mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	mDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 
 	if (mSelectedMesh)
 		mSelectedMesh->DrawSubset(0);
@@ -240,6 +272,53 @@ void MeshRenderer::SetSelectedPath(const std::vector<Vector3>& path)
 		mSelectedPath.push_back(mv0);
 		mSelectedPath.push_back(mv1);
 	}
+}
+
+void MeshRenderer::SetHeightmap(const NavHeightmap* heightmap, size_t index)
+{
+	int verticesCount = (heightmap->mSizeX + 1) * (heightmap->mSizeZ + 1);
+	int faceCount = heightmap->mSizeX * heightmap->mSizeZ * 2;
+	ID3DXMesh* mesh = NULL;
+	HRESULT hr = D3DXCreateMeshFVF(faceCount, verticesCount, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mesh);
+	if (FAILED(hr))
+		return;
+	MeshVertex* vb = NULL;
+	mesh->LockVertexBuffer(NULL, (void**)&vb);
+	for (int i = 0; i < verticesCount; ++i)
+	{
+		MeshVertex& v = vb[i];
+		int ix = i % (heightmap->mSizeX + 1);
+		int iz = i / (heightmap->mSizeX + 1);
+		v.pos.x = heightmap->mMin.x + heightmap->mCellSize.x * (float)ix;
+		v.pos.z = heightmap->mMin.y + heightmap->mCellSize.y * (float)iz;
+		v.pos.y = heightmap->mHeights[i];
+
+		v.color = 0xff00ffff;
+	}
+	mesh->UnlockVertexBuffer();
+
+	unsigned int* ib = NULL;
+	mesh->LockIndexBuffer(NULL, (void**)&ib);
+	memset(ib, 0, faceCount * 3 * sizeof(unsigned int));
+	int cellCount = faceCount / 2;
+	int indexIB = -1;
+	for (int i = 0; i < cellCount; ++i)
+	{
+		if (heightmap->mCellPassability[i] == 0)
+			continue;
+		int col = i % heightmap->mSizeX;
+		int row = i / heightmap->mSizeX;
+
+		unsigned int index0 = row * (heightmap->mSizeX + 1) + col;
+		unsigned int index1 = row * (heightmap->mSizeX + 1) + col + 1;
+		unsigned int index2 = (row + 1) * (heightmap->mSizeX + 1) + col;
+		unsigned int index3 = (row + 1) * (heightmap->mSizeX + 1) + col + 1;
+
+		ib[++indexIB] = index0; ib[++indexIB] = index1; ib[++indexIB] = index2;
+		ib[++indexIB] = index3; ib[++indexIB] = index2; ib[++indexIB] = index1;
+	}
+	mesh->UnlockIndexBuffer();
+	mHeightMeshes.push_back(mesh);
 }
 
 void MeshRenderer::ClearPath()

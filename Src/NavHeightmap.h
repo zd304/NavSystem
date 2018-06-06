@@ -23,7 +23,7 @@ public:
 	unsigned int WriteTo(char* dest, unsigned int ptr);
 
 	unsigned int ReadFrom(char* src, unsigned int ptr);
-private:
+public:
 	Vector2 mMin;
 	Vector2 mMax;
 	Vector2 mCellSize;

@@ -219,6 +219,19 @@ void Test::OnMenu()
 			}
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu(STU("模型").c_str()))
+		{
+			if (ImGui::MenuItem(STU("显示导航模型").c_str(), NULL, &mRenderer->mShowNavMesh))
+			{
+			}
+			if (ImGui::MenuItem(STU("显示高度图").c_str(), NULL, &mRenderer->mShowHeightmap))
+			{
+			}
+			if (ImGui::MenuItem(STU("显示导航网格").c_str(), NULL, &mRenderer->mShowWireMesh))
+			{
+			}
+			ImGui::EndMenu();
+		}
 		ImGui::EndMenuBar();
 	}
 
@@ -306,6 +319,8 @@ void Test::OpenFBX(const char* filePath)
 		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
 		NavGraph* pathFinder = new NavGraph(navMesh);
 		mNavSystem->AddGraph(pathFinder);
+
+		mRenderer->SetHeightmap(pathFinder->mHeightmap, i);
 	}
 
 	FBXHelper::EndFBXHelper();
@@ -346,6 +361,12 @@ void Test::OpenNav(const char* filePath)
 	}
 	mRenderer = new MeshRenderer(mDevice, &datas);
 	mPathFindLogic = new PathFindLogic(this);
+
+	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
+	{
+		NavGraph* graph = mNavSystem->GetGraphByID(i);
+		mRenderer->SetHeightmap(graph->mHeightmap, i);
+	}
 
 	D3DXVECTOR3 max, min;
 	FBXHelper::GetBox(max, min);
