@@ -43,6 +43,8 @@ private:
 
 	void OpenFBX(const char* filePath);
 
+	void OpenNav(const char* filePath);
+
 	void CloseFile();
 public:
 	MeshRenderer* mRenderer;

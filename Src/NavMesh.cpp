@@ -303,24 +303,24 @@ unsigned int NavMesh::ReadFrom(char* src, unsigned int ptr)
 		mTriangles.push_back(tri);
 	}
 
-	UpdateAdjacent(false);
+	UpdateAdjacent();
 
-	size_t boundsCount = 0;
-	memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
-	ptr += sizeof(unsigned int);
-	unsigned int edgeSize = sizeof(Vector3) * 2;
-	for (size_t i = 0; i < boundsCount; ++i)
-	{
-		NavEdge* edge = new NavEdge();
-		Vector3 v0, v1;
-		memcpy(v0.mem, &src[ptr], sizeof(Vector3));
-		ptr += sizeof(Vector3);
-		memcpy(v1.mem, &src[ptr], sizeof(Vector3));
-		ptr += sizeof(Vector3);
-		edge->mPoint[0] = v0;
-		edge->mPoint[1] = v1;
-		mBounds.push_back(edge);
-	}
+	//size_t boundsCount = 0;
+	//memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
+	//ptr += sizeof(unsigned int);
+	//unsigned int edgeSize = sizeof(Vector3) * 2;
+	//for (size_t i = 0; i < boundsCount; ++i)
+	//{
+	//	NavEdge* edge = new NavEdge();
+	//	Vector3 v0, v1;
+	//	memcpy(v0.mem, &src[ptr], sizeof(Vector3));
+	//	ptr += sizeof(Vector3);
+	//	memcpy(v1.mem, &src[ptr], sizeof(Vector3));
+	//	ptr += sizeof(Vector3);
+	//	edge->mPoint[0] = v0;
+	//	edge->mPoint[1] = v1;
+	//	mBounds.push_back(edge);
+	//}
 
 	return ptr;
 }

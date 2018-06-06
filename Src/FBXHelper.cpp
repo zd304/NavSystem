@@ -20,9 +20,12 @@ namespace FBXHelper
 
 	void ProcessNode(FbxNode* pNode, FbxNode* pParent = NULL, int mask = -1);
 	void UpdateBox(const D3DXVECTOR3& v);
+	void InitBox();
 
 	bool BeginFBXHelper(const char* fileName)
 	{
+		InitBox();
+
 		InitializeSdkObjects(pFBXSDKManager, pFBXScene);
 
 		bool rst = LoadScene(pFBXSDKManager, pFBXScene, fileName);
@@ -115,6 +118,16 @@ namespace FBXHelper
 	FBXMeshDatas* GetMeshDatas()
 	{
 		return pMeshDatas;
+	}
+
+	void InitBox()
+	{
+		boxMax.x = FLT_MIN;
+		boxMax.y = FLT_MIN;
+		boxMax.z = FLT_MIN;
+		boxMin.x = FLT_MAX;
+		boxMin.y = FLT_MAX;
+		boxMin.z = FLT_MAX;
 	}
 
 	void UpdateBox(const D3DXVECTOR3& v)

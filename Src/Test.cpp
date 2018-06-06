@@ -164,12 +164,11 @@ void Test::OnGUI()
 	}
 	if (mOpenNav->DoModal())
 	{
-		CloseFile();
-
 		std::string path;
 		path += mOpenNav->GetDirectory();
 		path += mOpenNav->GetFileName();
-		mNavSystem->LoadFromFile(path.c_str());
+
+		OpenNav(path.c_str());
 	}
 
 	ImGui::End();
@@ -197,7 +196,7 @@ void Test::OnMenu()
 	{
 		if (ImGui::BeginMenu(STU("文件").c_str()))
 		{
-			if (ImGui::MenuItem(STU("打开模型").c_str(), NULL))
+			if (ImGui::MenuItem(STU("导入模型").c_str(), NULL))
 			{
 				openFlag = true;
 			}
@@ -205,7 +204,7 @@ void Test::OnMenu()
 			{
 				open1Flag = true;
 			}
-			if (ImGui::MenuItem(STU("保存文件").c_str(), NULL))
+			if (ImGui::MenuItem(STU("保存导航").c_str(), NULL))
 			{
 				saveFlag = true;
 			}
@@ -310,6 +309,52 @@ void Test::OpenFBX(const char* filePath)
 	}
 
 	FBXHelper::EndFBXHelper();
+}
+
+void Test::OpenNav(const char* filePath)
+{
+	CloseFile();
+
+	mNavSystem->LoadFromFile(filePath);
+
+	FBXHelper::InitBox();
+
+	FBXHelper::FBXMeshDatas datas;
+	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
+	{
+		NavGraph* graph = mNavSystem->GetGraphByID(i);
+		FBXHelper::FBXMeshData* data = new FBXHelper::FBXMeshData();
+		int index = -1;
+		for (size_t j = 0; j < graph->mMesh->mTriangles.size(); ++j)
+		{
+			NavTriangle* tri = graph->mMesh->mTriangles[j];
+			D3DXVECTOR3 v0 = *(D3DXVECTOR3*)&tri->mPoint[0];
+			D3DXVECTOR3 v1 = *(D3DXVECTOR3*)&tri->mPoint[1];
+			D3DXVECTOR3 v2 = *(D3DXVECTOR3*)&tri->mPoint[2];
+			FBXHelper::UpdateBox(v0);
+			FBXHelper::UpdateBox(v1);
+			FBXHelper::UpdateBox(v2);
+			data->pos.push_back(v0);
+			data->pos.push_back(v1);
+			data->pos.push_back(v2);
+
+			data->indices.push_back(++index);
+			data->indices.push_back(++index);
+			data->indices.push_back(++index);
+		}
+		datas.datas.push_back(data);
+	}
+	mRenderer = new MeshRenderer(mDevice, &datas);
+	mPathFindLogic = new PathFindLogic(this);
+
+	D3DXVECTOR3 max, min;
+	FBXHelper::GetBox(max, min);
+	float boxSize = D3DXVec3Length(&(max - min));
+	mCameraDistance = 2.0f * boxSize;
+	mCameraHeight = 2.0f * boxSize;
+	mCameraX = 0.0f;// -boxSize;
+
+	UpdateView();
 }
 
 void Test::CloseFile()

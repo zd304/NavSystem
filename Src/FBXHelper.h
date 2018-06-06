@@ -25,7 +25,11 @@ namespace FBXHelper
 
 	FBXMeshDatas* GetMeshDatas();
 
+	void InitBox();
+
 	void GetBox(D3DXVECTOR3& max, D3DXVECTOR3& min);
+
+	void UpdateBox(const D3DXVECTOR3& v);
 
 	bool EndFBXHelper();
 }
