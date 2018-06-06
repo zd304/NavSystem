@@ -2,14 +2,25 @@
 #include "NavEdge.h"
 #include "NavTriangle.h"
 #include "NavMesh.h"
+#include "NavHeightmap.h"
 #include "NavPhysics.h"
 
 static const float MAX_COST = 1e4f;
+
+NavGraph::NavGraph()
+{
+	mID = 0;
+	mPather = new micropather::MicroPather(this);
+	mHeightmap = NULL;
+	mMesh = NULL;
+}
 
 NavGraph::NavGraph(NavMesh* mesh)
 {
 	mID = 0;
 	mPather = new micropather::MicroPather(this);
+	mHeightmap = new NavHeightmap();
+	mHeightmap->BuildHeightmap(mesh);
 	mMesh = mesh;
 }
 
@@ -17,6 +28,7 @@ NavGraph::~NavGraph()
 {
 	SAFE_DELETE(mPather);
 	SAFE_DELETE(mMesh);
+	SAFE_DELETE(mHeightmap);
 }
 
 float NavGraph::LeastCostEstimate(void* stateStart, void* stateEnd)

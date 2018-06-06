@@ -276,17 +276,17 @@ unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
 		ptr = tri->WriteTo(dest, ptr);
 	}
 
-	size_t boundsCount = mBounds.size();
-	memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
-	ptr += sizeof(unsigned int);
+	//size_t boundsCount = mBounds.size();
+	//memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
+	//ptr += sizeof(unsigned int);
 
-	unsigned int edgeSize = sizeof(Vector3) * 2;
-	for (size_t i = 0; i < mBounds.size(); ++i)
-	{
-		NavEdge* edge = mBounds[i];
-		memcpy(dest + ptr, edge->mPoint, edgeSize);
-		ptr += edgeSize;
-	}
+	//unsigned int edgeSize = sizeof(Vector3) * 2;
+	//for (size_t i = 0; i < mBounds.size(); ++i)
+	//{
+	//	NavEdge* edge = mBounds[i];
+	//	memcpy(dest + ptr, edge->mPoint, edgeSize);
+	//	ptr += edgeSize;
+	//}
 	return ptr;
 }
 

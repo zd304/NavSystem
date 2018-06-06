@@ -1,5 +1,6 @@
 #include "NavSystem.h"
 #include "NavMesh.h"
+#include "NavHeightmap.h"
 #include "NavGraph.h"
 #include <stdio.h>
 
@@ -68,7 +69,13 @@ void NavSystem::LoadFromFile(const char* path)
 	{
 		NavMesh* navMesh = new NavMesh();
 		ptr = navMesh->ReadFrom(data, ptr);
-		NavGraph* graph = new NavGraph(navMesh);
+
+		NavHeightmap* navHeightmap = new NavHeightmap();
+		ptr = navHeightmap->ReadFrom(data, ptr);
+
+		NavGraph* graph = new NavGraph();
+		graph->mMesh = navMesh;
+		graph->mHeightmap = navHeightmap;
 		AddGraph(graph);
 	}
 }
@@ -81,6 +88,7 @@ void NavSystem::SaveAs(const char* path)
 	{
 		NavGraph* graph = mGraphs[i];
 		fileSize += graph->mMesh->GetSize();
+		fileSize += graph->mHeightmap->GetSize();
 	}
 
 	char* data = new char[fileSize];
@@ -95,6 +103,7 @@ void NavSystem::SaveAs(const char* path)
 	{
 		NavGraph* graph = mGraphs[i];
 		ptr = graph->mMesh->WriteTo(data, ptr);
+		ptr = graph->mHeightmap->WriteTo(data, ptr);
 	}
 
 	FILE* fp = fopen(path, "wb");

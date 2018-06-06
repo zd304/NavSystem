@@ -5,10 +5,12 @@
 
 class NavMesh;
 class NavTriangle;
+class NavHeightmap;
 
 class NavGraph : public micropather::Graph
 {
 public:
+	NavGraph();
 	NavGraph(NavMesh* mesh);
 	~NavGraph();
 
@@ -30,6 +32,7 @@ private:
 	void SmoothPath(std::vector<Vector3>* path) const;
 public:
 	NavMesh* mMesh;
+	NavHeightmap* mHeightmap;
 	micropather::MicroPather* mPather;
 	unsigned int mID;
 };

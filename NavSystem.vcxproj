@@ -98,6 +98,7 @@
     <ClInclude Include="Src\micropather\micropather.h" />
     <ClInclude Include="Src\Nav.h" />
     <ClInclude Include="Src\NavEdge.h" />
+    <ClInclude Include="Src\NavHeightmap.h" />
     <ClInclude Include="Src\NavInc.h" />
     <ClInclude Include="Src\NavMesh.h" />
     <ClInclude Include="Src\NavGraph.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="Src\math\Vector3.cpp" />
     <ClCompile Include="Src\MeshRenderer.cpp" />
     <ClCompile Include="Src\micropather\micropather.cpp" />
+    <ClCompile Include="Src\NavHeightmap.cpp" />
     <ClCompile Include="Src\NavMesh.cpp" />
     <ClCompile Include="Src\NavGraph.cpp" />
     <ClCompile Include="Src\NavPhysics.cpp" />
