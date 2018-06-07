@@ -10,6 +10,7 @@ class NavGraph;
 class NavSystem;
 class FileDialog;
 class PathFindLogic;
+class GateLogic;
 
 class Test
 {
@@ -55,7 +56,9 @@ private:
 	int mWidth;
 	int mHeight;
 	NavSystem* mNavSystem;
+
 	PathFindLogic* mPathFindLogic;
+	GateLogic* mGateLogic;
 
 	// FileDialog
 	FileDialog* mOpenFBX;

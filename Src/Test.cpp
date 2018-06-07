@@ -8,6 +8,7 @@
 #include "NavSystem.h"
 #include "FileDialog.h"
 #include "PathFindLogic.h"
+#include "GateLogic.h"
 
 struct SelectedMeshVertex
 {
@@ -28,6 +29,7 @@ Test::Test()
 	mRenderer = NULL;
 	mNavSystem = new NavSystem();
 	mPathFindLogic = NULL;
+	mGateLogic = NULL;
 	mInstance = this;
 
 	char szPath[MAX_PATH] = { 0 };
@@ -48,6 +50,7 @@ Test::~Test()
 	SAFE_DELETE(mNavSystem);
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
+	SAFE_DELETE(mGateLogic);
 	SAFE_DELETE(mOpenFBX);
 	SAFE_DELETE(mSaveNav);
 	SAFE_DELETE(mOpenNav);
@@ -171,6 +174,9 @@ void Test::OnGUI()
 		OpenNav(path.c_str());
 	}
 
+	if (mGateLogic)
+		mGateLogic->OnGUI();
+
 	ImGui::End();
 }
 
@@ -221,20 +227,39 @@ void Test::OnMenu()
 		}
 		if (ImGui::BeginMenu(STU("显示").c_str()))
 		{
-			if (ImGui::MenuItem(STU("显示导航模型").c_str(), NULL, &mRenderer->mShowNavMesh))
+			if (mRenderer)
 			{
-			}
-			if (ImGui::MenuItem(STU("显示高度图").c_str(), NULL, &mRenderer->mShowHeightmap))
-			{
-			}
-			if (ImGui::MenuItem(STU("显示导航网格").c_str(), NULL, &mRenderer->mShowWireMesh))
-			{
-			}
+				if (ImGui::MenuItem(STU("显示导航模型").c_str(), NULL, &mRenderer->mShowNavMesh))
+				{
+				}
+				if (ImGui::MenuItem(STU("显示高度图").c_str(), NULL, &mRenderer->mShowHeightmap))
+				{
+				}
+				if (ImGui::MenuItem(STU("显示导航网格").c_str(), NULL, &mRenderer->mShowWireMesh))
+				{
+				}
+			}			
 			if (mPathFindLogic)
 			{
 				if (ImGui::MenuItem(STU("显示三角形路径").c_str(), NULL, &mPathFindLogic->mShowTriPath))
 				{
 				}
+			}
+			ImGui::EndMenu();
+		}
+		if (ImGui::BeginMenu(STU("编辑").c_str()))
+		{
+			bool b = mPathFindLogic != NULL;
+			if (ImGui::MenuItem(STU("实时寻路模式").c_str(), NULL, &b))
+			{
+				mPathFindLogic = new PathFindLogic(this);
+				SAFE_DELETE(mGateLogic);
+			}
+			b = mGateLogic != NULL;
+			if (ImGui::MenuItem(STU("门编辑模式").c_str(), NULL, &b))
+			{
+				SAFE_DELETE(mPathFindLogic);
+				mGateLogic = new GateLogic(this);
 			}
 			ImGui::EndMenu();
 		}
@@ -317,7 +342,7 @@ void Test::OpenFBX(const char* filePath)
 	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
 
 	mRenderer = new MeshRenderer(mDevice, meshDatas);
-	mPathFindLogic = new PathFindLogic(this);
+	//mPathFindLogic = new PathFindLogic(this);
 
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
@@ -366,7 +391,7 @@ void Test::OpenNav(const char* filePath)
 		datas.datas.push_back(data);
 	}
 	mRenderer = new MeshRenderer(mDevice, &datas);
-	mPathFindLogic = new PathFindLogic(this);
+	//mPathFindLogic = new PathFindLogic(this);
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
@@ -389,6 +414,7 @@ void Test::CloseFile()
 	mNavSystem->Clear();
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
+	SAFE_DELETE(mGateLogic);
 }
 
 bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)
@@ -486,6 +512,8 @@ void Test::Pick(int x, int y)
 
 	if (mPathFindLogic)
 		mPathFindLogic->OnPick(hitTri, hitPoint, hitGraph);
+	if (mGateLogic)
+		mGateLogic->OnPick(hitTri, hitPoint, hitGraph);
 }
 
 void Test::TransformPos(Vector3& pos)
