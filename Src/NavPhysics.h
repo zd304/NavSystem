@@ -66,6 +66,8 @@ namespace NavPhysics
 
 	bool IsPointInTriangle(const Vector2& v0, const Vector2& v1, const Vector2& v2, const Vector2& point);
 
+	bool IsPointInTriangle2D(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& point);
+
 	bool IsSegmentsInterct(const Vector2& line1Begin, const Vector2& line1End,
 		const Vector2& line2Begin, const Vector2& line2End);
 

@@ -18,6 +18,8 @@ public:
 
 	bool GetHeight(const Vector3& pos, float* height);
 
+	void SwitchCellPassability(const Vector3& v0, const Vector3& v1, const Vector3& v2, bool passable);
+
 	unsigned int GetSize();
 
 	unsigned int WriteTo(char* dest, unsigned int ptr);

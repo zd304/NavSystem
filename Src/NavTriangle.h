@@ -32,6 +32,9 @@ public:
 	std::vector<float> mDistance;
 	// 邻接边的中点;
 	std::vector<Vector3> mEdgeCenter;
+
+	// 是否门;
+	bool mPassable;
 };
 
 #endif

@@ -255,12 +255,12 @@ unsigned int NavMesh::GetSize()
 		NavTriangle* tri = mTriangles[i];
 		size += tri->GetSize();
 	}
-	size += sizeof(unsigned int);
-	for (size_t i = 0; i < mBounds.size(); ++i)
-	{
-		NavEdge* edge = mBounds[i];
-		size += (sizeof(Vector3) * 2);
-	}
+	//size += sizeof(unsigned int);
+	//for (size_t i = 0; i < mBounds.size(); ++i)
+	//{
+	//	NavEdge* edge = mBounds[i];
+	//	size += (sizeof(Vector3) * 2);
+	//}
 	return size;
 }
 

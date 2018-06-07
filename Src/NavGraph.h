@@ -6,6 +6,7 @@
 class NavMesh;
 class NavTriangle;
 class NavHeightmap;
+class NavGate;
 
 class NavGraph : public micropather::Graph
 {
@@ -21,6 +22,12 @@ public:
 	bool LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint) const;
 
 	bool IsLineTest(const Vector3& start, const Vector3& end) const;
+
+	unsigned int GetSize();
+
+	unsigned int WriteTo(char* dest, unsigned int ptr);
+
+	unsigned int ReadFrom(char* src, unsigned int ptr);
 public:
 	// Inherit;
 	float LeastCostEstimate(void* stateStart, void* stateEnd);
@@ -33,6 +40,7 @@ private:
 public:
 	NavMesh* mMesh;
 	NavHeightmap* mHeightmap;
+	std::vector<NavGate*> mGates;
 	micropather::MicroPather* mPather;
 	unsigned int mID;
 };

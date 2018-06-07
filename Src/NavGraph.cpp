@@ -3,6 +3,7 @@
 #include "NavTriangle.h"
 #include "NavMesh.h"
 #include "NavHeightmap.h"
+#include "NavGate.h"
 #include "NavPhysics.h"
 
 static const float MAX_COST = 1e4f;
@@ -26,6 +27,12 @@ NavGraph::NavGraph(NavMesh* mesh)
 
 NavGraph::~NavGraph()
 {
+	for (size_t i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		SAFE_DELETE(gate);
+	}
+	mGates.clear();
 	SAFE_DELETE(mPather);
 	SAFE_DELETE(mMesh);
 	SAFE_DELETE(mHeightmap);
@@ -55,6 +62,9 @@ void NavGraph::AdjacentCost(void* state, std::vector<micropather::StateCost> *ad
 		cost.cost = tri->mDistance[i];
 		cost.state = (void*)neighbor;
 
+		if (!neighbor->mPassable)
+			cost.cost = MAX_COST;
+
 		adjacent->push_back(cost);
 	}
 }
@@ -67,6 +77,8 @@ void NavGraph::PrintStateInfo(void* state)
 bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost) const
 {
 	int rst = mPather->Solve((void*)start, (void*)end, (std::vector<void*>*)path, cost);
+	if (MAX_COST <= *cost)
+		return false;
 	if (rst == micropather::MicroPather::SOLVED
 		|| rst == micropather::MicroPather::START_END_SAME)
 		return true;
@@ -211,4 +223,61 @@ NavTriangle* NavGraph::GetTriangleByPoint(const Vector3& point) const
 		return tri;
 	}
 	return NULL;
+}
+
+unsigned int NavGraph::GetSize()
+{
+	unsigned int size = mMesh->GetSize();
+	size += mHeightmap->GetSize();
+	size += sizeof(unsigned int);
+	for (size_t i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		size += gate->GetSize();
+	}
+	return size;
+}
+
+unsigned int NavGraph::WriteTo(char* dest, unsigned int ptr)
+{
+	ptr = mMesh->WriteTo(dest, ptr);
+	ptr = mHeightmap->WriteTo(dest, ptr);
+	unsigned int gateCount = mGates.size();
+	memcpy(dest + ptr, &gateCount, sizeof(unsigned int));
+	ptr += sizeof(unsigned int);
+	for (size_t i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		ptr = gate->WriteTo(dest, ptr);
+	}
+
+	return ptr;
+}
+
+unsigned int NavGraph::ReadFrom(char* src, unsigned int ptr)
+{
+	for (size_t i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		SAFE_DELETE(gate);
+	}
+	mGates.clear();
+	SAFE_DELETE(mMesh);
+	SAFE_DELETE(mHeightmap);
+	mMesh = new NavMesh();
+	mHeightmap = new NavHeightmap();
+
+	ptr = mMesh->ReadFrom(src, ptr);
+	ptr = mHeightmap->ReadFrom(src, ptr);
+	unsigned int gateCount = 0;
+	memcpy(&gateCount, src + ptr, sizeof(unsigned int));
+	ptr += sizeof(unsigned int);
+	for (size_t i = 0; i < gateCount; ++i)
+	{
+		NavGate* gate = new NavGate(this);
+		ptr = gate->ReadFrom(src, ptr);
+		mGates.push_back(gate);
+	}
+
+	return ptr;
 }

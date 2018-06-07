@@ -46,7 +46,7 @@ void NavSystem::LoadFromFile(const char* path)
 {
 	Clear();
 
-	FILE* fp = fopen(path, "r");
+	FILE* fp = fopen(path, "rb");
 	if (fp == NULL)
 		return;
 	fseek(fp, 0, SEEK_END);
@@ -67,15 +67,8 @@ void NavSystem::LoadFromFile(const char* path)
 	ptr += sizeof(unsigned int);
 	for (unsigned int i = 0; i < graphCount; ++i)
 	{
-		NavMesh* navMesh = new NavMesh();
-		ptr = navMesh->ReadFrom(data, ptr);
-
-		NavHeightmap* navHeightmap = new NavHeightmap();
-		ptr = navHeightmap->ReadFrom(data, ptr);
-
 		NavGraph* graph = new NavGraph();
-		graph->mMesh = navMesh;
-		graph->mHeightmap = navHeightmap;
+		ptr = graph->ReadFrom(data, ptr);
 		AddGraph(graph);
 	}
 }
@@ -87,8 +80,7 @@ void NavSystem::SaveAs(const char* path)
 	for (size_t i = 0; i < mGraphs.size(); ++i)
 	{
 		NavGraph* graph = mGraphs[i];
-		fileSize += graph->mMesh->GetSize();
-		fileSize += graph->mHeightmap->GetSize();
+		fileSize += graph->GetSize();
 	}
 
 	char* data = new char[fileSize];
@@ -102,8 +94,7 @@ void NavSystem::SaveAs(const char* path)
 	for (size_t i = 0; i < mGraphs.size(); ++i)
 	{
 		NavGraph* graph = mGraphs[i];
-		ptr = graph->mMesh->WriteTo(data, ptr);
-		ptr = graph->mHeightmap->WriteTo(data, ptr);
+		ptr = graph->WriteTo(data, ptr);
 	}
 
 	FILE* fp = fopen(path, "wb");

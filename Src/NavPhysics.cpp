@@ -189,6 +189,33 @@ namespace NavPhysics
 		return true;
 	}
 
+	bool IsPointInTriangle2D(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& point)
+	{
+		Vector2 e1(v1.x - v0.x, v1.z - v0.z);
+		Vector2 e2(v2.x - v1.x, v2.z - v1.z);
+		Vector2 e3(v0.x - v2.x, v0.z - v2.z);
+
+		Vector2 p1(v0.x - point.x, v0.z - point.z);
+		Vector2 p2(v1.x - point.x, v1.z - point.z);
+		Vector2 p3(v2.x - point.x, v2.z - point.z);
+
+		float fn = e1.Cross(e3);
+		float en;
+		en = e1.Cross(p1);
+		if (en * fn < 0)
+			return false;
+
+		en = e2.Cross(p2);
+		if (en * fn < 0)
+			return false;
+
+		en = e3.Cross(p3);
+		if (en * fn < 0)
+			return false;
+
+		return true;
+	}
+
 	bool IsSegmentsInterct(const Vector2& p1, const Vector2& p2,
 		const Vector2& q1, const Vector2& q2)
 	{

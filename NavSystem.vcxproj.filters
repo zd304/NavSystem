@@ -100,6 +100,9 @@
     <ClInclude Include="Src\NavHeightmap.h">
       <Filter>nav</Filter>
     </ClInclude>
+    <ClInclude Include="Src\NavGate.h">
+      <Filter>nav</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -163,6 +166,9 @@
       <Filter>nav</Filter>
     </ClCompile>
     <ClCompile Include="Src\NavHeightmap.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavGate.cpp">
       <Filter>nav</Filter>
     </ClCompile>
   </ItemGroup>

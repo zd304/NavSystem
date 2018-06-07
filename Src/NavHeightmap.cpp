@@ -14,9 +14,9 @@ float MaxFloat(float f1, float f2)
 }
 
 NavHeightmap::NavHeightmap()
-	: mMin(FLT_MAX, FLT_MAX),
-	mMax(FLT_MIN, FLT_MIN),
-	mCellSize(1.0f, 1.0f)
+: mMin(FLT_MAX, FLT_MAX),
+mMax(FLT_MIN, FLT_MIN),
+mCellSize(1.0f, 1.0f)
 {
 	mSizeX = 0;
 	mSizeZ = 0;
@@ -182,12 +182,43 @@ bool NavHeightmap::GetHeight(const Vector3& pos, float* height)
 	return true;
 }
 
+void NavHeightmap::SwitchCellPassability(const Vector3& v0, const Vector3& v1, const Vector3& v2, bool passable)
+{
+	Vector2 vSubMin;
+	Vector2 vSubMax;
+	vSubMin.x = MinFloat(MinFloat(v0.x, v1.x), v2.x);
+	vSubMin.y = MinFloat(MinFloat(v0.z, v1.z), v2.z);
+
+	int nGridStartIndexX = (int)(floorf((vSubMin.x - mMin.x) / mCellSize.x) - 0.5f);
+	int nGridStartIndexY = (int)(floorf((vSubMin.y - mMin.y) / mCellSize.y) - 0.5f);
+
+	vSubMax.x = MaxFloat(MaxFloat(v0.x, v1.x), v2.x);
+	vSubMax.y = MaxFloat(MaxFloat(v0.z, v1.z), v2.z);
+
+	int nGridEndIndexX = (int)(ceilf((vSubMax.x - mMin.x) / mCellSize.x) + 0.5f);
+	int nGridEndIndexY = (int)(ceilf((vSubMax.y - mMin.y) / mCellSize.y) + 0.5f);
+	for (int x = nGridStartIndexX; x <= nGridEndIndexX; ++x)
+	{
+		if (x + 1 > nGridStartIndexX)
+			continue;
+		for (int y = nGridStartIndexY; y <= nGridEndIndexY; ++y)
+		{
+			if (y + 1 > nGridStartIndexY)
+				continue;
+			if (passable)
+				mCellPassability[y * mSizeX + x] = (char)1;
+			else
+				mCellPassability[y * mSizeX + x] = (char)0;
+		}
+	}
+}
+
 unsigned int NavHeightmap::GetSize()
 {
-	unsigned int size = sizeof(Vector2) * 3;
-	size += sizeof(int) * 2;
-	size += sizeof(char) * mSizeX * mSizeZ;
-	size += sizeof(float) * (mSizeX + 1) * (mSizeZ + 1);
+	unsigned int size = sizeof(Vector2)* 3;
+	size += sizeof(int)* 2;
+	size += sizeof(char)* mSizeX * mSizeZ;
+	size += sizeof(float)* (mSizeX + 1) * (mSizeZ + 1);
 	return size;
 }
 
@@ -205,10 +236,10 @@ unsigned int NavHeightmap::WriteTo(char* dest, unsigned int ptr)
 	memcpy(dest + ptr, &mSizeZ, sizeof(int));
 	ptr += sizeof(int);
 
-	memcpy(dest + ptr, mCellPassability, sizeof(char) * mSizeX * mSizeZ);
-	ptr += (sizeof(char) * mSizeX * mSizeZ);
-	memcpy(dest + ptr, mHeights, sizeof(float) * (mSizeX + 1) * (mSizeZ + 1));
-	ptr += (sizeof(float) * (mSizeX + 1) * (mSizeZ + 1));
+	memcpy(dest + ptr, mCellPassability, sizeof(char)* mSizeX * mSizeZ);
+	ptr += (sizeof(char)* mSizeX * mSizeZ);
+	memcpy(dest + ptr, mHeights, sizeof(float)* (mSizeX + 1) * (mSizeZ + 1));
+	ptr += (sizeof(float)* (mSizeX + 1) * (mSizeZ + 1));
 
 	return ptr;
 }
@@ -232,10 +263,10 @@ unsigned int NavHeightmap::ReadFrom(char* src, unsigned int ptr)
 
 	mCellPassability = new char[mSizeX * mSizeZ];
 	mHeights = new float[(mSizeX + 1) * (mSizeZ + 1)];
-	memcpy(mCellPassability, src + ptr, sizeof(char) * mSizeX * mSizeZ);
-	ptr += (sizeof(char) * mSizeX * mSizeZ);
-	memcpy(mHeights, src + ptr, sizeof(float) * (mSizeX + 1) * (mSizeZ + 1));
-	ptr += (sizeof(float) * (mSizeX + 1) * (mSizeZ + 1));
+	memcpy(mCellPassability, src + ptr, sizeof(char)* mSizeX * mSizeZ);
+	ptr += (sizeof(char)* mSizeX * mSizeZ);
+	memcpy(mHeights, src + ptr, sizeof(float)* (mSizeX + 1) * (mSizeZ + 1));
+	ptr += (sizeof(float)* (mSizeX + 1) * (mSizeZ + 1));
 
 	return ptr;
 }
