@@ -24,6 +24,7 @@ public:
 	unsigned int mID;
 	std::vector<unsigned int> mTriIndices;
 	NavGraph* mNavGraph;
+	bool mPassable;
 };
 
 #endif

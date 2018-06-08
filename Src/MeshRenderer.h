@@ -6,6 +6,8 @@
 class NavTriangle;
 struct MeshVertex;
 class NavHeightmap;
+class NavGraph;
+class NavGate;
 
 class MeshRenderer
 {
@@ -24,6 +26,12 @@ public:
 	void SetHeightmap(const NavHeightmap* heightmap, size_t index);
 
 	void ClearPath();
+
+	void SetGates(NavGraph* graph);
+
+	void SetSingleGate(NavGraph* graph, NavGate* gate);
+
+	void ClearGate();
 public:
 	IDirect3DDevice9* mDevice;
 	std::vector<ID3DXMesh*> mMeshes;
@@ -34,10 +42,15 @@ public:
 	bool mShowHeightmap;
 	bool mShowWireMesh;
 
+	// PathFind;
 	std::vector<MeshVertex> mSelectedPath;
 	ID3DXMesh* mStartMesh;
 	ID3DXMesh* mEndMesh;
 	ID3DXMesh* mSelectedMesh;
+
+	// Gate;
+	ID3DXMesh* mGateMeshInGraph;
+	ID3DXMesh* mGateMeshSingle;
 };
 
 #endif

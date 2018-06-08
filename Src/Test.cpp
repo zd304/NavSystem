@@ -43,6 +43,8 @@ Test::Test()
 	mSaveNav->SetDefaultDirectory(sCurPath);
 	mOpenNav = new FileDialog("打开导航", "nav", eFileDialogUsage_OpenFile);
 	mOpenNav->SetDefaultDirectory(sCurPath);
+
+	mLeftUIWidth = 256;
 }
 
 Test::~Test()
@@ -146,7 +148,7 @@ void Test::OnGUI()
 	OnInput();
 
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
-	ImGui::SetNextWindowSize(ImVec2(256, (float)mHeight));
+	ImGui::SetNextWindowSize(ImVec2(mLeftUIWidth, (float)mHeight));
 	ImGui::Begin(STU("导航编辑器").c_str(), NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar);
 
 	OnMenu();

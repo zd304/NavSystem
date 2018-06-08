@@ -23,6 +23,8 @@ public:
 
 	bool IsLineTest(const Vector3& start, const Vector3& end) const;
 
+	void ResetCost();
+
 	unsigned int GetSize();
 
 	unsigned int WriteTo(char* dest, unsigned int ptr);

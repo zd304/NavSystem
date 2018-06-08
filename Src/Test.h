@@ -49,7 +49,8 @@ private:
 	void CloseFile();
 public:
 	MeshRenderer* mRenderer;
-
+	// UILayout
+	float mLeftUIWidth;
 private:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;

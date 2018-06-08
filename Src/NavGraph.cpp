@@ -42,11 +42,14 @@ float NavGraph::LeastCostEstimate(void* stateStart, void* stateEnd)
 {
 	if (!stateStart || !stateEnd)
 		return MAX_COST;
-
+	
 	NavTriangle* triStart = (NavTriangle*)stateStart;
 	NavTriangle* triEnd = (NavTriangle*)stateEnd;
+	if (!triStart->mPassable || !triEnd->mPassable)
+		return MAX_COST;
 
 	float cost = (triStart->mCenter - triEnd->mCenter).Length();
+	
 	return cost;
 }
 
@@ -82,7 +85,6 @@ bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vect
 	if (rst == micropather::MicroPather::SOLVED
 		|| rst == micropather::MicroPather::START_END_SAME)
 		return true;
-	mPather->Reset();
 	return false;
 }
 
@@ -118,6 +120,11 @@ bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vecto
 		SmoothPath(path);
 	}
 	return rst;
+}
+
+void NavGraph::ResetCost()
+{
+	mPather->Reset();
 }
 
 bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint) const

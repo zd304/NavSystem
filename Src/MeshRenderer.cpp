@@ -1,6 +1,9 @@
 #include "MeshRenderer.h"
 #include "NavTriangle.h"
 #include "NavHeightmap.h"
+#include "NavGraph.h"
+#include "NavGate.h"
+#include "NavMesh.h"
 
 struct MeshVertex
 {
@@ -75,6 +78,9 @@ MeshRenderer::MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mD
 	mStartMesh = NULL;
 	mEndMesh = NULL;
 	mSelectedMesh = NULL;
+
+	mGateMeshInGraph = NULL;
+	mGateMeshSingle = NULL;
 }
 
 MeshRenderer::~MeshRenderer()
@@ -105,6 +111,8 @@ MeshRenderer::~MeshRenderer()
 	SAFE_RELEASE(mEndMesh);
 	SAFE_RELEASE(mSelectedMesh);
 	mSelectedPath.clear();
+	SAFE_RELEASE(mGateMeshInGraph);
+	SAFE_RELEASE(mGateMeshSingle);
 }
 
 void MeshRenderer::Render()
@@ -171,6 +179,11 @@ void MeshRenderer::Render()
 		mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	}
+
+	if (mGateMeshInGraph)
+		mGateMeshInGraph->DrawSubset(0);
+	if (mGateMeshSingle)
+		mGateMeshSingle->DrawSubset(0);
 }
 
 void MeshRenderer::SetPointMesh(const Vector3& pt0, const Vector3& pt1, const Vector3& pt2, const Vector3& point, bool isStart)
@@ -327,4 +340,97 @@ void MeshRenderer::ClearPath()
 	SAFE_RELEASE(mEndMesh);
 	SAFE_RELEASE(mSelectedMesh);
 	mSelectedPath.clear();
+}
+
+void MeshRenderer::SetGates(NavGraph* graph)
+{
+	ClearGate();
+
+	unsigned int vbCount = 0;
+	for (size_t i = 0; i < graph->mGates.size(); ++i)
+	{
+		NavGate* gate = graph->mGates[i];
+		vbCount += (gate->mTriIndices.size() * 3);
+	}
+	unsigned int faceCount = vbCount / 3;
+	HRESULT hr = D3DXCreateMeshFVF(faceCount, vbCount, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mGateMeshInGraph);
+	if (FAILED(hr))
+		return;
+	MeshVertex* vb = NULL;
+	unsigned int* ib = NULL;
+	mGateMeshInGraph->LockVertexBuffer(NULL, (void**)&vb);
+	mGateMeshInGraph->LockIndexBuffer(NULL, (void**)&ib);
+	int vbIndex = -1;
+	for (size_t i = 0; i < graph->mGates.size(); ++i)
+	{
+		NavGate* gate = graph->mGates[i];
+		DWORD color = gate->mPassable ? 0xffffff00 : 0x88888800;
+
+		for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
+		{
+			unsigned int triIndex = gate->mTriIndices[j];
+			NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+
+			MeshVertex& v0 = vb[++vbIndex];
+			ib[vbIndex] = vbIndex;
+			v0.pos = *(D3DXVECTOR3*)&tri->mPoint[0];
+			v0.color = color;
+			MeshVertex& v1 = vb[++vbIndex];
+			ib[vbIndex] = vbIndex;
+			v1.pos = *(D3DXVECTOR3*)&tri->mPoint[1];
+			v1.color = color;
+			MeshVertex& v2 = vb[++vbIndex];
+			ib[vbIndex] = vbIndex;
+			v2.pos = *(D3DXVECTOR3*)&tri->mPoint[2];
+			v2.color = color;
+		}
+	}
+	mGateMeshInGraph->UnlockVertexBuffer();
+	mGateMeshInGraph->UnlockIndexBuffer();
+}
+
+void MeshRenderer::SetSingleGate(NavGraph* graph, NavGate* gate)
+{
+	ClearGate();
+
+	unsigned int vbCount = gate->mTriIndices.size() * 3;
+	unsigned int faceCount = vbCount / 3;
+	HRESULT hr = D3DXCreateMeshFVF(faceCount, vbCount, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mGateMeshInGraph);
+	if (FAILED(hr))
+		return;
+	MeshVertex* vb = NULL;
+	unsigned int* ib = NULL;
+
+	mGateMeshInGraph->LockVertexBuffer(NULL, (void**)&vb);
+	mGateMeshInGraph->LockIndexBuffer(NULL, (void**)&ib);
+	int vbIndex = -1;
+
+	DWORD color = gate->mPassable ? 0xffffff00 : 0x88888800;
+	for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
+	{
+		unsigned int triIndex = gate->mTriIndices[j];
+		NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+
+		MeshVertex& v0 = vb[++vbIndex];
+		ib[vbIndex] = vbIndex;
+		v0.pos = *(D3DXVECTOR3*)&tri->mPoint[0];
+		v0.color = color;
+		MeshVertex& v1 = vb[++vbIndex];
+		ib[vbIndex] = vbIndex;
+		v1.pos = *(D3DXVECTOR3*)&tri->mPoint[1];
+		v1.color = color;
+		MeshVertex& v2 = vb[++vbIndex];
+		ib[vbIndex] = vbIndex;
+		v2.pos = *(D3DXVECTOR3*)&tri->mPoint[2];
+		v2.color = color;
+	}
+
+	mGateMeshInGraph->UnlockVertexBuffer();
+	mGateMeshInGraph->UnlockIndexBuffer();
+}
+
+void MeshRenderer::ClearGate()
+{
+	SAFE_RELEASE(mGateMeshInGraph);
+	SAFE_RELEASE(mGateMeshSingle);
 }

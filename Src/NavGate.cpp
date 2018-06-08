@@ -7,6 +7,7 @@
 NavGate::NavGate(NavGraph* graph)
 {
 	mNavGraph = graph;
+	mPassable = true;
 }
 
 void NavGate::AddTriangle(const NavTriangle* tri)
@@ -38,12 +39,14 @@ void NavGate::SwitchPassable(bool passable)
 		heightmap->SwitchCellPassability(tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], passable);
 		tri->mPassable = passable;
 	}
+	mNavGraph->ResetCost();
 }
 
 unsigned int NavGate::GetSize()
 {
 	unsigned int size = sizeof(unsigned int)* mTriIndices.size();
 	size += sizeof(unsigned int);
+	size += sizeof(bool);
 	return size;
 }
 
@@ -55,6 +58,8 @@ unsigned int NavGate::WriteTo(char* dest, unsigned int ptr)
 	size_t size = sizeof(unsigned int)* mTriIndices.size();
 	memcpy(dest + ptr, &mTriIndices[0], size);
 	ptr += size;
+	memcpy(dest + ptr, &mPassable, sizeof(bool));
+	ptr += sizeof(bool);
 
 	return ptr;
 }
@@ -73,6 +78,8 @@ unsigned int NavGate::ReadFrom(char* src, unsigned int ptr)
 		mTriIndices.push_back(index);
 		ptr += sizeof(unsigned int);
 	}
+	memcpy(&mPassable, src + ptr, sizeof(bool));
+	ptr += sizeof(bool);
 
 	return ptr;
 }
