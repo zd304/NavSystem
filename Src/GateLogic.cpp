@@ -66,6 +66,16 @@ void GateLogic::OnPick(const NavTriangle* tri, const Vector3& point, const NavGr
 		{
 			if (graph->mMesh->mTriangles[i] == tri)
 			{
+				for (size_t j = 0; j < mNavGate->mTriIndices.size(); ++j)
+				{
+					unsigned int index = mNavGate->mTriIndices[j];
+					if (index == i)
+					{
+						mNavGate->mTriIndices.erase(mNavGate->mTriIndices.begin() + j);
+						mTest->mRenderer->SetSingleGate(mNavGraph, mNavGate);
+						return;
+					}
+				}
 				mNavGate->mTriIndices.push_back(i);
 				mTest->mRenderer->SetSingleGate(mNavGraph, mNavGate);
 				return;
@@ -79,15 +89,26 @@ void GateLogic::OnGUI()
 	GateEditMode lastMode = mCurMode;
 	if (mNavGraph == NULL)
 	{
+		ImGui::Spacing();
 		ImGui::Text(STU("点击场景视图选择导航").c_str());
+		ImGui::Spacing();
 		return;
 	}
 	if (mCurMode == GateEditMode_GateList)
 	{
+		char szTemp[64];
+
+		memset(szTemp, 0, 64);
+		sprintf_s(szTemp, "当前正在编辑的导航模型ID = [%d]", mNavGraph->mID);
+		ImGui::Spacing();
+		ImGui::Text(STU(szTemp).c_str());
+		ImGui::Spacing();
+
 		if (ImGui::Button(STU("返回").c_str(), ImVec2(mTest->mLeftUIWidth - 16.0f, 30.0f)))
 		{
 			mNavGraph = NULL;
 			mNavGate = NULL;
+			mTest->mRenderer->ClearGate();
 			return;
 		}
 
@@ -98,8 +119,6 @@ void GateLogic::OnGUI()
 		}
 
 		ImGui::Spacing();
-
-		char szTemp[64];
 
 		for (size_t i = 0; i < mNavGraph->mGates.size(); ++i)
 		{
@@ -148,6 +167,9 @@ void GateLogic::OnGUI()
 		char szTemp[64];
 		memset(szTemp, 0, 64);
 		sprintf_s(szTemp, "当前编辑的门ID = [%d]", mNavGate->mID);
+		ImGui::Spacing();
+		ImGui::Text(STU(szTemp).c_str());
+		ImGui::Spacing();
 
 		const char* btText = mNavGate->mPassable ? "关门" : "开门";
 		if (ImGui::Button(STU(btText).c_str(), ImVec2(mTest->mLeftUIWidth - 16.0f, 30.0f)))
@@ -157,12 +179,25 @@ void GateLogic::OnGUI()
 			mNavGate->SwitchPassable(mNavGate->mPassable);
 		}
 
-		ImGui::Text(STU(szTemp).c_str());
 		if (ImGui::Button(STU("返回").c_str(), ImVec2(mTest->mLeftUIWidth - 16.0f, 30.0f)))
 		{
 			mCurMode = GateEditMode_GateList;
 			mNavGate = NULL;
 			return;
+		}
+
+		char szContent[256];
+		for (size_t i = 0; i < mNavGate->mTriIndices.size(); ++i)
+		{
+			unsigned int triIndex = mNavGate->mTriIndices[i];
+			NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
+			memset(szContent, 0, 256);
+			sprintf_s(szContent, "\n三角形[%d]:\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)",
+				triIndex,
+				tri->mPoint[0].x, tri->mPoint[0].y, tri->mPoint[0].z,
+				tri->mPoint[1].x, tri->mPoint[1].y, tri->mPoint[1].z, 
+				tri->mPoint[2].x, tri->mPoint[2].y, tri->mPoint[2].z);
+			ImGui::Text(STU(szContent).c_str());
 		}
 	}
 

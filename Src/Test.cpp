@@ -343,8 +343,7 @@ void Test::OpenFBX(const char* filePath)
 
 	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
 
-	mRenderer = new MeshRenderer(mDevice, meshDatas);
-	//mPathFindLogic = new PathFindLogic(this);
+	mRenderer = new MeshRenderer(mDevice, meshDatas, this);
 
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
@@ -355,6 +354,7 @@ void Test::OpenFBX(const char* filePath)
 
 		mRenderer->SetHeightmap(pathFinder->mHeightmap, i);
 	}
+	mRenderer->CalcAllCloseGates();
 
 	FBXHelper::EndFBXHelper();
 }
@@ -392,7 +392,7 @@ void Test::OpenNav(const char* filePath)
 		}
 		datas.datas.push_back(data);
 	}
-	mRenderer = new MeshRenderer(mDevice, &datas);
+	mRenderer = new MeshRenderer(mDevice, &datas, this);
 	//mPathFindLogic = new PathFindLogic(this);
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
@@ -400,6 +400,7 @@ void Test::OpenNav(const char* filePath)
 		NavGraph* graph = mNavSystem->GetGraphByID(i);
 		mRenderer->SetHeightmap(graph->mHeightmap, i);
 	}
+	mRenderer->CalcAllCloseGates();
 
 	D3DXVECTOR3 max, min;
 	FBXHelper::GetBox(max, min);

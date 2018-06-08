@@ -8,11 +8,12 @@ struct MeshVertex;
 class NavHeightmap;
 class NavGraph;
 class NavGate;
+class Test;
 
 class MeshRenderer
 {
 public:
-	MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mDatas);
+	MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mDatas, Test* test);
 	~MeshRenderer();
 
 	void Render();
@@ -31,12 +32,16 @@ public:
 
 	void SetSingleGate(NavGraph* graph, NavGate* gate);
 
+	void CalcAllCloseGates();
+
 	void ClearGate();
 public:
+	Test* mTest;
 	IDirect3DDevice9* mDevice;
 	std::vector<ID3DXMesh*> mMeshes;
 	std::vector<ID3DXMesh*> mWireMeshes;
 	std::vector<ID3DXMesh*> mHeightMeshes;
+	ID3DXMesh* mAllCloseGates;
 
 	bool mShowNavMesh;
 	bool mShowHeightmap;

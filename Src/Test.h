@@ -51,12 +51,13 @@ public:
 	MeshRenderer* mRenderer;
 	// UILayout
 	float mLeftUIWidth;
+
+	NavSystem* mNavSystem;
 private:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;
 	int mWidth;
 	int mHeight;
-	NavSystem* mNavSystem;
 
 	PathFindLogic* mPathFindLogic;
 	GateLogic* mGateLogic;
