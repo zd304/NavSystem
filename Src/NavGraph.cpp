@@ -88,7 +88,7 @@ bool NavGraph::Solve(const NavTriangle* start, const NavTriangle* end, std::vect
 	return false;
 }
 
-bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost) const
+bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost, bool smoothPath) const
 {
 	NavTriangle* triStart = GetTriangleByPoint(start);
 	NavTriangle* triEnd = GetTriangleByPoint(end);
@@ -117,7 +117,10 @@ bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vecto
 		}
 		path->push_back(end);
 
-		SmoothPath(path);
+		if (smoothPath)
+		{
+			SmoothPath(path);
+		}
 	}
 	return rst;
 }

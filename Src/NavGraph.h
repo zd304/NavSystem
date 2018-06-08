@@ -17,7 +17,7 @@ public:
 
 	bool Solve(const NavTriangle* start, const NavTriangle* end, std::vector<NavTriangle*>* path, float* cost) const;
 
-	bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost) const;
+	bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost, bool smoothPath = true) const;
 
 	bool LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint) const;
 

@@ -8,6 +8,7 @@ PathFindLogic::PathFindLogic(Test* test)
 {
 	mTest = test;
 	mShowTriPath = true;
+	mSmoothPath = true;
 }
 
 PathFindLogic::~PathFindLogic()
@@ -62,13 +63,26 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 				}
 			}
 			std::vector<Vector3> findVectorPath;
-			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost))
+			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost, mSmoothPath))
 			{
 				mTest->mRenderer->SetSelectedPath(findVectorPath);
 			}
 		}
 
 		return;
+	}
+}
+
+void PathFindLogic::OnGUI()
+{
+	ImGui::Spacing();
+	ImGui::Text(STU("第一次点击模型，确定寻路起点\n第二次点击导航，确定寻路终点\n自动生成路径").c_str());
+	ImGui::Spacing();
+
+	std::string text = mSmoothPath ? "关闭路径平滑" : "开启路径平滑";
+	if (ImGui::Button(STU(text).c_str(), ImVec2(mTest->mLeftUIWidth - 20.0f, 30.0f)))
+	{
+		mSmoothPath = !mSmoothPath;
 	}
 }
 

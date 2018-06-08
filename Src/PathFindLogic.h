@@ -22,6 +22,8 @@ public:
 	~PathFindLogic();
 
 	void OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph);
+
+	void OnGUI();
 private:
 	void ClearPath();
 
@@ -37,6 +39,7 @@ private:
 	Vector3 mEndPoint;
 
 	eClickState mClickMode;
+	bool mSmoothPath;
 };
 
 #endif

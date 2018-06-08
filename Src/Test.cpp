@@ -200,7 +200,13 @@ void Test::OnGUI()
 	}
 
 	if (mGateLogic)
+	{
 		mGateLogic->OnGUI();
+	}
+	if (mPathFindLogic)
+	{
+		mPathFindLogic->OnGUI();
+	}
 
 	ImGui::End();
 }
