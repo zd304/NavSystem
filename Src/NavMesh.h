@@ -28,4 +28,6 @@ public:
 	std::vector<NavEdge*> mBounds;
 };
 
+void DecodeEdgeIndex(int edgeIndex, int* pointIndex1, int* pointIndex2);
+
 #endif

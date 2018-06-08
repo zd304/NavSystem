@@ -149,6 +149,23 @@ bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPo
 		hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
 		return true;
 	}
+	for (size_t i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		for (size_t j = 0; j < gate->mBounds.size(); ++j)
+		{
+			NavEdge* edge = gate->mBounds[j];
+			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+				continue;
+			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+			Vector2 hitInfo;
+			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
+				continue;
+			hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+			return true;
+		}
+	}
 	return false;
 }
 
@@ -171,6 +188,21 @@ bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end) const
 		if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
 			continue;
 		return true;
+	}
+	for (size_t i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		for (size_t j = 0; j < gate->mBounds.size(); ++j)
+		{
+			NavEdge* edge = gate->mBounds[j];
+			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+				continue;
+			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+			if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
+				continue;
+			return true;
+		}
 	}
 	return false;
 }

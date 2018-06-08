@@ -3,11 +3,17 @@
 #include "NavMesh.h"
 #include "NavHeightmap.h"
 #include "NavGraph.h"
+#include "NavEdge.h"
 
 NavGate::NavGate(NavGraph* graph)
 {
 	mNavGraph = graph;
 	mPassable = true;
+}
+
+NavGate::~NavGate()
+{
+	ClearBounds();
 }
 
 void NavGate::AddTriangle(const NavTriangle* tri)
@@ -40,6 +46,45 @@ void NavGate::SwitchPassable(bool passable)
 		tri->mPassable = passable;
 	}
 	mNavGraph->ResetCost();
+	CalcBounds();
+}
+
+void NavGate::CalcBounds()
+{
+	ClearBounds();
+	if (!mNavGraph->mMesh)
+		return;
+
+	for (size_t i = 0; i < mTriIndices.size(); ++i)
+	{
+		unsigned int triIndex = mTriIndices[i];
+		NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
+		for (size_t j = 0; j < tri->mNeighbors.size(); ++j)
+		{
+			NavTriangle* neighbor = tri->mNeighbors[j];
+			if (!neighbor->mPassable)
+				continue;
+			int edgeIndex = tri->mShareEdgeIndices[j];
+			
+			int ptIndex1 = -1;
+			int ptIndex2 = -1;
+			DecodeEdgeIndex(edgeIndex, &ptIndex1, &ptIndex2);
+			NavEdge* edge = new NavEdge();
+			edge->mPoint[0] = tri->mPoint[ptIndex1];
+			edge->mPoint[1] = tri->mPoint[ptIndex2];
+			mBounds.push_back(edge);
+		}
+	}
+}
+
+void NavGate::ClearBounds()
+{
+	for (size_t i = 0; i < mBounds.size(); ++i)
+	{
+		NavEdge* edge = mBounds[i];
+		SAFE_DELETE(edge);
+	}
+	mBounds.clear();
 }
 
 unsigned int NavGate::GetSize()
@@ -80,6 +125,8 @@ unsigned int NavGate::ReadFrom(char* src, unsigned int ptr)
 	}
 	memcpy(&mPassable, src + ptr, sizeof(bool));
 	ptr += sizeof(bool);
+
+	SwitchPassable(mPassable);
 
 	return ptr;
 }
