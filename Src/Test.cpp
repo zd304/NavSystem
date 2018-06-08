@@ -176,12 +176,9 @@ void Test::OnGUI()
 		OpenNav(path.c_str());
 	}
 
-	if (mGateLogic)
-		mGateLogic->OnGUI();
-
 	if (!mGateLogic && !mPathFindLogic)
 	{
-		if (ImGui::Button(STU("实时寻路模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		if (ImGui::Button(STU("寻路模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
 		{
 			mPathFindLogic = new PathFindLogic(this);
 		}
@@ -190,6 +187,20 @@ void Test::OnGUI()
 			mGateLogic = new GateLogic(this);
 		}
 	}
+	else
+	{
+		if (ImGui::Button(STU("退出编辑模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		{
+			SAFE_DELETE(mPathFindLogic);
+			SAFE_DELETE(mGateLogic);
+		}
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+	}
+
+	if (mGateLogic)
+		mGateLogic->OnGUI();
 
 	ImGui::End();
 }
@@ -258,22 +269,6 @@ void Test::OnMenu()
 				if (ImGui::MenuItem(STU("显示三角形路径").c_str(), NULL, &mPathFindLogic->mShowTriPath))
 				{
 				}
-			}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu(STU("编辑").c_str()))
-		{
-			bool b = mPathFindLogic != NULL;
-			if (ImGui::MenuItem(STU("实时寻路模式").c_str(), NULL, &b))
-			{
-				mPathFindLogic = new PathFindLogic(this);
-				SAFE_DELETE(mGateLogic);
-			}
-			b = mGateLogic != NULL;
-			if (ImGui::MenuItem(STU("门编辑模式").c_str(), NULL, &b))
-			{
-				SAFE_DELETE(mPathFindLogic);
-				mGateLogic = new GateLogic(this);
 			}
 			ImGui::EndMenu();
 		}

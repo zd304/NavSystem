@@ -120,6 +120,7 @@ void GateLogic::OnGUI()
 
 		ImGui::Spacing();
 
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.4f, 0.6f, 1.0f));
 		for (size_t i = 0; i < mNavGraph->mGates.size(); ++i)
 		{
 			NavGate* gate = mNavGraph->mGates[i];
@@ -161,9 +162,12 @@ void GateLogic::OnGUI()
 			}
 			ImGui::PopID();
 		}
+		ImGui::PopStyleColor();
 	}
 	else if (mCurMode == GateEditMode_GateTriangles)
 	{
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.4f, 0.6f, 1.0f));
+
 		char szTemp[64];
 		memset(szTemp, 0, 64);
 		sprintf_s(szTemp, "当前编辑的门ID = [%d]", mNavGate->mID);
@@ -183,22 +187,25 @@ void GateLogic::OnGUI()
 		{
 			mCurMode = GateEditMode_GateList;
 			mNavGate = NULL;
-			return;
 		}
 
-		char szContent[256];
-		for (size_t i = 0; i < mNavGate->mTriIndices.size(); ++i)
+		if (mNavGate)
 		{
-			unsigned int triIndex = mNavGate->mTriIndices[i];
-			NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
-			memset(szContent, 0, 256);
-			sprintf_s(szContent, "\n三角形[%d]:\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)",
-				triIndex,
-				tri->mPoint[0].x, tri->mPoint[0].y, tri->mPoint[0].z,
-				tri->mPoint[1].x, tri->mPoint[1].y, tri->mPoint[1].z, 
-				tri->mPoint[2].x, tri->mPoint[2].y, tri->mPoint[2].z);
-			ImGui::Text(STU(szContent).c_str());
+			char szContent[256];
+			for (size_t i = 0; i < mNavGate->mTriIndices.size(); ++i)
+			{
+				unsigned int triIndex = mNavGate->mTriIndices[i];
+				NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
+				memset(szContent, 0, 256);
+				sprintf_s(szContent, "\n三角形[%d]:\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)",
+					triIndex,
+					tri->mPoint[0].x, tri->mPoint[0].y, tri->mPoint[0].z,
+					tri->mPoint[1].x, tri->mPoint[1].y, tri->mPoint[1].z,
+					tri->mPoint[2].x, tri->mPoint[2].y, tri->mPoint[2].z);
+				ImGui::Text(STU(szContent).c_str());
+			}
 		}
+		ImGui::PopStyleColor();
 	}
 
 	if (lastMode != mCurMode)
