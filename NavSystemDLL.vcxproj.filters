@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Src">
+      <UniqueIdentifier>{528b06e0-8de1-4f1f-8e82-a71d36a770c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\micropather">
+      <UniqueIdentifier>{8c28db8f-7162-4c9c-a132-e1adee3f6f92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\math">
+      <UniqueIdentifier>{b60dac9c-025e-47ba-b324-0e4b71d7fb83}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\Nav.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavEdge.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavGate.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavGraph.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavHeightmap.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavInc.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavMesh.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavPhysics.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavSystem.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavTriangle.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\micropather\micropather.h">
+      <Filter>Src\micropather</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\math\Vector2.h">
+      <Filter>Src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\math\Vector3.h">
+      <Filter>Src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavSystemDLL.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Src\NavGate.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavGraph.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavHeightmap.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavMesh.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavPhysics.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSystem.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavTriangle.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\micropather\micropather.cpp">
+      <Filter>Src\micropather</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\math\Vector2.cpp">
+      <Filter>Src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\math\Vector3.cpp">
+      <Filter>Src\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSystemDLL.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

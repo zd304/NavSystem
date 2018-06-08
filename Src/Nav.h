@@ -5,6 +5,9 @@
 #include "NavEdge.h"
 #include "NavTriangle.h"
 #include "NavMesh.h"
+#include "NavHeightmap.h"
 #include "NavGraph.h"
+#include "NavGate.h"
+#include "NavSystem.h"
 
 #endif
