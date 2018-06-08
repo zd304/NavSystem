@@ -46,7 +46,14 @@ void NavGate::SwitchPassable(bool passable)
 		tri->mPassable = passable;
 	}
 	mNavGraph->ResetCost();
-	CalcBounds();
+	if (!passable)
+	{
+		CalcBounds();
+	}
+	else
+	{
+		ClearBounds();
+	}
 }
 
 void NavGate::CalcBounds()
