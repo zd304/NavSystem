@@ -13,9 +13,9 @@ struct NAV_VEC2 { float x, z; };
 
 extern "C"
 {
-	bool LoadFromFile(const char* path);
+	_DLLExprot bool LoadFromFile(const char* path);
 
-	void Destroy();
+	_DLLExprot void Destroy();
 
 
 }
