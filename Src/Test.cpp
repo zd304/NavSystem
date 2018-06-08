@@ -339,6 +339,18 @@ void Test::OnInput()
 	}
 }
 
+bool CompareTriangleArea(const NavTriangle* t1, const NavTriangle* t2)
+{
+	float area1 = NavPhysics::CalcTriangleArea2D(t1->mPoint[0], t1->mPoint[1], t1->mPoint[2]);
+	float area2 = NavPhysics::CalcTriangleArea2D(t2->mPoint[0], t2->mPoint[1], t2->mPoint[2]);
+
+	if (area1 > area2)
+	{
+		return true;
+	}
+	return false;
+}
+
 void Test::OpenFBX(const char* filePath)
 {
 	CloseFile();
@@ -363,6 +375,10 @@ void Test::OpenFBX(const char* filePath)
 		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
 		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
 		NavGraph* pathFinder = new NavGraph(navMesh);
+
+		//三角形按面积大小排序;
+		std::sort(navMesh->mTriangles.begin(), navMesh->mTriangles.end(), CompareTriangleArea);
+
 		mNavSystem->AddGraph(pathFinder);
 
 		mRenderer->SetHeightmap(pathFinder->mHeightmap, i);

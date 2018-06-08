@@ -74,6 +74,8 @@ namespace NavPhysics
 	bool SegmentIntersectSegment(const Vector2& line1Begin, const Vector2& line1End,
 		const Vector2& line2Begin, const Vector2& line2End,
 		Vector2* hitPoint);
+
+	float CalcTriangleArea2D(const Vector3& v0, const Vector3& v1, const Vector3& v2);
 }
 
 #endif

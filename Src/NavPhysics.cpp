@@ -249,4 +249,22 @@ namespace NavPhysics
 		hitPoint->y = (int)((double)tmpRight / (double)tmpLeft);
 		return true;
 	}
+
+	float CalcTriangleArea2D(const Vector3& v0, const Vector3& v1, const Vector3& v2)
+	{
+		Vector2 edge0(v1.x - v0.x, v1.z - v0.z);
+		Vector2 edge1(v2.x - v1.x, v2.z - v1.z);
+		Vector2 edge2(v0.x - v2.x, v0.z - v2.z);
+
+		float a = edge0.Length();
+		float b = edge1.Length();
+		float c = edge2.Length();
+
+		if ((a + b) <= c || (b + c) <= a || (c + a) <= b)
+			return 0.0f;
+
+		float m = (a + b + c) * 0.5f;
+
+		return sqrtf(m * (m - a) * (m - b) * (m - c));
+	}
 }
