@@ -179,6 +179,18 @@ void Test::OnGUI()
 	if (mGateLogic)
 		mGateLogic->OnGUI();
 
+	if (!mGateLogic && !mPathFindLogic)
+	{
+		if (ImGui::Button(STU("ʵʱѰ·ģʽ").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		{
+			mPathFindLogic = new PathFindLogic(this);
+		}
+		if (ImGui::Button(STU("�ű༭ģʽ").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		{
+			mGateLogic = new GateLogic(this);
+		}
+	}
+
 	ImGui::End();
 }
 
