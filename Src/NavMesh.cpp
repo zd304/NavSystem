@@ -1,6 +1,7 @@
 #include "NavMesh.h"
 #include "NavTriangle.h"
 #include "NavEdge.h"
+#include "NavPhysics.h"
 
 struct AdjacentEdgePair
 {
@@ -127,6 +128,24 @@ NavMesh::NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int in
 		mTriangles.push_back(tri);
 	}
 	UpdateAdjacent();
+}
+
+bool NavMesh::GetHeight(const Vector3& pos, float* height)
+{
+	NavPhysics::NavHit hit;
+	for (size_t i = 0; i < mTriangles.size(); ++i)
+	{
+		NavTriangle* tri = mTriangles[i];
+		if (!tri->mPassable)
+			continue;
+		if (NavPhysics::RayIntersectTriangle(pos, Vector3::DOWN,
+			tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], &hit))
+		{
+			(*height) = hit.hitPoint.y;
+			return true;
+		}
+	}
+	return false;
 }
 
 void NavMesh::UpdateAdjacent(bool calcBounds)

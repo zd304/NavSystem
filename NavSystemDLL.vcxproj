@@ -68,21 +68,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>Lib\</OutDir>
-    <IntDir>Temp\</IntDir>
+    <OutDir>Bin_Debug\</OutDir>
+    <IntDir>Temp\Debug\x86</IntDir>
     <TargetName>NavSystem</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>NavSystem</TargetName>
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>Bin_Debug\</OutDir>
+    <IntDir>Temp\Debug\x64</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>Bin\</OutDir>
+    <IntDir>Temp\Release\x86</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>Bin\</OutDir>
-    <IntDir>Temp\</IntDir>
+    <IntDir>Temp\Release\x64</IntDir>
     <TargetName>NavSystem</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

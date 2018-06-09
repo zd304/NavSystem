@@ -162,8 +162,10 @@ bool NavHeightmap::GetHeight(const Vector3& pos, float* height)
 	float u = fmodf(p.x, mCellSize.x);
 	float v = fmodf(p.z, mCellSize.y);
 
-	int nextCol = (nextCol < mSizeX ? col + 1 : col);
-	int nextRow = (nextRow < mSizeZ ? row + 1 : row);
+	int nextCol = col + 1;
+	nextCol = (nextCol < mSizeX ? nextCol : col);
+	int nextRow = row + 1;
+	nextRow = (nextRow < mSizeZ ? nextRow : row);
 
 	int countX = mSizeX + 1;
 	float h0 = mHeights[row * countX + col];

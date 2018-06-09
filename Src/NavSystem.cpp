@@ -108,3 +108,8 @@ void NavSystem::SaveAs(const char* path)
 
 	SAFE_DELETE_ARRAY(data);
 }
+
+unsigned int NavSystem::GetVersion()
+{
+	return mVersion;
+}

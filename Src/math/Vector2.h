@@ -21,6 +21,8 @@ public:
 	{};
 	Vector2(float fX, float fY) : x(fX), y(fY)
 	{};
+	Vector2(float* data) : x(data[0]), y(data[1])
+	{}
 	~Vector2(void)
 	{}
 public:

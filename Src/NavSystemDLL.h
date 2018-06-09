@@ -13,11 +13,29 @@ struct NAV_VEC2 { float x, z; };
 
 extern "C"
 {
-	_DLLExprot bool LoadFromFile(const char* path);
+	_DLLExprot bool Create(const char* path);
 
-	_DLLExprot void Destroy();
+	_DLLExprot void Release();
 
-	_DLLExprot unsigned int GetLayerCount();
+	_DLLExprot bool GetLayerCount(unsigned int* layerCount);
+
+	_DLLExprot bool GetLayer(const NAV_VEC3* pos, unsigned int* layer);
+
+	_DLLExprot bool GetNavHeight(const NAV_VEC3* pos, float* height);
+
+	_DLLExprot bool GetLayerHeight(const NAV_VEC3* pos, unsigned int layer, float* height);
+
+	_DLLExprot bool LineCast(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos);
+
+	_DLLExprot bool LineTest(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer);
+
+	_DLLExprot bool RayCastLayer(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos);
+
+	_DLLExprot bool RayCastNav(const NAV_VEC3* start, const NAV_VEC3* end, NAV_VEC3* hitPos);
+
+	_DLLExprot bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer);
+
+	_DLLExprot bool ReleaseLayerPath(NAV_VEC3** pathBuffer);
 }
 
 #endif

@@ -29,6 +29,8 @@ public:
 	{}
 	Vector3(float fX, float fY, float fZ) : x(fX), y(fY), z(fZ)
 	{}
+	Vector3(float* data) : x(data[0]), y(data[1]), z(data[2])
+	{}
 	~Vector3(void)
 	{}
 public:

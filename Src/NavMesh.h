@@ -14,6 +14,8 @@ public:
 	NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int indicesNum);
 	~NavMesh();
 
+	bool GetHeight(const Vector3& pos, float* height);
+
 	unsigned int GetSize();
 
 	unsigned int WriteTo(char* dest, unsigned int ptr);

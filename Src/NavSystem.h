@@ -22,6 +22,8 @@ public:
 	unsigned int GetGraphCount();
 
 	NavGraph* GetGraphByID(unsigned int id);
+
+	unsigned int GetVersion();
 private:
 	std::vector<NavGraph*> mGraphs;
 	unsigned int mVersion;
