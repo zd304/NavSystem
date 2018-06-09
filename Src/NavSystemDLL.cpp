@@ -191,7 +191,7 @@ extern "C"
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
-		if (!graph || !graph->mMesh) return false;
+		if (!graph) return false;
 
 		const Vector3 vStart((float*)start);
 		const Vector3 vEnd((float*)end);
@@ -217,6 +217,39 @@ extern "C"
 	bool ReleaseLayerPath(NAV_VEC3** pathBuffer)
 	{
 		SAFE_DELETE_ARRAY(*pathBuffer);
+		return true;
+	}
+
+	bool GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer)
+	{
+		if (!navSystem) return false;
+		NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph || !graph->mMesh) return false;
+
+		unsigned int faceCount = (unsigned int)graph->mMesh->mTriangles.size();
+		(*verticesBuffer) = new NAV_VEC3[faceCount * 3];
+		(*verticesCount) = faceCount * 3;
+
+		unsigned int index = -1;
+		for (unsigned int i = 0; i < faceCount; ++i)
+		{
+			NavTriangle* tri = graph->mMesh->mTriangles[i];
+			for (unsigned int j = 0; j < 3; ++j)
+			{
+				Vector3 v = tri->mPoint[j];
+
+				NAV_VEC3* nv = &(*verticesBuffer)[++index];
+				nv->x = v.x;
+				nv->y = v.y;
+				nv->z = v.z;
+			}
+		}
+		return true;
+	}
+
+	bool ReleaseLayerTriangles(NAV_VEC3** verticesBuffer)
+	{
+		SAFE_DELETE_ARRAY(*verticesBuffer);
 		return true;
 	}
 }

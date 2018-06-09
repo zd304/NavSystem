@@ -36,6 +36,10 @@ extern "C"
 	_DLLExprot bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer);
 
 	_DLLExprot bool ReleaseLayerPath(NAV_VEC3** pathBuffer);
+
+	_DLLExprot bool GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer);
+
+	_DLLExprot bool ReleaseLayerTriangles(NAV_VEC3** verticesBuffer);
 }
 
 #endif
