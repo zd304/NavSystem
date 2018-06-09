@@ -27,7 +27,7 @@ NavGraph::NavGraph(NavMesh* mesh)
 
 NavGraph::~NavGraph()
 {
-	for (size_t i = 0; i < mGates.size(); ++i)
+	for (unsigned int i = 0; i < mGates.size(); ++i)
 	{
 		NavGate* gate = mGates[i];
 		SAFE_DELETE(gate);
@@ -57,7 +57,7 @@ void NavGraph::AdjacentCost(void* state, std::vector<micropather::StateCost> *ad
 {
 	if (!state) return;
 	NavTriangle* tri = (NavTriangle*)state;
-	for (size_t i = 0; i < tri->mNeighbors.size(); ++i)
+	for (unsigned int i = 0; i < tri->mNeighbors.size(); ++i)
 	{
 		NavTriangle* neighbor = tri->mNeighbors[i];
 		
@@ -97,8 +97,8 @@ bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vecto
 	if (rst)
 	{
 		path->push_back(start);
-		size_t nodeCount = triPath.size();
-		for (size_t i = 0; i < nodeCount; ++i)
+		unsigned int nodeCount = (unsigned int)triPath.size();
+		for (unsigned int i = 0; i < nodeCount; ++i)
 		{
 			NavTriangle* tri = triPath[i];
 			path->push_back(tri->mCenter);
@@ -106,7 +106,7 @@ bool NavGraph::Solve(const Vector3& start, const Vector3& end, std::vector<Vecto
 			if (i < (nodeCount - 1))
 			{
 				NavTriangle* triNext = triPath[i + 1];
-				for (size_t j = 0; j < tri->mNeighbors.size(); ++j)
+				for (unsigned int j = 0; j < tri->mNeighbors.size(); ++j)
 				{
 					if (tri->mNeighbors[j] != triNext)
 						continue;
@@ -139,7 +139,7 @@ bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPo
 	float distance = dir.Length();
 	dir.Normalize();
 	
-	for (size_t i = 0; i < mMesh->mBounds.size(); ++i)
+	for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 	{
 		NavEdge* edge = mMesh->mBounds[i];
 		if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
@@ -152,10 +152,10 @@ bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPo
 		hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
 		return true;
 	}
-	for (size_t i = 0; i < mGates.size(); ++i)
+	for (unsigned int i = 0; i < mGates.size(); ++i)
 	{
 		NavGate* gate = mGates[i];
-		for (size_t j = 0; j < gate->mBounds.size(); ++j)
+		for (unsigned int j = 0; j < gate->mBounds.size(); ++j)
 		{
 			NavEdge* edge = gate->mBounds[j];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
@@ -181,7 +181,7 @@ bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end) const
 	float distance = dir.Length();
 	dir.Normalize();
 
-	for (size_t i = 0; i < mMesh->mBounds.size(); ++i)
+	for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 	{
 		NavEdge* edge = mMesh->mBounds[i];
 		if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
@@ -192,10 +192,10 @@ bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end) const
 			continue;
 		return true;
 	}
-	for (size_t i = 0; i < mGates.size(); ++i)
+	for (unsigned int i = 0; i < mGates.size(); ++i)
 	{
 		NavGate* gate = mGates[i];
-		for (size_t j = 0; j < gate->mBounds.size(); ++j)
+		for (unsigned int j = 0; j < gate->mBounds.size(); ++j)
 		{
 			NavEdge* edge = gate->mBounds[j];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
@@ -212,7 +212,7 @@ bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end) const
 
 void NavGraph::SmoothPath(std::vector<Vector3>* path) const
 {
-	size_t pathSize = path->size();
+	unsigned int pathSize = (unsigned int)path->size();
 	Vector3* oldPath = new Vector3[pathSize];
 	memcpy(oldPath, &((*path)[0]), pathSize * sizeof(Vector3));
 
@@ -243,7 +243,7 @@ void NavGraph::SmoothPath(std::vector<Vector3>* path) const
 
 NavTriangle* NavGraph::GetTriangleByPoint(const Vector3& point) const
 {
-	for (size_t i = 0; i < mMesh->mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mMesh->mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mMesh->mTriangles[i];
 		Vector3 v0 = tri->mPoint[0];
@@ -272,7 +272,7 @@ unsigned int NavGraph::GetSize()
 	unsigned int size = mMesh->GetSize();
 	size += mHeightmap->GetSize();
 	size += sizeof(unsigned int);
-	for (size_t i = 0; i < mGates.size(); ++i)
+	for (unsigned int i = 0; i < mGates.size(); ++i)
 	{
 		NavGate* gate = mGates[i];
 		size += gate->GetSize();
@@ -284,10 +284,10 @@ unsigned int NavGraph::WriteTo(char* dest, unsigned int ptr)
 {
 	ptr = mMesh->WriteTo(dest, ptr);
 	ptr = mHeightmap->WriteTo(dest, ptr);
-	unsigned int gateCount = mGates.size();
+	unsigned int gateCount = (unsigned int)mGates.size();
 	memcpy(dest + ptr, &gateCount, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
-	for (size_t i = 0; i < mGates.size(); ++i)
+	for (unsigned int i = 0; i < mGates.size(); ++i)
 	{
 		NavGate* gate = mGates[i];
 		ptr = gate->WriteTo(dest, ptr);
@@ -298,7 +298,7 @@ unsigned int NavGraph::WriteTo(char* dest, unsigned int ptr)
 
 unsigned int NavGraph::ReadFrom(char* src, unsigned int ptr)
 {
-	for (size_t i = 0; i < mGates.size(); ++i)
+	for (unsigned int i = 0; i < mGates.size(); ++i)
 	{
 		NavGate* gate = mGates[i];
 		SAFE_DELETE(gate);
@@ -314,7 +314,7 @@ unsigned int NavGraph::ReadFrom(char* src, unsigned int ptr)
 	unsigned int gateCount = 0;
 	memcpy(&gateCount, src + ptr, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
-	for (size_t i = 0; i < gateCount; ++i)
+	for (unsigned int i = 0; i < gateCount; ++i)
 	{
 		NavGate* gate = new NavGate(this);
 		ptr = gate->ReadFrom(src, ptr);

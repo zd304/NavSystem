@@ -21,7 +21,7 @@ void NavGate::AddTriangle(const NavTriangle* tri)
 	NavMesh* mesh = mNavGraph->mMesh;
 	if (!mesh) return;
 	
-	for (size_t i = 0; i < mesh->mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mesh->mTriangles.size(); ++i)
 	{
 		NavTriangle* t = mesh->mTriangles[i];
 		if (t == tri)
@@ -38,7 +38,7 @@ void NavGate::SwitchPassable(bool passable)
 	if (!mesh) return;
 	NavHeightmap* heightmap = mNavGraph->mHeightmap;
 	if (!heightmap) return;
-	for (size_t i = 0; i < mTriIndices.size(); ++i)
+	for (unsigned int i = 0; i < mTriIndices.size(); ++i)
 	{
 		unsigned int triIndex = mTriIndices[i];
 		NavTriangle* tri = mesh->mTriangles[triIndex];
@@ -62,11 +62,11 @@ void NavGate::CalcBounds()
 	if (!mNavGraph->mMesh)
 		return;
 
-	for (size_t i = 0; i < mTriIndices.size(); ++i)
+	for (unsigned int i = 0; i < mTriIndices.size(); ++i)
 	{
 		unsigned int triIndex = mTriIndices[i];
 		NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
-		for (size_t j = 0; j < tri->mNeighbors.size(); ++j)
+		for (unsigned int j = 0; j < tri->mNeighbors.size(); ++j)
 		{
 			NavTriangle* neighbor = tri->mNeighbors[j];
 			if (!neighbor->mPassable)
@@ -86,7 +86,7 @@ void NavGate::CalcBounds()
 
 void NavGate::ClearBounds()
 {
-	for (size_t i = 0; i < mBounds.size(); ++i)
+	for (unsigned int i = 0; i < mBounds.size(); ++i)
 	{
 		NavEdge* edge = mBounds[i];
 		SAFE_DELETE(edge);
@@ -96,7 +96,7 @@ void NavGate::ClearBounds()
 
 unsigned int NavGate::GetSize()
 {
-	unsigned int size = sizeof(unsigned int)* mTriIndices.size();
+	unsigned int size = sizeof(unsigned int)* (unsigned int)mTriIndices.size();
 	size += sizeof(unsigned int);
 	size += sizeof(bool);
 	return size;
@@ -104,10 +104,10 @@ unsigned int NavGate::GetSize()
 
 unsigned int NavGate::WriteTo(char* dest, unsigned int ptr)
 {
-	size_t count = mTriIndices.size();
+	unsigned int count = (unsigned int)mTriIndices.size();
 	memcpy(dest + ptr, &count, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
-	size_t size = sizeof(unsigned int)* mTriIndices.size();
+	unsigned int size = sizeof(unsigned int)* (unsigned int)mTriIndices.size();
 	memcpy(dest + ptr, &mTriIndices[0], size);
 	ptr += size;
 	memcpy(dest + ptr, &mPassable, sizeof(bool));
@@ -123,7 +123,7 @@ unsigned int NavGate::ReadFrom(char* src, unsigned int ptr)
 	unsigned int count = 0;
 	memcpy(&count, src + ptr, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
-	for (size_t i = 0; i < count; ++i)
+	for (unsigned int i = 0; i < count; ++i)
 	{
 		unsigned int index = 0;
 		memcpy(&index, src + ptr, sizeof(unsigned int));

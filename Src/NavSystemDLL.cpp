@@ -18,4 +18,9 @@ extern "C"
 	{
 		SAFE_DELETE(navSystem);
 	}
+
+	unsigned int GetLayerCount()
+	{
+		return navSystem->GetGraphCount();
+	}
 }

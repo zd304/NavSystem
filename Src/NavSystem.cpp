@@ -18,7 +18,7 @@ NavSystem::~NavSystem()
 
 void NavSystem::Clear()
 {
-	for (size_t i = 0; i < mGraphs.size(); ++i)
+	for (unsigned int i = 0; i < mGraphs.size(); ++i)
 	{
 		NavGraph* graph = mGraphs[i];
 		SAFE_DELETE(graph);
@@ -28,16 +28,16 @@ void NavSystem::Clear()
 
 void NavSystem::AddGraph(NavGraph* graph)
 {
-	graph->mID = mGraphs.size();
+	graph->mID = (unsigned int)mGraphs.size();
 	mGraphs.push_back(graph);
 }
 
-size_t NavSystem::GetGraphCount()
+unsigned int NavSystem::GetGraphCount()
 {
-	return mGraphs.size();
+	return (unsigned int)mGraphs.size();
 }
 
-NavGraph* NavSystem::GetGraphByID(size_t id)
+NavGraph* NavSystem::GetGraphByID(unsigned int id)
 {
 	return mGraphs[id];
 }
@@ -77,7 +77,7 @@ void NavSystem::SaveAs(const char* path)
 {
 	unsigned int fileSize = sizeof(unsigned int);
 	fileSize += sizeof(unsigned int);
-	for (size_t i = 0; i < mGraphs.size(); ++i)
+	for (unsigned int i = 0; i < mGraphs.size(); ++i)
 	{
 		NavGraph* graph = mGraphs[i];
 		fileSize += graph->GetSize();
@@ -87,11 +87,11 @@ void NavSystem::SaveAs(const char* path)
 	unsigned int ptr = 0;
 	memcpy(data + ptr, &mVersion, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
-	unsigned int graphCount = mGraphs.size();
+	unsigned int graphCount = (unsigned int)mGraphs.size();
 	memcpy(data + ptr, &graphCount, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 
-	for (size_t i = 0; i < mGraphs.size(); ++i)
+	for (unsigned int i = 0; i < mGraphs.size(); ++i)
 	{
 		NavGraph* graph = mGraphs[i];
 		ptr = graph->WriteTo(data, ptr);

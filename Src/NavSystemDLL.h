@@ -17,7 +17,7 @@ extern "C"
 
 	_DLLExprot void Destroy();
 
-
+	_DLLExprot unsigned int GetLayerCount();
 }
 
 #endif

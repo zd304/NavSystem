@@ -38,10 +38,10 @@ void NavHeightmap::BuildHeightmap(const NavMesh* mesh)
 	mMax = Vector2(FLT_MIN, FLT_MIN);
 
 	std::vector<Vector3> vertices;
-	for (size_t i = 0; i < mesh->mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mesh->mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mesh->mTriangles[i];
-		for (size_t j = 0; j < 3; ++j)
+		for (unsigned int j = 0; j < 3; ++j)
 		{
 			Vector3& pos = tri->mPoint[j];
 			mMin.x = mMin.x > pos.x ? pos.x : mMin.x;
@@ -79,7 +79,7 @@ void NavHeightmap::BuildHeightmap(const NavMesh* mesh)
 			mHeights[index] = 0.0f;
 		}
 	}
-	for (size_t i = 0; i + 2 < vertices.size(); i += 3)
+	for (unsigned int i = 0; i + 2 < vertices.size(); i += 3)
 	{
 		Vector3 vVertex0 = vertices[i];
 		Vector3 vVertex1 = vertices[i + 1];

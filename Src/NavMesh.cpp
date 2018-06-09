@@ -131,16 +131,16 @@ NavMesh::NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int in
 
 void NavMesh::UpdateAdjacent(bool calcBounds)
 {
-	for (size_t i = 0; i < mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mTriangles[i];
 		tri->mNeighbors.clear();
 		tri->mDistance.clear();
 	}
-	for (size_t i = 0; i < mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mTriangles.size(); ++i)
 	{
 		NavTriangle* tri1 = mTriangles[i];
-		for (size_t j = i + 1; j < mTriangles.size(); ++j)
+		for (unsigned int j = i + 1; j < mTriangles.size(); ++j)
 		{
 			NavTriangle* tri2 = mTriangles[j];
 
@@ -172,11 +172,11 @@ void NavMesh::UpdateAdjacent(bool calcBounds)
 	}
 	if (!calcBounds)
 		return;
-	for (size_t i = 0; i < mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mTriangles[i];
 		bool hasEdge[3] { false, false, false };
-		for (size_t j = 0; j < tri->mShareEdgeIndices.size(); ++j)
+		for (unsigned int j = 0; j < tri->mShareEdgeIndices.size(); ++j)
 		{
 			int edgeIndex = tri->mShareEdgeIndices[j];
 			hasEdge[edgeIndex] = true;
@@ -232,14 +232,14 @@ bool NavMesh::IsTriangleAdjacent(NavTriangle* tri1, NavTriangle* tri2, AdjacentE
 
 NavMesh::~NavMesh()
 {
-	for (size_t i = 0; i < mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mTriangles[i];
 		SAFE_DELETE(tri);
 	}
 	mTriangles.clear();
 
-	for (size_t i = 0; i < mBounds.size(); ++i)
+	for (unsigned int i = 0; i < mBounds.size(); ++i)
 	{
 		NavEdge* edge = mBounds[i];
 		SAFE_DELETE(edge);
@@ -250,13 +250,13 @@ NavMesh::~NavMesh()
 unsigned int NavMesh::GetSize()
 {
 	unsigned int size = sizeof(unsigned int);
-	for (size_t i = 0; i < mTriangles.size(); ++i)
+	for (unsigned int i = 0; i < mTriangles.size(); ++i)
 	{
 		NavTriangle* tri = mTriangles[i];
 		size += tri->GetSize();
 	}
 	//size += sizeof(unsigned int);
-	//for (size_t i = 0; i < mBounds.size(); ++i)
+	//for (unsigned int i = 0; i < mBounds.size(); ++i)
 	//{
 	//	NavEdge* edge = mBounds[i];
 	//	size += (sizeof(Vector3) * 2);
@@ -266,22 +266,22 @@ unsigned int NavMesh::GetSize()
 
 unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
 {
-	size_t triCount = mTriangles.size();
+	unsigned int triCount = (unsigned int)mTriangles.size();
 	memcpy(dest + ptr, &triCount, sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 
-	for (size_t i = 0; i < triCount; ++i)
+	for (unsigned int i = 0; i < triCount; ++i)
 	{
 		NavTriangle* tri = mTriangles[i];
 		ptr = tri->WriteTo(dest, ptr);
 	}
 
-	//size_t boundsCount = mBounds.size();
+	//unsigned int boundsCount = mBounds.size();
 	//memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
 	//ptr += sizeof(unsigned int);
 
 	//unsigned int edgeSize = sizeof(Vector3) * 2;
-	//for (size_t i = 0; i < mBounds.size(); ++i)
+	//for (unsigned int i = 0; i < mBounds.size(); ++i)
 	//{
 	//	NavEdge* edge = mBounds[i];
 	//	memcpy(dest + ptr, edge->mPoint, edgeSize);
@@ -292,11 +292,11 @@ unsigned int NavMesh::WriteTo(char* dest, unsigned int ptr)
 
 unsigned int NavMesh::ReadFrom(char* src, unsigned int ptr)
 {
-	size_t triCount = 0;
+	unsigned int triCount = 0;
 	memcpy(&triCount, &src[ptr], sizeof(unsigned int));
 	ptr += sizeof(unsigned int);
 
-	for (size_t i = 0; i < triCount; ++i)
+	for (unsigned int i = 0; i < triCount; ++i)
 	{
 		NavTriangle* tri = new NavTriangle();
 		ptr = tri->ReadFrom(src, ptr);
@@ -305,11 +305,11 @@ unsigned int NavMesh::ReadFrom(char* src, unsigned int ptr)
 
 	UpdateAdjacent();
 
-	//size_t boundsCount = 0;
+	//unsigned int boundsCount = 0;
 	//memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
 	//ptr += sizeof(unsigned int);
 	//unsigned int edgeSize = sizeof(Vector3) * 2;
-	//for (size_t i = 0; i < boundsCount; ++i)
+	//for (unsigned int i = 0; i < boundsCount; ++i)
 	//{
 	//	NavEdge* edge = new NavEdge();
 	//	Vector3 v0, v1;

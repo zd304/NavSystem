@@ -242,11 +242,11 @@ namespace NavPhysics
 		tmpLeft = (q2.x - q1.x) * (p1.y - p2.y) - (p2.x - p1.x) * (q1.y - q2.y);
 		tmpRight = (p1.y - q1.y) * (p2.x - p1.x) * (q2.x - q1.x) + q1.x * (q2.y - q1.y) * (p2.x - p1.x) - p1.x * (p2.y - p1.y) * (q2.x - q1.x);
 
-		hitPoint->x = (int)((double)tmpRight / (double)tmpLeft);
+		hitPoint->x = tmpRight / tmpLeft;
 
 		tmpLeft = (p1.x - p2.x) * (q2.y - q1.y) - (p2.y - p1.y) * (q1.x - q2.x);
 		tmpRight = p2.y * (p1.x - p2.x) * (q2.y - q1.y) + (q2.x - p2.x) * (q2.y - q1.y) * (p1.y - p2.y) - q2.y * (q1.x - q2.x) * (p2.y - p1.y);
-		hitPoint->y = (int)((double)tmpRight / (double)tmpLeft);
+		hitPoint->y = tmpRight / tmpLeft;
 		return true;
 	}
 

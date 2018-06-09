@@ -1,6 +1,8 @@
 #ifndef __NAV_INC_H__
 #define __NAV_INC_H__
 
+#define _CRT_SECURE_NO_WARNINGS 
+
 #include <vector>
 #include "math/Vector3.h"
 #include "micropather/micropather.h"

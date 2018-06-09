@@ -19,9 +19,9 @@ public:
 
 	void Clear();
 
-	size_t GetGraphCount();
+	unsigned int GetGraphCount();
 
-	NavGraph* GetGraphByID(size_t id);
+	NavGraph* GetGraphByID(unsigned int id);
 private:
 	std::vector<NavGraph*> mGraphs;
 	unsigned int mVersion;
