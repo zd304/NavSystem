@@ -187,7 +187,7 @@ extern "C"
 		return false;
 	}
 
-	bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer)
+	bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -209,6 +209,7 @@ extern "C"
 				node->y = v.y;
 				node->z = v.z;
 			}
+			(*pathNodeCount) = (unsigned int)path.size();
 			return true;
 		}
 		return false;
@@ -222,6 +223,8 @@ extern "C"
 
 	bool GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer)
 	{
+		if (!verticesBuffer)
+			return false;
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh) return false;
@@ -249,7 +252,50 @@ extern "C"
 
 	bool ReleaseLayerTriangles(NAV_VEC3** verticesBuffer)
 	{
+		if (!verticesBuffer)
+			return false;
 		SAFE_DELETE_ARRAY(*verticesBuffer);
+		return true;
+	}
+
+	bool GetLayerGateCount(unsigned int layer, unsigned int* gateCount)
+	{
+		if (!navSystem) return false;
+		NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph) return false;
+
+		(*gateCount) = (unsigned int)graph->mGates.size();
+		return true;
+	}
+
+	bool IsLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool* passable)
+	{
+		if (!navSystem) return false;
+		NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph) return false;
+
+		if (gateIndex >= (unsigned int)graph->mGates.size())
+			return false;
+
+		NavGate* gate = graph->mGates[gateIndex];
+		if (!gate) return false;
+		(*passable) = gate->mPassable;
+		return true;
+	}
+
+	bool SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable)
+	{
+		if (!navSystem) return false;
+		NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph) return false;
+
+		if (gateIndex >= (unsigned int)graph->mGates.size())
+			return false;
+
+		NavGate* gate = graph->mGates[gateIndex];
+		if (!gate) return false;
+
+		gate->SwitchPassable(passable);
 		return true;
 	}
 }

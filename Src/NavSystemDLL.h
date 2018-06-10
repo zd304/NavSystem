@@ -33,13 +33,19 @@ extern "C"
 
 	_DLLExprot bool RayCastNav(const NAV_VEC3* start, const NAV_VEC3* end, NAV_VEC3* hitPos);
 
-	_DLLExprot bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer);
+	_DLLExprot bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount);
 
 	_DLLExprot bool ReleaseLayerPath(NAV_VEC3** pathBuffer);
 
 	_DLLExprot bool GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer);
 
 	_DLLExprot bool ReleaseLayerTriangles(NAV_VEC3** verticesBuffer);
+
+	_DLLExprot bool GetLayerGateCount(unsigned int layer, unsigned int* gateCount);
+
+	_DLLExprot bool IsLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool* passable);
+
+	_DLLExprot bool SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable);
 }
 
 #endif
