@@ -133,8 +133,8 @@ void Test::OnInit(HWND hwnd, IDirect3DDevice9* device)
 void Test::UpdateView()
 {
 	D3DXMATRIX matView;
-	D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(-mCameraX, mCameraHeight, mCameraDistance),
-		&D3DXVECTOR3(-mCameraX, 0.0f, 0.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
+	D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(mCameraX, mCameraHeight, -mCameraDistance),
+		&D3DXVECTOR3(mCameraX, 0.0f, 0.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
 	mDevice->SetTransform(D3DTS_VIEW, &matView);
 
 	D3DXMatrixRotationYawPitchRoll(&mWorldMtrix, -rot, 0.0f, 0.0f);
