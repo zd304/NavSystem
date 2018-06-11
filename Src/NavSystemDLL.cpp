@@ -191,7 +191,7 @@ extern "C"
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
-		if (!graph) return false;
+		if (!graph || !graph->mMesh || !graph->mHeightmap) return false;
 
 		const Vector3 vStart((float*)start);
 		const Vector3 vEnd((float*)end);
@@ -204,9 +204,19 @@ extern "C"
 			for (size_t i = 0; i < path.size(); ++i)
 			{
 				Vector3& v = path[i];
+				float height = v.y + 0.5f;
+				if (!graph->mHeightmap->GetHeight(v, &height))
+				{
+					if (!graph->mMesh->GetHeight(v, &height))
+					{
+						return false;
+					}
+				}
+				
+
 				NAV_VEC3* node = &((*pathBuffer)[i]);
 				node->x = v.x;
-				node->y = v.y;
+				node->y = height;
 				node->z = v.z;
 			}
 			(*pathNodeCount) = (unsigned int)path.size();
