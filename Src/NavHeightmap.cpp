@@ -3,6 +3,10 @@
 #include "NavMesh.h"
 #include "NavPhysics.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 float MinFloat(float f1, float f2)
 {
 	return f1 < f2 ? f1 : f2;
@@ -118,22 +122,25 @@ void NavHeightmap::BuildHeightmap(const NavMesh* mesh)
 				}
 			}
 		}
+	}
 
-		mCellPassability = new char[mSizeZ * mSizeX];
-		for (int j = 0; j < mSizeZ; ++j)
+	mCellPassability = new char[mSizeZ * mSizeX];
+	for (int j = 0; j < mSizeZ; ++j)
+	{
+		for (int i = 0; i < mSizeX; ++i)
 		{
-			for (int i = 0; i < mSizeX; ++i)
-			{
-				bool bValue = true;
-				bValue = arrMapMask[j * (mSizeX + 1) + i]
-					& arrMapMask[j * (mSizeX + 1) + i + 1]
-					& arrMapMask[(j + 1) * (mSizeX + 1) + i]
-					& arrMapMask[(j + 1) * (mSizeX + 1) + i + 1];
+			bool bValue = true;
+			bValue = arrMapMask[j * (mSizeX + 1) + i]
+				& arrMapMask[j * (mSizeX + 1) + i + 1]
+				& arrMapMask[(j + 1) * (mSizeX + 1) + i]
+				& arrMapMask[(j + 1) * (mSizeX + 1) + i + 1];
 
-				mCellPassability[j * mSizeX + i] = bValue ? (char)1 : (char)0;
-			}
+			mCellPassability[j * mSizeX + i] = bValue ? (char)1 : (char)0;
 		}
 	}
+
+	SAFE_DELETE_ARRAY(arrMap);
+	SAFE_DELETE_ARRAY(arrMapMask);
 }
 
 void NavHeightmap::SetCellSize(const Vector2& size)

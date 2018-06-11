@@ -10,6 +10,10 @@
 #include "PathFindLogic.h"
 #include "GateLogic.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 struct SelectedMeshVertex
 {
 	Vector3 pos;

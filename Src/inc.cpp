@@ -1,5 +1,9 @@
 #include "inc.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 std::string UTS(const std::string& str)
 {
 	int nwLen = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);

@@ -6,6 +6,10 @@
 #include "NavGate.h"
 #include "NavMesh.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 GateLogic::GateLogic(Test* test)
 {
 	mTest = test;

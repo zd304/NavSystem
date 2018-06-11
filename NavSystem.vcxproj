@@ -41,7 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>./Temp/</IntDir>
+    <IntDir>./Temp/x86/Debug/</IntDir>
     <OutDir>./Bin_Debug/</OutDir>
     <IncludePath>.\DirectX\Include;.\FBX\include;$(IncludePath)</IncludePath>
     <LibraryPath>.\DirectX\Lib\x86;.\FBX\lib\vs2013\x86\debug;$(LibraryPath)</LibraryPath>
@@ -55,7 +55,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_CHECK_LEAK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -4,6 +4,10 @@
 #include "NavGraph.h"
 #include <stdio.h>
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 NavSystem* gNavSystem = NULL;
 
 NavSystem::NavSystem()

@@ -3,8 +3,12 @@
 #include "imgui/imgui.h"
 #include "imgui_impl_dx9.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 static D3DPRESENT_PARAMETERS    g_d3dpp;
-static Test test;
+static Test* test;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 extern LRESULT ImGui_ImplDX9_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -21,7 +25,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef _DEBUG
 	AllocConsole();
 	freopen("conout$", "w", stdout);
+
+	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
+	_CrtDumpMemoryLeaks();
 #endif
+
+	test = new Test();
 
 	WNDCLASS wc = { 0 };
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -123,7 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	else
 	{
 		//开始设置参数;
-		test.OnInit(hwnd, Device);
+		test->OnInit(hwnd, Device);
 
 		ImGui_ImplDX9_Init(hwnd, Device);
 	}
@@ -143,7 +152,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		else
 		{
 			ImGui_ImplDX9_NewFrame();
-			test.OnGUI();
+			test->OnGUI();
 
 			float curTime = (float)timeGetTime();
 			float timeDelta = (curTime - lastTime)*0.001f;
@@ -154,7 +163,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 				//开始显示;
 				
 				ImGui::Render();
-				test.OnUpdate();
+				test->OnUpdate();
 				Device->EndScene();
 
 				Device->Present(0, 0, 0, 0);
@@ -163,8 +172,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		}
 	}
 
-	test.OnQuit();
+	test->OnQuit();
 	ImGui_ImplDX9_Shutdown();
+	SAFE_DELETE(test);
 	UnregisterClass("Direct3D9App", wc.hInstance);
 	FreeConsole();
 	return 0;
@@ -198,7 +208,7 @@ LRESULT CALLBACK WndProc(
 	}
 	case WM_LBUTTONDOWN:
 	{
-		test.Pick(LOWORD(lParam), HIWORD(lParam));
+		test->Pick(LOWORD(lParam), HIWORD(lParam));
 		break;
 	}
 	case WM_DESTROY:

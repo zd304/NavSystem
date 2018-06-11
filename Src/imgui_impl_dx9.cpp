@@ -9,6 +9,10 @@
 #include "imgui/imgui.h"
 #include "imgui_impl_dx9.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 // DirectX
 #include <d3d9.h>
 #define DIRECTINPUT_VERSION 0x0800

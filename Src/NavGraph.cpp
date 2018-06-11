@@ -6,6 +6,10 @@
 #include "NavGate.h"
 #include "NavPhysics.h"
 
+#ifdef _CHECK_LEAK
+#define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#endif
+
 static const float MAX_COST = 1e4f;
 
 NavGraph::NavGraph()
