@@ -21,7 +21,7 @@ extern "C"
 
 	_DLLExprot bool GetLayer(const NAV_VEC3* pos, unsigned int* layer);
 
-	_DLLExprot bool GetNavHeight(const NAV_VEC3* pos, float* height);
+	_DLLExprot bool GetNavHeight(const NAV_VEC3* pos, float* height, unsigned int* layer);
 
 	_DLLExprot bool GetLayerHeight(const NAV_VEC3* pos, unsigned int layer, float* height);
 
@@ -46,6 +46,8 @@ extern "C"
 	_DLLExprot bool IsLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool* passable);
 
 	_DLLExprot bool SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable);
+
+	_DLLExprot bool GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* verticesCount);
 }
 
 #endif

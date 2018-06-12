@@ -48,7 +48,7 @@ extern "C"
 		return false;
 	}
 
-	bool GetNavHeight(const NAV_VEC3* pos, float* outHeight)
+	bool GetNavHeight(const NAV_VEC3* pos, float* outHeight, unsigned int* layer)
 	{
 		if (!navSystem) return false;
 		float h = FLT_MIN;
@@ -61,12 +61,14 @@ extern "C"
 			if (graph->mHeightmap->GetHeight(vPos, &height))
 			{
 				h = h > height ? h : height;
+				(*layer) = i;
 				rst = true;
 				break;
 			}
 			if (graph->mMesh->GetHeight(vPos, &height))
 			{
 				h = h > height ? h : height;
+				(*layer) = i;
 				rst = true;
 				break;
 			}
@@ -307,5 +309,37 @@ extern "C"
 
 		gate->SwitchPassable(passable);
 		return true;
+	}
+
+	bool GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* verticesCount)
+	{
+		if (!navSystem) return false;
+		NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph || !graph->mMesh) return false;
+
+		unsigned int verticesCount = 0;
+		for (size_t i = 0; i < graph->mGates.size(); ++i)
+		{
+			NavGate* gate = graph->mGates[i];
+			if (gate->mPassable)
+				continue;
+			verticesCount += ((unsigned int)gate->mTriIndices.size() * 3);
+		}
+
+		(*verticesBuffer) = new NAV_VEC3[verticesCount];
+		for (size_t i = 0; i < graph->mGates.size(); ++i)
+		{
+			NavGate* gate = graph->mGates[i];
+			if (gate->mPassable)
+				continue;
+			for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
+			{
+				unsigned int index = gate->mTriIndices[j];
+				if ((size_t)index >= graph->mMesh->mTriangles.size())
+					continue;
+				NavTriangle* tri = graph->mMesh->mTriangles[index];
+
+			}
+		}
 	}
 }
