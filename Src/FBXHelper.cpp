@@ -56,7 +56,6 @@ namespace FBXHelper
 		converter.Triangulate(pFBXScene, true);
 
 		pMeshDatas = new FBXMeshDatas();
-
 		ProcessNode(pFBXScene->GetRootNode(), NULL, FbxNodeAttribute::eMesh);
 
 		return rst;
@@ -64,7 +63,7 @@ namespace FBXHelper
 
 	void ProcessMesh(FbxNode* pNode)
 	{
-		FbxMesh* pMesh = pNode->GetMesh();
+		FbxMesh* pMesh = pNode->GetMesh(); 
 		if (pMesh == NULL)
 		{
 			return;
@@ -74,6 +73,8 @@ namespace FBXHelper
 		int triangleCount = pMesh->GetPolygonCount();
 		int vertexCount = pMesh->GetControlPointsCount();
 
+		float scaleFactor = (float)pFBXScene->GetGlobalSettings().GetOriginalSystemUnit().GetScaleFactor();
+
 		const FbxVector4* controlPoints = pMesh->GetControlPoints();
 		for (int i = 0; i < vertexCount; ++i)
 		{
@@ -82,6 +83,7 @@ namespace FBXHelper
 			v.x = -(float)currentVertex[0];
 			v.y = (float)currentVertex[2];
 			v.z = -(float)currentVertex[1];
+			v /= scaleFactor;
 			UpdateBox(v);
 			data->pos.push_back(v);
 		}

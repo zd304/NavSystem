@@ -67,6 +67,11 @@ void NavHeightmap::BuildHeightmap(const NavMesh* mesh)
 	mMax.y = ceilf(mMax.y);
 
 	Vector2 vSize = mMax - mMin;
+	if (vSize.x > 4000.0f || vSize.y > 4000.0f)
+	{
+		//assert("" != NULL);
+		return;
+	}
 	mSizeX = (int)(ceilf(vSize.x / mCellSize.x) + 0.5f);
 	mSizeZ = (int)(ceilf(vSize.y / mCellSize.y) + 0.5f);
 
