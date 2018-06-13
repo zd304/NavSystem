@@ -73,7 +73,7 @@ namespace FBXHelper
 		int triangleCount = pMesh->GetPolygonCount();
 		int vertexCount = pMesh->GetControlPointsCount();
 
-		float scaleFactor = (float)pFBXScene->GetGlobalSettings().GetOriginalSystemUnit().GetScaleFactor();
+		//float scaleFactor = (float)pFBXScene->GetGlobalSettings().GetOriginalSystemUnit().GetScaleFactor();
 
 		const FbxVector4* controlPoints = pMesh->GetControlPoints();
 		for (int i = 0; i < vertexCount; ++i)
@@ -83,7 +83,7 @@ namespace FBXHelper
 			v.x = -(float)currentVertex[0];
 			v.y = (float)currentVertex[2];
 			v.z = -(float)currentVertex[1];
-			v /= scaleFactor;
+			//v /= scaleFactor;
 			UpdateBox(v);
 			data->pos.push_back(v);
 		}
