@@ -11,6 +11,7 @@ class NavSystem;
 class FileDialog;
 class PathFindLogic;
 class GateLogic;
+class CheckInfoLogic;
 
 class Test
 {
@@ -61,6 +62,7 @@ private:
 
 	PathFindLogic* mPathFindLogic;
 	GateLogic* mGateLogic;
+	CheckInfoLogic* mCheckInfoLogic;
 
 	// FileDialog
 	FileDialog* mOpenFBX;

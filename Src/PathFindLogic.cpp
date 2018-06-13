@@ -13,6 +13,7 @@ PathFindLogic::PathFindLogic(Test* test)
 	mTest = test;
 	mShowTriPath = true;
 	mSmoothPath = true;
+	mCost = 0.0f;
 }
 
 PathFindLogic::~PathFindLogic()
@@ -29,8 +30,10 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 	{
 		mClickMode = eClickState::eClickState_None;
 		ClearPath();
+		mCost = 0.0f;
 		return;
 	}
+	mCost = 0.0f;
 	if (mStartTri == NULL && mEndTri == NULL)
 	{
 		mClickMode = eClickState::eClickState_Start;
@@ -71,6 +74,7 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 			{
 				mTest->mRenderer->SetSelectedPath(findVectorPath);
 			}
+			mCost = cost;
 		}
 
 		return;
@@ -81,6 +85,8 @@ void PathFindLogic::OnGUI()
 {
 	ImGui::Spacing();
 	ImGui::Text(STU("第一次点击模型，确定寻路起点\n第二次点击导航，确定寻路终点\n自动生成路径").c_str());
+	ImGui::Spacing();
+	ImGui::Text(STU("寻路消耗：%f").c_str(), mCost);
 	ImGui::Spacing();
 
 	std::string text = mSmoothPath ? "关闭路径平滑" : "开启路径平滑";

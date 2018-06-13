@@ -9,6 +9,7 @@
 #include "FileDialog.h"
 #include "PathFindLogic.h"
 #include "GateLogic.h"
+#include "CheckInfoLogic.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -34,6 +35,7 @@ Test::Test()
 	mNavSystem = new NavSystem();
 	mPathFindLogic = NULL;
 	mGateLogic = NULL;
+	mCheckInfoLogic = NULL;
 	mInstance = this;
 
 	char szPath[MAX_PATH] = { 0 };
@@ -57,6 +59,7 @@ Test::~Test()
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
 	SAFE_DELETE(mGateLogic);
+	SAFE_DELETE(mCheckInfoLogic);
 	SAFE_DELETE(mOpenFBX);
 	SAFE_DELETE(mSaveNav);
 	SAFE_DELETE(mOpenNav);
@@ -180,7 +183,7 @@ void Test::OnGUI()
 		OpenNav(path.c_str());
 	}
 
-	if (!mGateLogic && !mPathFindLogic)
+	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic)
 	{
 		if (ImGui::Button(STU("寻路模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
 		{
@@ -190,6 +193,10 @@ void Test::OnGUI()
 		{
 			mGateLogic = new GateLogic(this);
 		}
+		if (ImGui::Button(STU("三角形模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		{
+			mCheckInfoLogic = new CheckInfoLogic(this);
+		}
 	}
 	else
 	{
@@ -197,6 +204,7 @@ void Test::OnGUI()
 		{
 			SAFE_DELETE(mPathFindLogic);
 			SAFE_DELETE(mGateLogic);
+			SAFE_DELETE(mCheckInfoLogic);
 		}
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -210,6 +218,10 @@ void Test::OnGUI()
 	if (mPathFindLogic)
 	{
 		mPathFindLogic->OnGUI();
+	}
+	if (mCheckInfoLogic)
+	{
+		mCheckInfoLogic->OnGUI();
 	}
 
 	ImGui::End();
@@ -451,6 +463,7 @@ void Test::CloseFile()
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
 	SAFE_DELETE(mGateLogic);
+	SAFE_DELETE(mCheckInfoLogic);
 }
 
 bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)
@@ -550,6 +563,8 @@ void Test::Pick(int x, int y)
 		mPathFindLogic->OnPick(hitTri, hitPoint, hitGraph);
 	if (mGateLogic)
 		mGateLogic->OnPick(hitTri, hitPoint, hitGraph);
+	if (mCheckInfoLogic)
+		mCheckInfoLogic->OnPick(hitTri, hitPoint, hitGraph);
 }
 
 void Test::TransformPos(Vector3& pos)

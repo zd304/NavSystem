@@ -37,6 +37,7 @@ private:
 	NavTriangle* mEndTri;
 	Vector3 mStartPoint;
 	Vector3 mEndPoint;
+	float mCost;
 
 	eClickState mClickMode;
 	bool mSmoothPath;

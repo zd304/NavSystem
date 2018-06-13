@@ -20,6 +20,7 @@ NavTriangle::NavTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2
 	mPoint[0] = v0;
 	mPoint[1] = v1;
 	mPoint[2] = v2;
+	mPassable = true;
 }
 
 unsigned int NavTriangle::GetSize()

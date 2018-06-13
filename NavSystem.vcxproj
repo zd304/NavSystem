@@ -86,6 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Src\CheckInfoLogic.h" />
     <ClInclude Include="Src\FBXCommon.h" />
     <ClInclude Include="Src\FBXHelper.h" />
     <ClInclude Include="Src\FileDialog.h" />
@@ -116,6 +117,7 @@
     <ClInclude Include="Src\NavTriangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Src\CheckInfoLogic.cpp" />
     <ClCompile Include="Src\FBXCommon.cpp" />
     <ClCompile Include="Src\FBXHelper.cpp" />
     <ClCompile Include="Src\FileDialog.cpp" />

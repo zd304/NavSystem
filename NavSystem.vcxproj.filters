@@ -106,6 +106,9 @@
     <ClInclude Include="Src\GateLogic.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\CheckInfoLogic.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -175,6 +178,9 @@
       <Filter>nav</Filter>
     </ClCompile>
     <ClCompile Include="Src\GateLogic.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\CheckInfoLogic.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
