@@ -311,7 +311,7 @@ extern "C"
 		return true;
 	}
 
-	bool GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* verticesCount)
+	bool GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* vcount)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -326,7 +326,9 @@ extern "C"
 			verticesCount += ((unsigned int)gate->mTriIndices.size() * 3);
 		}
 
+		(*vcount) = verticesCount;
 		(*verticesBuffer) = new NAV_VEC3[verticesCount];
+		int index = -1;
 		for (size_t i = 0; i < graph->mGates.size(); ++i)
 		{
 			NavGate* gate = graph->mGates[i];
@@ -334,12 +336,19 @@ extern "C"
 				continue;
 			for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
 			{
-				unsigned int index = gate->mTriIndices[j];
-				if ((size_t)index >= graph->mMesh->mTriangles.size())
+				unsigned int triIndex = gate->mTriIndices[j];
+				if ((size_t)triIndex >= graph->mMesh->mTriangles.size())
 					continue;
-				NavTriangle* tri = graph->mMesh->mTriangles[index];
-
+				NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+				for (int k = 0; k < 3; ++k)
+				{
+					NAV_VEC3& v = (*verticesBuffer)[++index];
+					v.x = tri->mPoint[0].x;
+					v.y = tri->mPoint[1].x;
+					v.z = tri->mPoint[2].x;
+				}
 			}
 		}
+		return true;
 	}
 }
