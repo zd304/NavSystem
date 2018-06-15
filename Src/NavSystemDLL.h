@@ -27,6 +27,8 @@ extern "C"
 
 	_DLLExprot bool LineCast(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos);
 
+	_DLLExprot bool LineCastEdge(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos, NAV_VEC3* edgePoint0, NAV_VEC3* edgePoint1);
+
 	_DLLExprot bool LineTest(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer);
 
 	_DLLExprot bool RayCastLayer(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos);
@@ -48,6 +50,8 @@ extern "C"
 	_DLLExprot bool SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable);
 
 	_DLLExprot bool GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* verticesCount);
+
+	_DLLExprot bool ReleaseLayerCloseGates(NAV_VEC3** verticesBuffer);
 }
 
 #endif

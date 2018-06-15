@@ -21,6 +21,8 @@ public:
 
 	bool LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint) const;
 
+	bool LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint, Vector3& edgePoint0, Vector3& edgePoint1) const;
+
 	bool IsLineTest(const Vector3& start, const Vector3& end) const;
 
 	void ResetCost();

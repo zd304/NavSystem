@@ -123,6 +123,41 @@ extern "C"
 		return false;
 	}
 
+	bool LineCastEdge(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos, NAV_VEC3* edgePoint0, NAV_VEC3* edgePoint1)
+	{
+		if (!navSystem) return false;
+		NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph) return false;
+
+		const Vector3 vStart((float*)start);
+		const Vector3 vEnd((float*)end);
+		Vector3 hitPoint;
+		Vector3 ep0, ep1;
+		if (graph->LineTest(vStart, vEnd, hitPoint, ep0, ep1))
+		{
+			hitPos->x = hitPoint.x;
+			hitPos->y = hitPoint.y;
+			hitPos->z = hitPoint.z;
+			if (edgePoint0)
+			{
+				(*edgePoint0).x = ep0.x;
+				(*edgePoint0).y = ep0.y;
+				(*edgePoint0).z = ep0.z;
+			}
+			if (edgePoint1)
+			{
+				(*edgePoint1).x = ep1.x;
+				(*edgePoint1).y = ep1.y;
+				(*edgePoint1).z = ep1.z;
+			}
+			return true;
+		}
+		hitPos->x = end->x;
+		hitPos->y = end->y;
+		hitPos->z = end->z;
+		return false;
+	}
+
 	bool LineTest(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer)
 	{
 		if (!navSystem) return false;
@@ -343,12 +378,20 @@ extern "C"
 				for (int k = 0; k < 3; ++k)
 				{
 					NAV_VEC3& v = (*verticesBuffer)[++index];
-					v.x = tri->mPoint[0].x;
-					v.y = tri->mPoint[1].x;
-					v.z = tri->mPoint[2].x;
+					v.x = tri->mPoint[k].x;
+					v.y = tri->mPoint[k].y;
+					v.z = tri->mPoint[k].z;
 				}
 			}
 		}
+		return true;
+	}
+
+	bool ReleaseLayerCloseGates(NAV_VEC3** verticesBuffer)
+	{
+		if (!verticesBuffer)
+			return false;
+		SAFE_DELETE_ARRAY(*verticesBuffer);
 		return true;
 	}
 }

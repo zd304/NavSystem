@@ -176,6 +176,52 @@ bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPo
 	return false;
 }
 
+bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint, Vector3& edgePoint0, Vector3& edgePoint1) const
+{
+	Vector2 start2D(start.x, start.z);
+	Vector2 end2D(end.x, end.z);
+
+	Vector2 dir = end2D - start2D;
+	float distance = dir.Length();
+	dir.Normalize();
+
+	for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
+	{
+		NavEdge* edge = mMesh->mBounds[i];
+		if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+			continue;
+		Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+		Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+		Vector2 hitInfo;
+		if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
+			continue;
+		edgePoint0 = edge->mPoint[0];
+		edgePoint1 = edge->mPoint[1];
+		hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+		return true;
+	}
+	for (unsigned int i = 0; i < mGates.size(); ++i)
+	{
+		NavGate* gate = mGates[i];
+		for (unsigned int j = 0; j < gate->mBounds.size(); ++j)
+		{
+			NavEdge* edge = gate->mBounds[j];
+			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+				continue;
+			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+			Vector2 hitInfo;
+			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
+				continue;
+			edgePoint0 = edge->mPoint[0];
+			edgePoint1 = edge->mPoint[1];
+			hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+			return true;
+		}
+	}
+	return false;
+}
+
 bool NavGraph::IsLineTest(const Vector3& start, const Vector3& end) const
 {
 	Vector2 start2D(start.x, start.z);
