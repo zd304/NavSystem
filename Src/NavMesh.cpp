@@ -142,7 +142,9 @@ bool NavMesh::GetHeight(const Vector3& pos, float* height)
 		NavTriangle* tri = mTriangles[i];
 		if (!tri->mPassable)
 			continue;
-		if (NavPhysics::RayIntersectTriangle(pos, Vector3::DOWN,
+		Vector3 vPos = pos;
+		vPos.y += 10.0f;
+		if (NavPhysics::RayIntersectTriangle(vPos, Vector3::DOWN,
 			tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], &hit))
 		{
 			(*height) = hit.hitPoint.y;
