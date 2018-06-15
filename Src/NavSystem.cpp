@@ -2,7 +2,8 @@
 #include "NavMesh.h"
 #include "NavHeightmap.h"
 #include "NavGraph.h"
-#include <stdio.h>
+//#include <stdio.h>
+#include <fstream>
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -46,20 +47,22 @@ NavGraph* NavSystem::GetGraphByID(unsigned int id)
 	return mGraphs[id];
 }
 
-void NavSystem::LoadFromFile(const char* path)
+bool NavSystem::LoadFromFileW(const wchar_t* path)
 {
 	Clear();
 
-	FILE* fp = fopen(path, "rb");
-	if (fp == NULL)
-		return;
-	fseek(fp, 0, SEEK_END);
-	long fileSize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+	std::locale::global(std::locale(""));
+	std::ifstream stream;
+	stream.open(path, std::ios::in | std::ios::binary);
+	if (!stream.is_open())
+		return false;
+	stream.seekg(0, std::ios::end);
+	long long fileSize = stream.tellg();
+	stream.seekg(0, std::ios::beg);
 
 	char* data = new char[fileSize];
-	fread(data, 1, fileSize, fp);
-	fclose(fp);
+	stream.read(data, fileSize);
+	stream.close();
 
 	mGraphs.clear();
 
@@ -75,6 +78,44 @@ void NavSystem::LoadFromFile(const char* path)
 		ptr = graph->ReadFrom(data, ptr);
 		AddGraph(graph);
 	}
+	SAFE_DELETE_ARRAY(data);
+	return true;
+	return true;
+}
+
+bool NavSystem::LoadFromFile(const char* path)
+{
+	Clear();
+
+	std::locale::global(std::locale(""));
+	std::ifstream stream;
+	stream.open(path, std::ios::in | std::ios::binary);
+	if (!stream.is_open())
+		return false;
+	stream.seekg(0, std::ios::end);
+	long long fileSize = stream.tellg();
+	stream.seekg(0, std::ios::beg);
+
+	char* data = new char[fileSize];
+	stream.read(data, fileSize);
+	stream.close();
+
+	mGraphs.clear();
+
+	unsigned int ptr = 0;
+	memcpy(&mVersion, data + ptr, sizeof(unsigned int));
+	ptr += sizeof(unsigned int);
+	unsigned int graphCount = 0;
+	memcpy(&graphCount, data + ptr, sizeof(unsigned int));
+	ptr += sizeof(unsigned int);
+	for (unsigned int i = 0; i < graphCount; ++i)
+	{
+		NavGraph* graph = new NavGraph();
+		ptr = graph->ReadFrom(data, ptr);
+		AddGraph(graph);
+	}
+	SAFE_DELETE_ARRAY(data);
+	return true;
 }
 
 void NavSystem::SaveAs(const char* path)
@@ -101,14 +142,24 @@ void NavSystem::SaveAs(const char* path)
 		ptr = graph->WriteTo(data, ptr);
 	}
 
-	FILE* fp = fopen(path, "wb");
-	if (!fp)
+	std::ofstream stream;
+	stream.open(path, std::ios::out | std::ios::binary);
+	if (!stream.is_open())
 	{
 		SAFE_DELETE_ARRAY(data);
 		return;
 	}
-	fwrite(data, 1, fileSize, fp);
-	fclose(fp);
+	stream.write(data, fileSize);
+	stream.close();
+
+	//FILE* fp = fopen(path, "wb");
+	//if (!fp)
+	//{
+	//	SAFE_DELETE_ARRAY(data);
+	//	return;
+	//}
+	//fwrite(data, 1, fileSize, fp);
+	//fclose(fp);
 
 	SAFE_DELETE_ARRAY(data);
 }

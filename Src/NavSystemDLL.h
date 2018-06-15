@@ -15,6 +15,8 @@ extern "C"
 {
 	_DLLExprot bool Create(const char* path);
 
+	_DLLExprot bool CreateW(const unsigned char* path, unsigned int len);
+
 	_DLLExprot void Release();
 
 	_DLLExprot bool GetLayerCount(unsigned int* layerCount);

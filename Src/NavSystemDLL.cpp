@@ -2,6 +2,7 @@
 
 #include "NavSystemDLL.h"
 #include "Nav.h"
+#include <fstream>
 
 static NavSystem* navSystem = NULL;
 
@@ -10,7 +11,30 @@ extern "C"
 	bool Create(const char* path)
 	{
 		navSystem = new NavSystem();
-		navSystem->LoadFromFile(path);
+		if (!navSystem->LoadFromFile(path))
+		{
+			SAFE_DELETE(navSystem);
+			return false;
+		}
+		return true;
+	}
+
+	bool CreateW(const unsigned char* path, unsigned int len)
+	{
+		navSystem = new NavSystem();
+
+		unsigned long pathLen = len / (sizeof(wchar_t) / sizeof(unsigned char));
+		wchar_t* pathData = new wchar_t[pathLen];
+		memset(pathData, 0, sizeof(wchar_t) * pathLen);
+		memcpy(pathData, path, len);
+
+		if (!navSystem->LoadFromFileW(pathData))
+		{
+			SAFE_DELETE(navSystem);
+			SAFE_DELETE_ARRAY(pathData);
+			return false;
+		}
+		SAFE_DELETE_ARRAY(pathData);
 		return true;
 	}
 

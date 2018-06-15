@@ -11,7 +11,9 @@ public:
 	NavSystem();
 	~NavSystem();
 
-	void LoadFromFile(const char* path);
+	bool LoadFromFileW(const wchar_t* path);
+
+	bool LoadFromFile(const char* path);
 
 	void SaveAs(const char* path);
 
