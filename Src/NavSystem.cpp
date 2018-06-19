@@ -53,7 +53,7 @@ bool NavSystem::LoadFromFileW(const wchar_t* path)
 {
 	Clear();
 
-	std::locale::global(std::locale(""));
+#ifdef _WINDOWS
 	std::ifstream stream;
 	stream.open(path, std::ios::in | std::ios::binary);
 	if (!stream.is_open())
@@ -82,25 +82,25 @@ bool NavSystem::LoadFromFileW(const wchar_t* path)
 	}
 	SAFE_DELETE_ARRAY(data);
 	return true;
-	return true;
+#else
+	return false;
+#endif
 }
 
 bool NavSystem::LoadFromFile(const char* path)
 {
 	Clear();
 
-	std::locale::global(std::locale(""));
-	std::ifstream stream;
-	stream.open(path, std::ios::in | std::ios::binary);
-	if (!stream.is_open())
+	FILE* fp = fopen(path, "rb");
+	if (fp == NULL)
 		return false;
-	stream.seekg(0, std::ios::end);
-	long long fileSize = stream.tellg();
-	stream.seekg(0, std::ios::beg);
+	fseek(fp, 0, SEEK_END);
+	long fileSize = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
 
 	char* data = new char[fileSize];
-	stream.read(data, fileSize);
-	stream.close();
+	fread(data, 1, fileSize, fp);
+	fclose(fp);
 
 	mGraphs.clear();
 
@@ -144,24 +144,14 @@ void NavSystem::SaveAs(const char* path)
 		ptr = graph->WriteTo(data, ptr);
 	}
 
-	std::ofstream stream;
-	stream.open(path, std::ios::out | std::ios::binary);
-	if (!stream.is_open())
+	FILE* fp = fopen(path, "wb");
+	if (!fp)
 	{
 		SAFE_DELETE_ARRAY(data);
 		return;
 	}
-	stream.write(data, fileSize);
-	stream.close();
-
-	//FILE* fp = fopen(path, "wb");
-	//if (!fp)
-	//{
-	//	SAFE_DELETE_ARRAY(data);
-	//	return;
-	//}
-	//fwrite(data, 1, fileSize, fp);
-	//fclose(fp);
+	fwrite(data, 1, fileSize, fp);
+	fclose(fp);
 
 	SAFE_DELETE_ARRAY(data);
 }

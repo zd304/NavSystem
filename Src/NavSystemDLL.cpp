@@ -2,7 +2,6 @@
 
 #include "NavSystemDLL.h"
 #include "Nav.h"
-#include <fstream>
 
 static NavSystem* navSystem = NULL;
 
