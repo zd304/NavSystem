@@ -44,6 +44,8 @@ unsigned int NavSystem::GetGraphCount()
 
 NavGraph* NavSystem::GetGraphByID(unsigned int id)
 {
+	if (id < 0 || id >= mGraphs.size())
+		return NULL;
 	return mGraphs[id];
 }
 
