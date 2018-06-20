@@ -159,6 +159,7 @@
     <ClInclude Include="Src\NavGraph.h" />
     <ClInclude Include="Src\NavHeightmap.h" />
     <ClInclude Include="Src\NavInc.h" />
+    <ClInclude Include="Src\NavLog.h" />
     <ClInclude Include="Src\NavMesh.h" />
     <ClInclude Include="Src\NavPhysics.h" />
     <ClInclude Include="Src\NavSystem.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Src\NavGate.cpp" />
     <ClCompile Include="Src\NavGraph.cpp" />
     <ClCompile Include="Src\NavHeightmap.cpp" />
+    <ClCompile Include="Src\NavLog.cpp" />
     <ClCompile Include="Src\NavMesh.cpp" />
     <ClCompile Include="Src\NavPhysics.cpp" />
     <ClCompile Include="Src\NavSystem.cpp" />

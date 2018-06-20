@@ -58,6 +58,9 @@
     <ClInclude Include="Src\NavSystemDLL.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\NavLog.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\NavGate.cpp">
@@ -91,6 +94,9 @@
       <Filter>Src\math</Filter>
     </ClCompile>
     <ClCompile Include="Src\NavSystemDLL.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavLog.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
