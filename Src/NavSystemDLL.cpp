@@ -7,7 +7,7 @@ static NavSystem* navSystem = NULL;
 
 extern "C"
 {
-	bool Create(const char* path)
+	bool Nav_Create(const char* path)
 	{
 		navSystem = new NavSystem();
 		if (!navSystem->LoadFromFile(path))
@@ -18,7 +18,7 @@ extern "C"
 		return true;
 	}
 
-	bool CreateW(const unsigned char* path, unsigned int len)
+	bool Nav_CreateW(const unsigned char* path, unsigned int len)
 	{
 		navSystem = new NavSystem();
 
@@ -37,19 +37,19 @@ extern "C"
 		return true;
 	}
 
-	void Release()
+	void Nav_Release()
 	{
 		SAFE_DELETE(navSystem);
 	}
 
-	bool GetLayerCount(unsigned int* layerCount)
+	bool Nav_GetLayerCount(unsigned int* layerCount)
 	{
 		if (!navSystem) return false;
 		(*layerCount) = navSystem->GetGraphCount();
 		return true;
 	}
 
-	bool GetLayer(const NAV_VEC3* pos, unsigned int* layer)
+	bool Nav_GetLayer(const NAV_VEC3* pos, unsigned int* layer)
 	{
 		if (!navSystem) return false;
 		const Vector3 vPos((float*)pos);
@@ -71,7 +71,7 @@ extern "C"
 		return false;
 	}
 
-	bool GetNavHeight(const NAV_VEC3* pos, float* outHeight, unsigned int* layer)
+	bool Nav_GetNavHeight(const NAV_VEC3* pos, float* outHeight, unsigned int* layer)
 	{
 		if (!navSystem) return false;
 		float h = FLT_MIN;
@@ -103,7 +103,7 @@ extern "C"
 		return rst;
 	}
 
-	bool GetLayerHeight(const NAV_VEC3* pos, unsigned int layer, float* outHeight)
+	bool Nav_GetLayerHeight(const NAV_VEC3* pos, unsigned int layer, float* outHeight)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -124,7 +124,7 @@ extern "C"
 		return false;
 	}
 
-	bool LineCast(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos)
+	bool Nav_LineCast(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -146,7 +146,7 @@ extern "C"
 		return false;
 	}
 
-	bool LineCastEdge(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos, NAV_VEC3* edgePoint0, NAV_VEC3* edgePoint1)
+	bool Nav_LineCastEdge(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos, NAV_VEC3* edgePoint0, NAV_VEC3* edgePoint1)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -181,7 +181,7 @@ extern "C"
 		return false;
 	}
 
-	bool LineTest(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer)
+	bool Nav_LineTest(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -192,7 +192,7 @@ extern "C"
 		return graph->IsLineTest(vStart, vEnd);
 	}
 
-	bool RayCastLayer(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos)
+	bool Nav_RayCastLayer(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -218,7 +218,7 @@ extern "C"
 		return false;
 	}
 
-	bool RayCastNav(const NAV_VEC3* start, const NAV_VEC3* end, NAV_VEC3* hitPos)
+	bool Nav_RayCastNav(const NAV_VEC3* start, const NAV_VEC3* end, NAV_VEC3* hitPos)
 	{
 		if (!navSystem) return false;
 
@@ -247,7 +247,7 @@ extern "C"
 		return false;
 	}
 
-	bool CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount)
+	bool Nav_CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -285,13 +285,13 @@ extern "C"
 		return false;
 	}
 
-	bool ReleaseLayerPath(NAV_VEC3** pathBuffer)
+	bool Nav_ReleaseLayerPath(NAV_VEC3** pathBuffer)
 	{
 		SAFE_DELETE_ARRAY(*pathBuffer);
 		return true;
 	}
 
-	bool GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer)
+	bool Nav_GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer)
 	{
 		if (!verticesBuffer)
 			return false;
@@ -320,7 +320,7 @@ extern "C"
 		return true;
 	}
 
-	bool ReleaseLayerTriangles(NAV_VEC3** verticesBuffer)
+	bool Nav_ReleaseLayerTriangles(NAV_VEC3** verticesBuffer)
 	{
 		if (!verticesBuffer)
 			return false;
@@ -328,7 +328,7 @@ extern "C"
 		return true;
 	}
 
-	bool GetLayerGateCount(unsigned int layer, unsigned int* gateCount)
+	bool Nav_GetLayerGateCount(unsigned int layer, unsigned int* gateCount)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -338,7 +338,7 @@ extern "C"
 		return true;
 	}
 
-	bool IsLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool* passable)
+	bool Nav_IsLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool* passable)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -353,7 +353,7 @@ extern "C"
 		return true;
 	}
 
-	bool SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable)
+	bool Nav_SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -369,7 +369,7 @@ extern "C"
 		return true;
 	}
 
-	bool GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* vcount)
+	bool Nav_GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* vcount)
 	{
 		if (!navSystem) return false;
 		NavGraph* graph = navSystem->GetGraphByID(layer);
@@ -410,7 +410,7 @@ extern "C"
 		return true;
 	}
 
-	bool ReleaseLayerCloseGates(NAV_VEC3** verticesBuffer)
+	bool Nav_ReleaseLayerCloseGates(NAV_VEC3** verticesBuffer)
 	{
 		if (!verticesBuffer)
 			return false;
