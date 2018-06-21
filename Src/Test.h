@@ -4,10 +4,13 @@
 #include "inc.h"
 
 class MeshRenderer;
-class NavMesh;
-class NavTriangle;
-class NavGraph;
-class NavSystem;
+namespace Nav
+{
+	class NavMesh;
+	class NavTriangle;
+	class NavGraph;
+	class NavSystem;
+}
 class FileDialog;
 class PathFindLogic;
 class GateLogic;
@@ -33,7 +36,7 @@ public:
 private:
 	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir);
 
-	bool IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder);
+	bool IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, Nav::NavGraph*& outFinder);
 
 	void UpdateView();
 
@@ -53,7 +56,7 @@ public:
 	// UILayout
 	float mLeftUIWidth;
 
-	NavSystem* mNavSystem;
+	Nav::NavSystem* mNavSystem;
 private:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;

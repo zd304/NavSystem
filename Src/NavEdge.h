@@ -3,9 +3,12 @@
 
 #include "NavInc.h"
 
-struct NavEdge
+namespace Nav
 {
-	Vector3 mPoint[2];
-};
+	struct NavEdge
+	{
+		Vector3 mPoint[2];
+	};
+}
 
 #endif

@@ -32,7 +32,7 @@ Test* Test::GetInstance()
 Test::Test()
 {
 	mRenderer = NULL;
-	mNavSystem = new NavSystem();
+	mNavSystem = new Nav::NavSystem();
 	mPathFindLogic = NULL;
 	mGateLogic = NULL;
 	mCheckInfoLogic = NULL;
@@ -355,7 +355,7 @@ void Test::OnInput()
 	}
 }
 
-bool CompareTriangleArea(const NavTriangle* t1, const NavTriangle* t2)
+bool CompareTriangleArea(const Nav::NavTriangle* t1, const Nav::NavTriangle* t2)
 {
 	float area1 = NavPhysics::CalcTriangleArea2D(t1->mPoint[0], t1->mPoint[1], t1->mPoint[2]);
 	float area2 = NavPhysics::CalcTriangleArea2D(t2->mPoint[0], t2->mPoint[1], t2->mPoint[2]);
@@ -389,8 +389,8 @@ void Test::OpenFBX(const char* filePath)
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
 		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
-		NavMesh* navMesh = new NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
-		NavGraph* pathFinder = new NavGraph(navMesh);
+		Nav::NavMesh* navMesh = new Nav::NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
+		Nav::NavGraph* pathFinder = new Nav::NavGraph(navMesh);
 
 		//三角形按面积大小排序;
 		std::sort(navMesh->mTriangles.begin(), navMesh->mTriangles.end(), CompareTriangleArea);
@@ -415,12 +415,12 @@ void Test::OpenNav(const char* filePath)
 	FBXHelper::FBXMeshDatas datas;
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		NavGraph* graph = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* graph = mNavSystem->GetGraphByID(i);
 		FBXHelper::FBXMeshData* data = new FBXHelper::FBXMeshData();
 		int index = -1;
 		for (size_t j = 0; j < graph->mMesh->mTriangles.size(); ++j)
 		{
-			NavTriangle* tri = graph->mMesh->mTriangles[j];
+			Nav::NavTriangle* tri = graph->mMesh->mTriangles[j];
 			D3DXVECTOR3 v0 = *(D3DXVECTOR3*)&tri->mPoint[0];
 			D3DXVECTOR3 v1 = *(D3DXVECTOR3*)&tri->mPoint[1];
 			D3DXVECTOR3 v2 = *(D3DXVECTOR3*)&tri->mPoint[2];
@@ -442,7 +442,7 @@ void Test::OpenNav(const char* filePath)
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		NavGraph* graph = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* graph = mNavSystem->GetGraphByID(i);
 		mRenderer->SetHeightmap(graph->mHeightmap, i);
 	}
 	mRenderer->CalcAllCloseGates();
@@ -466,16 +466,16 @@ void Test::CloseFile()
 	SAFE_DELETE(mCheckInfoLogic);
 }
 
-bool Test::IsTriangleInSameMesh(NavTriangle* tri1, NavTriangle* tri2, NavGraph*& outFinder)
+bool Test::IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, Nav::NavGraph*& outFinder)
 {
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
 		bool exist1 = false;
 		bool exist2 = false;
-		NavGraph* finder = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* finder = mNavSystem->GetGraphByID(i);
 		for (size_t j = 0; j < finder->mMesh->mTriangles.size(); ++j)
 		{
-			NavTriangle* tri = finder->mMesh->mTriangles[j];
+			Nav::NavTriangle* tri = finder->mMesh->mTriangles[j];
 			if (!exist1 && tri1 == tri)
 				exist1 = true;
 			if (!exist2 && tri2 == tri)
@@ -531,17 +531,17 @@ void Test::Pick(int x, int y)
 	D3DXVec3TransformCoord((D3DXVECTOR3*)&orig, (D3DXVECTOR3*)&orig, &worldInv);
 	D3DXVec3TransformNormal((D3DXVECTOR3*)&dir, (D3DXVECTOR3*)&dir, &worldInv);
 
-	NavTriangle* hitTri = NULL;
-	NavGraph* hitGraph = NULL;
+	Nav::NavTriangle* hitTri = NULL;
+	Nav::NavGraph* hitGraph = NULL;
 	Vector3 hitPoint = Vector3::ZERO;
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		NavGraph* navPathFinder = mNavSystem->GetGraphByID(i);
-		NavMesh* navMesh = navPathFinder->mMesh;
+		Nav::NavGraph* navPathFinder = mNavSystem->GetGraphByID(i);
+		Nav::NavMesh* navMesh = navPathFinder->mMesh;
 		for (size_t j = 0; j < navMesh->mTriangles.size(); ++j)
 		{
-			NavTriangle* tri = navMesh->mTriangles[j];
+			Nav::NavTriangle* tri = navMesh->mTriangles[j];
 			NavPhysics::NavHit hitInfo;
 
 			Vector3 v0 = tri->mPoint[0];

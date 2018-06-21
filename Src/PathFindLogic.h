@@ -3,9 +3,12 @@
 
 #include "inc.h"
 
-class NavTriangle;
+namespace Nav
+{
+	class NavTriangle;
+	class NavGraph;
+}
 class MeshRenderer;
-class NavGraph;
 class Test;
 
 enum eClickState
@@ -21,20 +24,20 @@ public:
 	PathFindLogic(Test* test);
 	~PathFindLogic();
 
-	void OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph);
+	void OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph);
 
 	void OnGUI();
 private:
 	void ClearPath();
 
-	void SetPointMesh(const NavTriangle* tri, const Vector3& point, bool isStart);
+	void SetPointMesh(const Nav::NavTriangle* tri, const Vector3& point, bool isStart);
 public:
 	bool mShowTriPath;
 private:
 	Test* mTest;
 
-	NavTriangle* mStartTri;
-	NavTriangle* mEndTri;
+	Nav::NavTriangle* mStartTri;
+	Nav::NavTriangle* mEndTri;
 	Vector3 mStartPoint;
 	Vector3 mEndPoint;
 	float mCost;

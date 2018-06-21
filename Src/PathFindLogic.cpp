@@ -22,7 +22,7 @@ PathFindLogic::~PathFindLogic()
 		mTest->mRenderer->ClearPath();
 }
 
-void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph)
+void PathFindLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph)
 {
 	if (mTest->mRenderer == NULL)
 		return;
@@ -57,10 +57,10 @@ void PathFindLogic::OnPick(const NavTriangle* tri, const Vector3& point, const N
 	{
 		SetPointMesh(tri, point, false);
 
-		const NavGraph* finder = graph;
+		const Nav::NavGraph* finder = graph;
 		if (mStartTri != NULL && mEndTri != NULL)
 		{
-			std::vector<NavTriangle*> findPath;
+			std::vector<Nav::NavTriangle*> findPath;
 			float cost;
 			if (mShowTriPath)
 			{
@@ -96,7 +96,7 @@ void PathFindLogic::OnGUI()
 	}
 }
 
-void PathFindLogic::SetPointMesh(const NavTriangle* tri, const Vector3& point, bool isStart)
+void PathFindLogic::SetPointMesh(const Nav::NavTriangle* tri, const Vector3& point, bool isStart)
 {
 	if (mTest->mRenderer == NULL)
 		return;
@@ -104,12 +104,12 @@ void PathFindLogic::SetPointMesh(const NavTriangle* tri, const Vector3& point, b
 	DWORD color = 0;
 	if (isStart)
 	{
-		mStartTri = (NavTriangle*)tri;
+		mStartTri = (Nav::NavTriangle*)tri;
 		mStartPoint = point;
 	}
 	else
 	{
-		mEndTri = (NavTriangle*)tri;
+		mEndTri = (Nav::NavTriangle*)tri;
 		mEndPoint = point;
 	}
 	mTest->mRenderer->SetPointMesh(tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], point, isStart);

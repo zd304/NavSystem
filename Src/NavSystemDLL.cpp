@@ -3,13 +3,13 @@
 #include "NavSystemDLL.h"
 #include "Nav.h"
 
-static NavSystem* navSystem = NULL;
+static Nav::NavSystem* navSystem = NULL;
 
 extern "C"
 {
 	bool Nav_Create(const char* path)
 	{
-		navSystem = new NavSystem();
+		navSystem = new Nav::NavSystem();
 		if (!navSystem->LoadFromFile(path))
 		{
 			SAFE_DELETE(navSystem);
@@ -20,7 +20,7 @@ extern "C"
 
 	bool Nav_CreateW(const unsigned char* path, unsigned int len)
 	{
-		navSystem = new NavSystem();
+		navSystem = new Nav::NavSystem();
 
 		unsigned long pathLen = len / (sizeof(wchar_t) / sizeof(unsigned char));
 		wchar_t* pathData = new wchar_t[pathLen];
@@ -55,7 +55,7 @@ extern "C"
 		const Vector3 vPos((float*)pos);
 		for (unsigned int i = 0; i < navSystem->GetGraphCount(); ++i)
 		{
-			NavGraph* graph = navSystem->GetGraphByID(i);
+			Nav::NavGraph* graph = navSystem->GetGraphByID(i);
 			float height = 0.0f;
 			if (graph->mHeightmap->GetHeight(vPos, &height))
 			{
@@ -79,7 +79,7 @@ extern "C"
 		const Vector3 vPos((float*)pos);
 		for (unsigned int i = 0; i < navSystem->GetGraphCount(); ++i)
 		{
-			NavGraph* graph = navSystem->GetGraphByID(i);
+			Nav::NavGraph* graph = navSystem->GetGraphByID(i);
 			float height = 0.0f;
 			if (graph->mHeightmap->GetHeight(vPos, &height))
 			{
@@ -106,7 +106,7 @@ extern "C"
 	bool Nav_GetLayerHeight(const NAV_VEC3* pos, unsigned int layer, float* outHeight)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		const Vector3 vPos((float*)pos);
@@ -127,7 +127,7 @@ extern "C"
 	bool Nav_LineCast(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		const Vector3 vStart((float*)start);
@@ -149,7 +149,7 @@ extern "C"
 	bool Nav_LineCastEdge(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos, NAV_VEC3* edgePoint0, NAV_VEC3* edgePoint1)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		const Vector3 vStart((float*)start);
@@ -184,7 +184,7 @@ extern "C"
 	bool Nav_LineTest(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		const Vector3 vStart((float*)start);
@@ -195,7 +195,7 @@ extern "C"
 	bool Nav_RayCastLayer(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3* hitPos)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh) return false;
 
 		const Vector3 vStart((float*)start);
@@ -204,7 +204,7 @@ extern "C"
 		NavPhysics::NavHit hit;
 		for (size_t i = 0; i < graph->mMesh->mTriangles.size(); ++i)
 		{
-			NavTriangle* tri = graph->mMesh->mTriangles[i];
+			Nav::NavTriangle* tri = graph->mMesh->mTriangles[i];
 			if (!tri->mPassable)
 				continue;
 			if (NavPhysics::RayIntersectTriangle(vStart, vEnd, tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], &hit))
@@ -229,10 +229,10 @@ extern "C"
 		unsigned int layerCount = (unsigned int)navSystem->GetGraphCount();
 		for (unsigned int layer = 0; layer < layerCount; ++layer)
 		{
-			NavGraph* graph = navSystem->GetGraphByID(layer);
+			Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 			for (size_t i = 0; i < graph->mMesh->mTriangles.size(); ++i)
 			{
-				NavTriangle* tri = graph->mMesh->mTriangles[i];
+				Nav::NavTriangle* tri = graph->mMesh->mTriangles[i];
 				if (!tri->mPassable)
 					continue;
 				if (NavPhysics::RayIntersectTriangle(vStart, vEnd, tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], &hit))
@@ -250,7 +250,7 @@ extern "C"
 	bool Nav_CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh || !graph->mHeightmap) return false;
 
 		const Vector3 vStart((float*)start);
@@ -296,7 +296,7 @@ extern "C"
 		if (!verticesBuffer)
 			return false;
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh) return false;
 
 		unsigned int faceCount = (unsigned int)graph->mMesh->mTriangles.size();
@@ -306,7 +306,7 @@ extern "C"
 		unsigned int index = -1;
 		for (unsigned int i = 0; i < faceCount; ++i)
 		{
-			NavTriangle* tri = graph->mMesh->mTriangles[i];
+			Nav::NavTriangle* tri = graph->mMesh->mTriangles[i];
 			for (unsigned int j = 0; j < 3; ++j)
 			{
 				Vector3 v = tri->mPoint[j];
@@ -331,7 +331,7 @@ extern "C"
 	bool Nav_GetLayerGateCount(unsigned int layer, unsigned int* gateCount)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		(*gateCount) = (unsigned int)graph->mGates.size();
@@ -341,13 +341,13 @@ extern "C"
 	bool Nav_IsLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool* passable)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		if (gateIndex >= (unsigned int)graph->mGates.size())
 			return false;
 
-		NavGate* gate = graph->mGates[gateIndex];
+		Nav::NavGate* gate = graph->mGates[gateIndex];
 		if (!gate) return false;
 		(*passable) = gate->mPassable;
 		return true;
@@ -356,13 +356,13 @@ extern "C"
 	bool Nav_SetLayerGatePassable(unsigned int layer, unsigned int gateIndex, bool passable)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
 		if (gateIndex >= (unsigned int)graph->mGates.size())
 			return false;
 
-		NavGate* gate = graph->mGates[gateIndex];
+		Nav::NavGate* gate = graph->mGates[gateIndex];
 		if (!gate) return false;
 
 		gate->SwitchPassable(passable);
@@ -372,13 +372,13 @@ extern "C"
 	bool Nav_GetLayerCloseGates(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* vcount)
 	{
 		if (!navSystem) return false;
-		NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh) return false;
 
 		unsigned int verticesCount = 0;
 		for (size_t i = 0; i < graph->mGates.size(); ++i)
 		{
-			NavGate* gate = graph->mGates[i];
+			Nav::NavGate* gate = graph->mGates[i];
 			if (gate->mPassable)
 				continue;
 			verticesCount += ((unsigned int)gate->mTriIndices.size() * 3);
@@ -389,7 +389,7 @@ extern "C"
 		int index = -1;
 		for (size_t i = 0; i < graph->mGates.size(); ++i)
 		{
-			NavGate* gate = graph->mGates[i];
+			Nav::NavGate* gate = graph->mGates[i];
 			if (gate->mPassable)
 				continue;
 			for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
@@ -397,7 +397,7 @@ extern "C"
 				unsigned int triIndex = gate->mTriIndices[j];
 				if ((size_t)triIndex >= graph->mMesh->mTriangles.size())
 					continue;
-				NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+				Nav::NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
 				for (int k = 0; k < 3; ++k)
 				{
 					NAV_VEC3& v = (*verticesBuffer)[++index];

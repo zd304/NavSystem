@@ -25,11 +25,11 @@ GateLogic::~GateLogic()
 	}
 }
 
-void GateLogic::OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph)
+void GateLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph)
 {
 	if (mCurMode == GateEditMode_GateList && mNavGraph == NULL && graph)
 	{
-		mNavGraph = (NavGraph*)graph;
+		mNavGraph = (Nav::NavGraph*)graph;
 		mTest->mRenderer->SetGates(mNavGraph);
 		return;
 	}
@@ -50,7 +50,7 @@ void GateLogic::OnPick(const NavTriangle* tri, const Vector3& point, const NavGr
 		{
 			for (size_t i = 0; i < graph->mGates.size(); ++i)
 			{
-				NavGate* gate = graph->mGates[i];
+				Nav::NavGate* gate = graph->mGates[i];
 				for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
 				{
 					if (gate->mTriIndices[j] == triIndex)
@@ -118,7 +118,7 @@ void GateLogic::OnGUI()
 
 		if (ImGui::Button(STU("创建门").c_str(), ImVec2(mTest->mLeftUIWidth - 16.0f, 30.0f)))
 		{
-			NavGate* gate = new NavGate(mNavGraph);
+			Nav::NavGate* gate = new Nav::NavGate(mNavGraph);
 			mNavGraph->mGates.push_back(gate);
 		}
 
@@ -127,7 +127,7 @@ void GateLogic::OnGUI()
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.4f, 0.6f, 1.0f));
 		for (size_t i = 0; i < mNavGraph->mGates.size(); ++i)
 		{
-			NavGate* gate = mNavGraph->mGates[i];
+			Nav::NavGate* gate = mNavGraph->mGates[i];
 			gate->mID = i;
 			memset(szTemp, 0, 64);
 			sprintf_s(szTemp, "门[%d]", i);
@@ -199,7 +199,7 @@ void GateLogic::OnGUI()
 			for (size_t i = 0; i < mNavGate->mTriIndices.size(); ++i)
 			{
 				unsigned int triIndex = mNavGate->mTriIndices[i];
-				NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
+				Nav::NavTriangle* tri = mNavGraph->mMesh->mTriangles[triIndex];
 				memset(szContent, 0, 256);
 				sprintf_s(szContent, "\n三角形[%d]:\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)\n  (%.4f, %.4f, %.4f)",
 					triIndex,

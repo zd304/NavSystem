@@ -3,9 +3,12 @@
 
 #include "inc.h"
 
-class NavTriangle;
+namespace Nav
+{
+	class NavTriangle;
+	class NavGraph;
+}
 class MeshRenderer;
-class NavGraph;
 class Test;
 
 class CheckInfoLogic
@@ -14,13 +17,13 @@ public:
 	CheckInfoLogic(Test* test);
 	~CheckInfoLogic();
 
-	void OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph);
+	void OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph);
 
 	void OnGUI();
 private:
 	Test* mTest;
-	NavGraph* mGraph;
-	NavTriangle* mTri;
+	Nav::NavGraph* mGraph;
+	Nav::NavTriangle* mTri;
 };
 
 #endif

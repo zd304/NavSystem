@@ -239,7 +239,7 @@ void MeshRenderer::SetPointMesh(const Vector3& pt0, const Vector3& pt1, const Ve
 	(*ppMesh)->UnlockIndexBuffer();
 }
 
-void MeshRenderer::SetSelectedPath(const std::vector<NavTriangle*>& tris)
+void MeshRenderer::SetSelectedPath(const std::vector<Nav::NavTriangle*>& tris)
 {
 	SAFE_RELEASE(mSelectedMesh);
 
@@ -252,7 +252,7 @@ void MeshRenderer::SetSelectedPath(const std::vector<NavTriangle*>& tris)
 	mSelectedMesh->LockVertexBuffer(NULL, (void**)&vb);
 	for (size_t i = 0; i < tris.size(); ++i)
 	{
-		NavTriangle* t = tris[i];
+		Nav::NavTriangle* t = tris[i];
 		MeshVertex& v0 = vb[i * 3];
 		v0.color = 0xffff0000;
 		v0.pos = *(D3DXVECTOR3*)(&t->mPoint[0]);
@@ -297,7 +297,7 @@ void MeshRenderer::SetSelectedPath(const std::vector<Vector3>& path)
 	}
 }
 
-void MeshRenderer::SetHeightmap(const NavHeightmap* heightmap, size_t index)
+void MeshRenderer::SetHeightmap(const Nav::NavHeightmap* heightmap, size_t index)
 {
 	int verticesCount = (heightmap->mSizeX + 1) * (heightmap->mSizeZ + 1);
 	int faceCount = heightmap->mSizeX * heightmap->mSizeZ * 2;
@@ -352,7 +352,7 @@ void MeshRenderer::ClearPath()
 	mSelectedPath.clear();
 }
 
-void MeshRenderer::SetGates(NavGraph* graph)
+void MeshRenderer::SetGates(Nav::NavGraph* graph)
 {
 	SAFE_RELEASE(mGateMeshInGraph);
 	SAFE_RELEASE(mGateMeshSingle);
@@ -361,7 +361,7 @@ void MeshRenderer::SetGates(NavGraph* graph)
 	unsigned int vbCount = 0;
 	for (size_t i = 0; i < graph->mGates.size(); ++i)
 	{
-		NavGate* gate = graph->mGates[i];
+		Nav::NavGate* gate = graph->mGates[i];
 		vbCount += (gate->mTriIndices.size() * 3);
 	}
 	unsigned int faceCount = vbCount / 3;
@@ -375,13 +375,13 @@ void MeshRenderer::SetGates(NavGraph* graph)
 	int vbIndex = -1;
 	for (size_t i = 0; i < graph->mGates.size(); ++i)
 	{
-		NavGate* gate = graph->mGates[i];
+		Nav::NavGate* gate = graph->mGates[i];
 		DWORD color = gate->mPassable ? 0xffffff00 : 0x88888800;
 
 		for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
 		{
 			unsigned int triIndex = gate->mTriIndices[j];
-			NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+			Nav::NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
 
 			MeshVertex& v0 = vb[++vbIndex];
 			ib[vbIndex] = vbIndex;
@@ -401,7 +401,7 @@ void MeshRenderer::SetGates(NavGraph* graph)
 	mGateMeshInGraph->UnlockIndexBuffer();
 }
 
-void MeshRenderer::SetSingleGate(NavGraph* graph, NavGate* gate)
+void MeshRenderer::SetSingleGate(Nav::NavGraph* graph, Nav::NavGate* gate)
 {
 	SAFE_RELEASE(mGateMeshInGraph);
 	SAFE_RELEASE(mGateMeshSingle);
@@ -423,7 +423,7 @@ void MeshRenderer::SetSingleGate(NavGraph* graph, NavGate* gate)
 	for (size_t j = 0; j < gate->mTriIndices.size(); ++j)
 	{
 		unsigned int triIndex = gate->mTriIndices[j];
-		NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+		Nav::NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
 
 		MeshVertex& v0 = vb[++vbIndex];
 		ib[vbIndex] = vbIndex;
@@ -458,10 +458,10 @@ void MeshRenderer::CalcAllCloseGates()
 	unsigned int vbCount = 0;
 	for (size_t i = 0; i < mTest->mNavSystem->GetGraphCount(); ++i)
 	{
-		NavGraph* graph = mTest->mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* graph = mTest->mNavSystem->GetGraphByID(i);
 		for (size_t j = 0; j < graph->mGates.size(); ++j)
 		{
-			NavGate* gate = graph->mGates[j];
+			Nav::NavGate* gate = graph->mGates[j];
 			if (gate->mPassable)
 				continue;
 			vbCount += gate->mTriIndices.size() * 3;
@@ -480,16 +480,16 @@ void MeshRenderer::CalcAllCloseGates()
 	int vbIndex = -1;
 	for (size_t i = 0; i < mTest->mNavSystem->GetGraphCount(); ++i)
 	{
-		NavGraph* graph = mTest->mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* graph = mTest->mNavSystem->GetGraphByID(i);
 		for (size_t j = 0; j < graph->mGates.size(); ++j)
 		{
-			NavGate* gate = graph->mGates[j];
+			Nav::NavGate* gate = graph->mGates[j];
 			if (gate->mPassable)
 				continue;
 			for (size_t k = 0; k < gate->mTriIndices.size(); ++k)
 			{
 				unsigned int triIndex = gate->mTriIndices[k];
-				NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
+				Nav::NavTriangle* tri = graph->mMesh->mTriangles[triIndex];
 
 				MeshVertex& v0 = vb[++vbIndex];
 				ib[vbIndex] = vbIndex;

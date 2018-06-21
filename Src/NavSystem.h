@@ -3,34 +3,37 @@
 
 #include "NavInc.h"
 
-class NavGraph;
-
-class NavSystem
+namespace Nav
 {
-public:
-	NavSystem();
-	~NavSystem();
+	class NavGraph;
 
-	bool LoadFromFileW(const wchar_t* path);
+	class NavSystem
+	{
+	public:
+		NavSystem();
+		~NavSystem();
 
-	bool LoadFromFile(const char* path);
+		bool LoadFromFileW(const wchar_t* path);
 
-	void SaveAs(const char* path);
+		bool LoadFromFile(const char* path);
 
-	void AddGraph(NavGraph* graph);
+		void SaveAs(const char* path);
 
-	void Clear();
+		void AddGraph(NavGraph* graph);
 
-	unsigned int GetGraphCount();
+		void Clear();
 
-	NavGraph* GetGraphByID(unsigned int id);
+		unsigned int GetGraphCount();
 
-	unsigned int GetVersion();
-private:
-	std::vector<NavGraph*> mGraphs;
-	unsigned int mVersion;
-};
+		NavGraph* GetGraphByID(unsigned int id);
 
-extern NavSystem* gNavSystem;
+		unsigned int GetVersion();
+	private:
+		std::vector<NavGraph*> mGraphs;
+		unsigned int mVersion;
+	};
+
+	extern NavSystem* gNavSystem;
+}
 
 #endif

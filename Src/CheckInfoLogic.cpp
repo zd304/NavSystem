@@ -17,7 +17,7 @@ CheckInfoLogic::~CheckInfoLogic()
 	mTest->mRenderer->ClearPath();
 }
 
-void CheckInfoLogic::OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph)
+void CheckInfoLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph)
 {
 	if (!mTest->mRenderer)
 		return;
@@ -29,8 +29,8 @@ void CheckInfoLogic::OnPick(const NavTriangle* tri, const Vector3& point, const 
 	}
 	if (tri != NULL && graph != NULL)
 	{
-		mTri = (NavTriangle*)tri;
-		mGraph = (NavGraph*)graph;
+		mTri = (Nav::NavTriangle*)tri;
+		mGraph = (Nav::NavGraph*)graph;
 		mTest->mRenderer->SetPointMesh(tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], point, true);
 	}
 }

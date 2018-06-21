@@ -3,11 +3,14 @@
 
 #include "FBXHelper.h"
 
-class NavTriangle;
 struct MeshVertex;
-class NavHeightmap;
-class NavGraph;
-class NavGate;
+namespace Nav
+{
+	class NavTriangle;
+	class NavHeightmap;
+	class NavGraph;
+	class NavGate;
+}
 class Test;
 
 class MeshRenderer
@@ -20,17 +23,17 @@ public:
 
 	void SetPointMesh(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& point, bool isStart);
 
-	void SetSelectedPath(const std::vector<NavTriangle*>& tris);
+	void SetSelectedPath(const std::vector<Nav::NavTriangle*>& tris);
 
 	void SetSelectedPath(const std::vector<Vector3>& path);
 
-	void SetHeightmap(const NavHeightmap* heightmap, size_t index);
+	void SetHeightmap(const Nav::NavHeightmap* heightmap, size_t index);
 
 	void ClearPath();
 
-	void SetGates(NavGraph* graph);
+	void SetGates(Nav::NavGraph* graph);
 
-	void SetSingleGate(NavGraph* graph, NavGate* gate);
+	void SetSingleGate(Nav::NavGraph* graph, Nav::NavGate* gate);
 
 	void CalcAllCloseGates();
 

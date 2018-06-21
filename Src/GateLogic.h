@@ -3,10 +3,13 @@
 
 #include "inc.h"
 
+namespace Nav
+{
+	class NavGraph;
+	class NavGate;
+	class NavTriangle;
+}
 class Test;
-class NavGraph;
-class NavGate;
-class NavTriangle;
 
 enum GateEditMode
 {
@@ -22,11 +25,11 @@ public:
 
 	void OnGUI();
 
-	void OnPick(const NavTriangle* tri, const Vector3& point, const NavGraph* graph);
+	void OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph);
 private:
 	Test* mTest;
-	NavGraph* mNavGraph;
-	NavGate* mNavGate;
+	Nav::NavGraph* mNavGraph;
+	Nav::NavGate* mNavGate;
 
 	GateEditMode mCurMode;
 };

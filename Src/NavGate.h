@@ -3,35 +3,38 @@
 
 #include "NavInc.h"
 
-class NavTriangle;
-class NavGraph;
-struct NavEdge;
-
-class NavGate
+namespace Nav
 {
-public:
-	NavGate(NavGraph* graph);
-	~NavGate();
+	class NavTriangle;
+	class NavGraph;
+	struct NavEdge;
 
-	void AddTriangle(const NavTriangle* tri);
+	class NavGate
+	{
+	public:
+		NavGate(NavGraph* graph);
+		~NavGate();
 
-	void SwitchPassable(bool passable);
+		void AddTriangle(const NavTriangle* tri);
 
-	void CalcBounds();
+		void SwitchPassable(bool passable);
 
-	unsigned int GetSize();
+		void CalcBounds();
 
-	unsigned int WriteTo(char* dest, unsigned int ptr);
+		unsigned int GetSize();
 
-	unsigned int ReadFrom(char* src, unsigned int ptr);
-private:
-	void ClearBounds();
-public:
-	unsigned int mID;
-	std::vector<unsigned int> mTriIndices;
-	NavGraph* mNavGraph;
-	bool mPassable;
-	std::vector<NavEdge*> mBounds;
-};
+		unsigned int WriteTo(char* dest, unsigned int ptr);
+
+		unsigned int ReadFrom(char* src, unsigned int ptr);
+	private:
+		void ClearBounds();
+	public:
+		unsigned int mID;
+		std::vector<unsigned int> mTriIndices;
+		NavGraph* mNavGraph;
+		bool mPassable;
+		std::vector<NavEdge*> mBounds;
+	};
+}
 
 #endif

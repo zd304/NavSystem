@@ -3,36 +3,39 @@
 
 #include "NavInc.h"
 
-class NavMesh;
-
-class NavHeightmap
+namespace Nav
 {
-public:
-	NavHeightmap();
+	class NavMesh;
 
-	~NavHeightmap();
+	class NavHeightmap
+	{
+	public:
+		NavHeightmap();
 
-	void BuildHeightmap(const NavMesh* mesh);
+		~NavHeightmap();
 
-	void SetCellSize(const Vector2& size);
+		void BuildHeightmap(const NavMesh* mesh);
 
-	bool GetHeight(const Vector3& pos, float* height);
+		void SetCellSize(const Vector2& size);
 
-	void SwitchCellPassability(const Vector3& v0, const Vector3& v1, const Vector3& v2, bool passable);
+		bool GetHeight(const Vector3& pos, float* height);
 
-	unsigned int GetSize();
+		void SwitchCellPassability(const Vector3& v0, const Vector3& v1, const Vector3& v2, bool passable);
 
-	unsigned int WriteTo(char* dest, unsigned int ptr);
+		unsigned int GetSize();
 
-	unsigned int ReadFrom(char* src, unsigned int ptr);
-public:
-	Vector2 mMin;
-	Vector2 mMax;
-	Vector2 mCellSize;
-	int mSizeX;
-	int mSizeZ;
-	char* mCellPassability;
-	float* mHeights;
-};
+		unsigned int WriteTo(char* dest, unsigned int ptr);
+
+		unsigned int ReadFrom(char* src, unsigned int ptr);
+	public:
+		Vector2 mMin;
+		Vector2 mMax;
+		Vector2 mCellSize;
+		int mSizeX;
+		int mSizeZ;
+		char* mCellPassability;
+		float* mHeights;
+	};
+}
 
 #endif
