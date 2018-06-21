@@ -193,6 +193,24 @@ extern "C"
 	// Parameter: [verticesBuffer]GetLayerCloseGates获取出来的顶点数据;
 	//************************************
 	_DLLExprot bool Nav_ReleaseLayerCloseGates(NAV_VEC3** verticesBuffer);
+
+	//************************************
+	// Method:    获取指定层的AABB盒;
+	// Returns:   是否获取成功;
+	// Parameter: [layer]指定层索引;
+	// Parameter: [min]返回AABB盒的最小点;
+	// Parameter: [max]返回AABB盒的最大点;
+	//************************************
+	_DLLExprot bool Nav_GetLayerBound(unsigned int layer, NAV_VEC3* min, NAV_VEC3* max);
+
+	//************************************
+	// Method:    获取所有层的AABB盒;
+	// Returns:   是否获取成功;
+	// Parameter: [layer]指定层索引;
+	// Parameter: [min]返回AABB盒的最小点;
+	// Parameter: [max]返回AABB盒的最大点;
+	//************************************
+	_DLLExprot bool Nav_GetNavBound(NAV_VEC3* min, NAV_VEC3* max);
 }
 
 #endif

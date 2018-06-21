@@ -417,4 +417,24 @@ extern "C"
 		SAFE_DELETE_ARRAY(*verticesBuffer);
 		return true;
 	}
+
+	bool Nav_GetLayerBound(unsigned int layer, NAV_VEC3* min, NAV_VEC3* max)
+	{
+		if (!navSystem) return false;
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph || !graph->mMesh) return false;
+
+		graph->mMesh->GetBound((Nav::Vector3*)min, (Nav::Vector3*)max);
+
+		return true;
+	}
+
+	bool Nav_GetNavBound(NAV_VEC3* min, NAV_VEC3* max)
+	{
+		if (!navSystem) return false;
+
+		navSystem->GetBound((Nav::Vector3*)min, (Nav::Vector3*)max);
+
+		return true;
+	}
 }

@@ -27,6 +27,8 @@ namespace Nav
 
 		NavGraph* GetGraphByID(unsigned int id);
 
+		void GetBound(Vector3* min, Vector3* max);
+
 		unsigned int GetVersion();
 	private:
 		std::vector<NavGraph*> mGraphs;

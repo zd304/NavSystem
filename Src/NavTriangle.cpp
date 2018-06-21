@@ -24,6 +24,22 @@ namespace Nav
 		mPassable = true;
 	}
 
+	void NavTriangle::GetBound(Vector3* min, Vector3* max)
+	{
+		if (min == NULL || max == NULL)
+			return;
+		max->Set(
+			MaxFloat(MaxFloat(mPoint[0].x, mPoint[1].x), mPoint[2].x),
+			MaxFloat(MaxFloat(mPoint[0].y, mPoint[1].y), mPoint[2].y),
+			MaxFloat(MaxFloat(mPoint[0].z, mPoint[1].z), mPoint[2].z)
+		);
+		min->Set(
+			MinFloat(MinFloat(mPoint[0].x, mPoint[1].x), mPoint[2].x),
+			MinFloat(MinFloat(mPoint[0].y, mPoint[1].y), mPoint[2].y),
+			MinFloat(MinFloat(mPoint[0].z, mPoint[1].z), mPoint[2].z)
+		);
+	}
+
 	unsigned int NavTriangle::GetSize()
 	{
 		return sizeof(Vector3) * 3;

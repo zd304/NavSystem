@@ -134,6 +134,7 @@
     <ClCompile Include="Src\micropather\micropather.cpp" />
     <ClCompile Include="Src\NavGate.cpp" />
     <ClCompile Include="Src\NavHeightmap.cpp" />
+    <ClCompile Include="Src\NavInc.cpp" />
     <ClCompile Include="Src\NavMesh.cpp" />
     <ClCompile Include="Src\NavGraph.cpp" />
     <ClCompile Include="Src\NavPhysics.cpp" />

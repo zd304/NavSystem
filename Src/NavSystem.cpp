@@ -51,6 +51,32 @@ namespace Nav
 		return mGraphs[id];
 	}
 
+	void NavSystem::GetBound(Vector3* min, Vector3* max)
+	{
+		if (min == NULL || max == NULL)
+			return;
+		min->Set(FLT_MAX, FLT_MAX, FLT_MAX);
+		max->Set(FLT_MIN, FLT_MIN, FLT_MIN);
+		for (size_t i = 0; i < mGraphs.size(); ++i)
+		{
+			NavGraph* graph = mGraphs[i];
+			if (graph == NULL || graph->mMesh == NULL)
+				continue;
+			Vector3 nmMax, nmMin;
+			graph->mMesh->GetBound(&nmMin, &nmMax);
+			min->Set(
+				MinFloat(nmMin.x, min->x),
+				MinFloat(nmMin.y, min->y),
+				MinFloat(nmMin.z, min->z)
+			);
+			max->Set(
+				MaxFloat(nmMax.x, max->x),
+				MaxFloat(nmMax.y, max->y),
+				MaxFloat(nmMax.z, max->z)
+			);
+		}
+	}
+
 	bool NavSystem::LoadFromFileW(const wchar_t* path)
 	{
 		Clear();

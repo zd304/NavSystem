@@ -136,6 +136,30 @@ namespace Nav
 		UpdateAdjacent();
 	}
 
+	void NavMesh::GetBound(Vector3* min, Vector3* max)
+	{
+		if (min == NULL || max == NULL)
+			return;
+		min->Set(FLT_MAX, FLT_MAX, FLT_MAX);
+		max->Set(FLT_MIN, FLT_MIN, FLT_MIN);
+		for (size_t i = 0; i < mTriangles.size(); ++i)
+		{
+			NavTriangle* tri = mTriangles[i];
+			Vector3 triMax, triMin;
+			tri->GetBound(&triMin, &triMax);
+			min->Set(
+				MinFloat(triMin.x, min->x),
+				MinFloat(triMin.y, min->y),
+				MinFloat(triMin.z, min->z)
+			);
+			max->Set(
+				MaxFloat(triMax.x, max->x),
+				MaxFloat(triMax.y, max->y),
+				MaxFloat(triMax.z, max->z)
+			);
+		}
+	}
+
 	bool NavMesh::GetHeight(const Vector3& pos, float* height)
 	{
 		NavPhysics::NavHit hit;

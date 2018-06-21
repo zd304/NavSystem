@@ -12,6 +12,8 @@ namespace Nav
 
 		NavTriangle(const Vector3& v0, const Vector3& v1, const Vector3& v2);
 
+		void GetBound(Vector3* min, Vector3* max);
+
 		unsigned int GetSize();
 
 		unsigned int WriteTo(char* dest, unsigned int ptr);

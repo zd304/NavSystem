@@ -11,4 +11,11 @@
 #define SAFE_DELETE_ARRAY(x) if (x) { delete [] x; x = NULL; }
 #define SAFE_RELEASE(x) if (x) { x->Release(); x = NULL; }
 
+namespace Nav
+{
+	float MinFloat(float f1, float f2);
+
+	float MaxFloat(float f1, float f2);
+}
+
 #endif
