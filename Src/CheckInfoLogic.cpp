@@ -17,7 +17,7 @@ CheckInfoLogic::~CheckInfoLogic()
 	mTest->mRenderer->ClearPath();
 }
 
-void CheckInfoLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph)
+void CheckInfoLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph)
 {
 	if (!mTest->mRenderer)
 		return;

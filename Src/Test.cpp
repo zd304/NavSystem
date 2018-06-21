@@ -17,7 +17,7 @@
 
 struct SelectedMeshVertex
 {
-	Vector3 pos;
+	Nav::Vector3 pos;
 	DWORD color;
 
 	static const int fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE;
@@ -389,7 +389,7 @@ void Test::OpenFBX(const char* filePath)
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
 		FBXHelper::FBXMeshData* data = meshDatas->datas[i];
-		Nav::NavMesh* navMesh = new Nav::NavMesh((Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
+		Nav::NavMesh* navMesh = new Nav::NavMesh((Nav::Vector3*)&data->pos[0], data->pos.size(), &data->indices[0], data->indices.size());
 		Nav::NavGraph* pathFinder = new Nav::NavGraph(navMesh);
 
 		//三角形按面积大小排序;
@@ -490,7 +490,7 @@ bool Test::IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, 
 	return false;
 }
 
-void Test::GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir)
+void Test::GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Nav::Vector3& orig, Nav::Vector3& dir)
 {
 	D3DXMATRIX matView;
 	D3DXMATRIX matProj;
@@ -522,8 +522,8 @@ void Test::Pick(int x, int y)
 	long w = rect.right - rect.left;
 	long h = rect.bottom - rect.top;
 
-	Vector3 orig;
-	Vector3 dir;
+	Nav::Vector3 orig;
+	Nav::Vector3 dir;
 	GetWorldRay(mDevice, x, y, w, h, orig, dir);
 	
 	D3DXMATRIX worldInv;
@@ -533,7 +533,7 @@ void Test::Pick(int x, int y)
 
 	Nav::NavTriangle* hitTri = NULL;
 	Nav::NavGraph* hitGraph = NULL;
-	Vector3 hitPoint = Vector3::ZERO;
+	Nav::Vector3 hitPoint = Nav::Vector3::ZERO;
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
@@ -544,9 +544,9 @@ void Test::Pick(int x, int y)
 			Nav::NavTriangle* tri = navMesh->mTriangles[j];
 			NavPhysics::NavHit hitInfo;
 
-			Vector3 v0 = tri->mPoint[0];
-			Vector3 v1 = tri->mPoint[1];
-			Vector3 v2 = tri->mPoint[2];
+			Nav::Vector3 v0 = tri->mPoint[0];
+			Nav::Vector3 v1 = tri->mPoint[1];
+			Nav::Vector3 v2 = tri->mPoint[2];
 			//TransformPos(v0); TransformPos(v1); TransformPos(v2);
 			if (!NavPhysics::RayIntersectTriangle(orig, dir, v0, v1, v2, &hitInfo))
 				continue;
@@ -567,7 +567,7 @@ void Test::Pick(int x, int y)
 		mCheckInfoLogic->OnPick(hitTri, hitPoint, hitGraph);
 }
 
-void Test::TransformPos(Vector3& pos)
+void Test::TransformPos(Nav::Vector3& pos)
 {
 	D3DXVECTOR3 v(pos.x, pos.y, pos.z);
 	D3DXVec3TransformCoord(&v, &v, &mWorldMtrix);

@@ -196,7 +196,7 @@ void MeshRenderer::Render()
 		mGateMeshSingle->DrawSubset(0);
 }
 
-void MeshRenderer::SetPointMesh(const Vector3& pt0, const Vector3& pt1, const Vector3& pt2, const Vector3& point, bool isStart)
+void MeshRenderer::SetPointMesh(const Nav::Vector3& pt0, const Nav::Vector3& pt1, const Nav::Vector3& pt2, const Nav::Vector3& point, bool isStart)
 {
 	ID3DXMesh** ppMesh = NULL;
 	DWORD color = 0;
@@ -276,14 +276,14 @@ void MeshRenderer::SetSelectedPath(const std::vector<Nav::NavTriangle*>& tris)
 	mSelectedMesh->UnlockIndexBuffer();
 }
 
-void MeshRenderer::SetSelectedPath(const std::vector<Vector3>& path)
+void MeshRenderer::SetSelectedPath(const std::vector<Nav::Vector3>& path)
 {
 	mSelectedPath.clear();
 
 	for (size_t i = 0; i < path.size() - 1; ++i)
 	{
-		Vector3 v0 = path[i];
-		Vector3 v1 = path[i + 1];
+		Nav::Vector3 v0 = path[i];
+		Nav::Vector3 v1 = path[i + 1];
 
 		MeshVertex mv0;
 		mv0.pos = *(D3DXVECTOR3*)(&v0);

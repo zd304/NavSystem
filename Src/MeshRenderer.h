@@ -21,11 +21,11 @@ public:
 
 	void Render();
 
-	void SetPointMesh(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& point, bool isStart);
+	void SetPointMesh(const Nav::Vector3& v0, const Nav::Vector3& v1, const Nav::Vector3& v2, const Nav::Vector3& point, bool isStart);
 
 	void SetSelectedPath(const std::vector<Nav::NavTriangle*>& tris);
 
-	void SetSelectedPath(const std::vector<Vector3>& path);
+	void SetSelectedPath(const std::vector<Nav::Vector3>& path);
 
 	void SetHeightmap(const Nav::NavHeightmap* heightmap, size_t index);
 

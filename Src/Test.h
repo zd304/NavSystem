@@ -34,13 +34,13 @@ public:
 public:
 	static Test* GetInstance();
 private:
-	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Vector3& orig, Vector3& dir);
+	void GetWorldRay(IDirect3DDevice9* pDevice, long x, long y, long width, long height, Nav::Vector3& orig, Nav::Vector3& dir);
 
 	bool IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, Nav::NavGraph*& outFinder);
 
 	void UpdateView();
 
-	void TransformPos(Vector3& pos);
+	void TransformPos(Nav::Vector3& pos);
 
 	void OnMenu();
 

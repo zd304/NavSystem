@@ -17,7 +17,7 @@ public:
 	CheckInfoLogic(Test* test);
 	~CheckInfoLogic();
 
-	void OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph);
+	void OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph);
 
 	void OnGUI();
 private:

@@ -24,13 +24,13 @@ public:
 	PathFindLogic(Test* test);
 	~PathFindLogic();
 
-	void OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph);
+	void OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph);
 
 	void OnGUI();
 private:
 	void ClearPath();
 
-	void SetPointMesh(const Nav::NavTriangle* tri, const Vector3& point, bool isStart);
+	void SetPointMesh(const Nav::NavTriangle* tri, const Nav::Vector3& point, bool isStart);
 public:
 	bool mShowTriPath;
 private:
@@ -38,8 +38,8 @@ private:
 
 	Nav::NavTriangle* mStartTri;
 	Nav::NavTriangle* mEndTri;
-	Vector3 mStartPoint;
-	Vector3 mEndPoint;
+	Nav::Vector3 mStartPoint;
+	Nav::Vector3 mEndPoint;
 	float mCost;
 
 	eClickState mClickMode;

@@ -25,7 +25,7 @@ GateLogic::~GateLogic()
 	}
 }
 
-void GateLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph)
+void GateLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph)
 {
 	if (mCurMode == GateEditMode_GateList && mNavGraph == NULL && graph)
 	{

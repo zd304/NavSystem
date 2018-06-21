@@ -22,7 +22,7 @@ PathFindLogic::~PathFindLogic()
 		mTest->mRenderer->ClearPath();
 }
 
-void PathFindLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, const Nav::NavGraph* graph)
+void PathFindLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph)
 {
 	if (mTest->mRenderer == NULL)
 		return;
@@ -69,7 +69,7 @@ void PathFindLogic::OnPick(const Nav::NavTriangle* tri, const Vector3& point, co
 					mTest->mRenderer->SetSelectedPath(findPath);
 				}
 			}
-			std::vector<Vector3> findVectorPath;
+			std::vector<Nav::Vector3> findVectorPath;
 			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost, mSmoothPath))
 			{
 				mTest->mRenderer->SetSelectedPath(findVectorPath);
@@ -96,7 +96,7 @@ void PathFindLogic::OnGUI()
 	}
 }
 
-void PathFindLogic::SetPointMesh(const Nav::NavTriangle* tri, const Vector3& point, bool isStart)
+void PathFindLogic::SetPointMesh(const Nav::NavTriangle* tri, const Nav::Vector3& point, bool isStart)
 {
 	if (mTest->mRenderer == NULL)
 		return;

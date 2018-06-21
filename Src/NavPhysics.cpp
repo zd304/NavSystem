@@ -7,21 +7,21 @@
 
 namespace NavPhysics
 {
-	bool RayIntersectTriangle(const Vector3& orig, const Vector3& dir,
-		const Vector3& v0, const Vector3& v1, const Vector3& v2,
+	bool RayIntersectTriangle(const Nav::Vector3& orig, const Nav::Vector3& dir,
+		const Nav::Vector3& v0, const Nav::Vector3& v1, const Nav::Vector3& v2,
 		NavHit* hit)
 	{
 		// Find vectors for two edges sharing vert0
-		Vector3 edge1 = v1 - v0;
-		Vector3 edge2 = v2 - v0;
+		Nav::Vector3 edge1 = v1 - v0;
+		Nav::Vector3 edge2 = v2 - v0;
 
 		// Begin calculating determinant - also used to calculate U parameter
-		Vector3 pvec;
-		Vector3::Vector3Cross(pvec, dir, edge2);
+		Nav::Vector3 pvec;
+		Nav::Vector3::Vector3Cross(pvec, dir, edge2);
 
 		// If determinant is near zero, ray lies in plane of triangle
-		float det = Vector3::Vector3Dot(pvec, edge1);
-		Vector3 tvec;
+		float det = Nav::Vector3::Vector3Dot(pvec, edge1);
+		Nav::Vector3 tvec;
 		if (det > 0)
 		{
 			tvec = orig - v0;
@@ -38,25 +38,25 @@ namespace NavPhysics
 		}
 
 		// Calculate U parameter and test bounds
-		float u = Vector3::Vector3Dot(pvec, tvec);
+		float u = Nav::Vector3::Vector3Dot(pvec, tvec);
 		if (u < 0.0f || u > det)
 		{
 			return false;
 		}
 
 		// Prepare to test V parameter
-		Vector3 qvec;
-		Vector3::Vector3Cross(qvec, tvec, edge1);
+		Nav::Vector3 qvec;
+		Nav::Vector3::Vector3Cross(qvec, tvec, edge1);
 
 			// Calculate V parameter and test bounds
-		float v = Vector3::Vector3Dot(qvec, dir);
+		float v = Nav::Vector3::Vector3Dot(qvec, dir);
 		if (v < 0.0f || u + v > det)
 		{
 			return false;
 		}
 
 		// Calculate t, scale parameters, ray intersects triangle
-		float t = Vector3::Vector3Dot(qvec, edge2);
+		float t = Nav::Vector3::Vector3Dot(qvec, edge2);
 		float fInvDet = 1.0f / det;
 		t *= fInvDet;
 
@@ -69,12 +69,12 @@ namespace NavPhysics
 		return t > 0.f;
 	}
 
-	bool RayIntersectSegment2D(const Vector2& orig, const Vector2& dir,
-		const Vector2& lineBegin, const Vector2& lineEnd,
+	bool RayIntersectSegment2D(const Nav::Vector2& orig, const Nav::Vector2& dir,
+		const Nav::Vector2& lineBegin, const Nav::Vector2& lineEnd,
 		NavHit* hit)
 	{
 		// 射线方向向量不能为零向量;
-		if (dir == Vector2::ZERO)
+		if (dir == Nav::Vector2::ZERO)
 		{
 			return false;
 		}
@@ -93,7 +93,7 @@ namespace NavPhysics
 		//射线方向向量、线段所在直线的方向向量平行;
 		//rayDirection.Cross(lineAB) == 0
 		//时，没有交点;
-		Vector2 lAB = lineEnd - lineBegin;
+		Nav::Vector2 lAB = lineEnd - lineBegin;
 
 		float tmp = dir.x * lAB.y - dir.y * lAB.x;
 		if (tmp == 0.0f)
@@ -105,8 +105,8 @@ namespace NavPhysics
 			return false;
 		}
 
-		Vector2 intersection = orig + dir * d;
-		Vector2 lAI = intersection - lineBegin;
+		Nav::Vector2 intersection = orig + dir * d;
+		Nav::Vector2 lAI = intersection - lineBegin;
 		float k = lAI.Dot(lAB) / lAB.LengthSquared();
 		if (k < 0.0f || k > 1.0f)
 			return false;
@@ -118,8 +118,8 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool TriangleAABBPoint2D(const Vector2& v0, const Vector2& v1, const Vector2& v2,
-		const Vector2& point2D)
+	bool TriangleAABBPoint2D(const Nav::Vector2& v0, const Nav::Vector2& v1, const Nav::Vector2& v2,
+		const Nav::Vector2& point2D)
 	{
 		float x = point2D.x;
 		if (x < v0.x && x < v1.x && x < v2.x)
@@ -135,8 +135,8 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool TriangleAABBPoint2D(const Vector3& v0, const Vector3& v1, const Vector3& v2,
-		const Vector3& point2D)
+	bool TriangleAABBPoint2D(const Nav::Vector3& v0, const Nav::Vector3& v1, const Nav::Vector3& v2,
+		const Nav::Vector3& point2D)
 	{
 		float x = point2D.x;
 		if (x < v0.x && x < v1.x && x < v2.x)
@@ -152,8 +152,8 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool SegmentAABBSegment2D(const Vector3& line1Begin, const Vector3& line1End,
-		const Vector3& line2Begin, const Vector3& line2End)
+	bool SegmentAABBSegment2D(const Nav::Vector3& line1Begin, const Nav::Vector3& line1End,
+		const Nav::Vector3& line2Begin, const Nav::Vector3& line2End)
 	{
 		float minx = line1Begin.x > line1End.x ? line1End.x : line1Begin.x;
 		if (minx > line2Begin.x && minx > line2End.x)
@@ -171,11 +171,11 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool IsPointInTriangle(const Vector2& v0, const Vector2& v1, const Vector2& v2, const Vector2& point)
+	bool IsPointInTriangle(const Nav::Vector2& v0, const Nav::Vector2& v1, const Nav::Vector2& v2, const Nav::Vector2& point)
 	{
-		Vector2 e1(v1 - v0);
-		Vector2 e2(v2 - v1);
-		Vector2 e3(v0 - v2);
+		Nav::Vector2 e1(v1 - v0);
+		Nav::Vector2 e2(v2 - v1);
+		Nav::Vector2 e3(v0 - v2);
 		float fn = e1.Cross(e3);
 		float en;
 		en = e1.Cross(v0 - point);
@@ -193,15 +193,15 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool IsPointInTriangle2D(const Vector3& v0, const Vector3& v1, const Vector3& v2, const Vector3& point)
+	bool IsPointInTriangle2D(const Nav::Vector3& v0, const Nav::Vector3& v1, const Nav::Vector3& v2, const Nav::Vector3& point)
 	{
-		Vector2 e1(v1.x - v0.x, v1.z - v0.z);
-		Vector2 e2(v2.x - v1.x, v2.z - v1.z);
-		Vector2 e3(v0.x - v2.x, v0.z - v2.z);
+		Nav::Vector2 e1(v1.x - v0.x, v1.z - v0.z);
+		Nav::Vector2 e2(v2.x - v1.x, v2.z - v1.z);
+		Nav::Vector2 e3(v0.x - v2.x, v0.z - v2.z);
 
-		Vector2 p1(v0.x - point.x, v0.z - point.z);
-		Vector2 p2(v1.x - point.x, v1.z - point.z);
-		Vector2 p3(v2.x - point.x, v2.z - point.z);
+		Nav::Vector2 p1(v0.x - point.x, v0.z - point.z);
+		Nav::Vector2 p2(v1.x - point.x, v1.z - point.z);
+		Nav::Vector2 p3(v2.x - point.x, v2.z - point.z);
 
 		float fn = e1.Cross(e3);
 		float en;
@@ -220,8 +220,8 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool IsSegmentsInterct(const Vector2& p1, const Vector2& p2,
-		const Vector2& q1, const Vector2& q2)
+	bool IsSegmentsInterct(const Nav::Vector2& p1, const Nav::Vector2& p2,
+		const Nav::Vector2& q1, const Nav::Vector2& q2)
 	{
 		//跨立判断
 		float multi1 = ((q1.x - p1.x)*(q1.y - q2.y) - (q1.y - p1.y)*(q1.x - q2.x)) * ((q1.x - p2.x)*(q1.y - q2.y) - (q1.y - p2.y)*(q1.x - q2.x));
@@ -231,9 +231,9 @@ namespace NavPhysics
 		return true;
 	}
 
-	bool SegmentIntersectSegment(const Vector2& p1, const Vector2& p2,
-		const Vector2& q1, const Vector2& q2,
-		Vector2* hitPoint)
+	bool SegmentIntersectSegment(const Nav::Vector2& p1, const Nav::Vector2& p2,
+		const Nav::Vector2& q1, const Nav::Vector2& q2,
+		Nav::Vector2* hitPoint)
 	{
 		//跨立判断
 		float multi1 = ((q1.x - p1.x)*(q1.y - q2.y) - (q1.y - p1.y)*(q1.x - q2.x)) * ((q1.x - p2.x)*(q1.y - q2.y) - (q1.y - p2.y)*(q1.x - q2.x));
@@ -254,11 +254,11 @@ namespace NavPhysics
 		return true;
 	}
 
-	float CalcTriangleArea2D(const Vector3& v0, const Vector3& v1, const Vector3& v2)
+	float CalcTriangleArea2D(const Nav::Vector3& v0, const Nav::Vector3& v1, const Nav::Vector3& v2)
 	{
-		Vector2 edge0(v1.x - v0.x, v1.z - v0.z);
-		Vector2 edge1(v2.x - v1.x, v2.z - v1.z);
-		Vector2 edge2(v0.x - v2.x, v0.z - v2.z);
+		Nav::Vector2 edge0(v1.x - v0.x, v1.z - v0.z);
+		Nav::Vector2 edge1(v2.x - v1.x, v2.z - v1.z);
+		Nav::Vector2 edge2(v0.x - v2.x, v0.z - v2.z);
 
 		float a = edge0.Length();
 		float b = edge1.Length();

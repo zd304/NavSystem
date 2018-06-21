@@ -52,7 +52,7 @@ extern "C"
 	bool Nav_GetLayer(const NAV_VEC3* pos, unsigned int* layer)
 	{
 		if (!navSystem) return false;
-		const Vector3 vPos((float*)pos);
+		const Nav::Vector3 vPos((float*)pos);
 		for (unsigned int i = 0; i < navSystem->GetGraphCount(); ++i)
 		{
 			Nav::NavGraph* graph = navSystem->GetGraphByID(i);
@@ -76,7 +76,7 @@ extern "C"
 		if (!navSystem) return false;
 		float h = FLT_MIN;
 		bool rst = false;
-		const Vector3 vPos((float*)pos);
+		const Nav::Vector3 vPos((float*)pos);
 		for (unsigned int i = 0; i < navSystem->GetGraphCount(); ++i)
 		{
 			Nav::NavGraph* graph = navSystem->GetGraphByID(i);
@@ -109,7 +109,7 @@ extern "C"
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
-		const Vector3 vPos((float*)pos);
+		const Nav::Vector3 vPos((float*)pos);
 		float height = 0.0f;
 		if (graph->mHeightmap->GetHeight(vPos, &height))
 		{
@@ -130,9 +130,9 @@ extern "C"
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
-		const Vector3 vStart((float*)start);
-		const Vector3 vEnd((float*)end);
-		Vector3 hitPoint;
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
+		Nav::Vector3 hitPoint;
 		if (graph->LineTest(vStart, vEnd, hitPoint))
 		{
 			hitPos->x = hitPoint.x;
@@ -152,10 +152,10 @@ extern "C"
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
-		const Vector3 vStart((float*)start);
-		const Vector3 vEnd((float*)end);
-		Vector3 hitPoint;
-		Vector3 ep0, ep1;
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
+		Nav::Vector3 hitPoint;
+		Nav::Vector3 ep0, ep1;
 		if (graph->LineTest(vStart, vEnd, hitPoint, ep0, ep1))
 		{
 			hitPos->x = hitPoint.x;
@@ -187,8 +187,8 @@ extern "C"
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph) return false;
 
-		const Vector3 vStart((float*)start);
-		const Vector3 vEnd((float*)end);
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
 		return graph->IsLineTest(vStart, vEnd);
 	}
 
@@ -198,8 +198,8 @@ extern "C"
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh) return false;
 
-		const Vector3 vStart((float*)start);
-		const Vector3 vEnd((float*)end);
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
 
 		NavPhysics::NavHit hit;
 		for (size_t i = 0; i < graph->mMesh->mTriangles.size(); ++i)
@@ -222,8 +222,8 @@ extern "C"
 	{
 		if (!navSystem) return false;
 
-		const Vector3 vStart((float*)start);
-		const Vector3 vEnd((float*)end);
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
 		NavPhysics::NavHit hit;
 
 		unsigned int layerCount = (unsigned int)navSystem->GetGraphCount();
@@ -253,17 +253,17 @@ extern "C"
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
 		if (!graph || !graph->mMesh || !graph->mHeightmap) return false;
 
-		const Vector3 vStart((float*)start);
-		const Vector3 vEnd((float*)end);
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
 
-		std::vector<Vector3> path;
+		std::vector<Nav::Vector3> path;
 		float cost;
 		if (graph->Solve(vStart, vEnd, &path, &cost))
 		{
 			*pathBuffer = new NAV_VEC3[path.size()];
 			for (size_t i = 0; i < path.size(); ++i)
 			{
-				Vector3& v = path[i];
+				Nav::Vector3& v = path[i];
 				float height = v.y + 0.5f;
 				if (!graph->mHeightmap->GetHeight(v, &height))
 				{
@@ -309,7 +309,7 @@ extern "C"
 			Nav::NavTriangle* tri = graph->mMesh->mTriangles[i];
 			for (unsigned int j = 0; j < 3; ++j)
 			{
-				Vector3 v = tri->mPoint[j];
+				Nav::Vector3 v = tri->mPoint[j];
 
 				NAV_VEC3* nv = &(*verticesBuffer)[++index];
 				nv->x = v.x;
