@@ -4,3 +4,8 @@
 /NavSystem.sdf
 /*.opensdf
 /*.sdf
+/libs
+/obj
+/*.suo
+/Bin
+/Bin_Debug
