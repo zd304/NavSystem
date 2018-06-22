@@ -1,10 +1,14 @@
 #ifndef __NAV_SYSTEM_DLL_H__
 #define __NAV_SYSTEM_DLL_H__
 
-#if defined (EXPORTBUILD)
-#define _DLLExprot __declspec (dllexport)
+#if defined _WINDOWS
+	#if defined (EXPORTBUILD)
+		#define _DLLExprot __declspec (dllexport)
+	#else
+		#define _DLLExprot __declspec (dllimport)
+	#endif
 #else
-#define _DLLExprot __declspec (dllimport)
+	#define _DLLExprot 
 #endif
 
 struct NAV_VEC3 { float x, y, z; };
