@@ -11,6 +11,7 @@ LOCAL_SRC_FILES := \
 	../Src/NavGraph.cpp\
 	../Src/NavHeightmap.cpp\
 	../Src/NavInc.cpp\
+	../Src/NavLog.cpp\
 	../Src/NavMesh.cpp\
 	../Src/NavPhysics.cpp\
 	../Src/NavSystem.cpp\
