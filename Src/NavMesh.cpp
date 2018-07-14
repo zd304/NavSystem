@@ -181,6 +181,29 @@ namespace Nav
 		return false;
 	}
 
+	int NavMesh::GetHeightCount(const Vector3& pos, float* height) const
+	{
+		NavPhysics::NavHit hit;
+		Vector3 vPos = pos;
+		vPos.y += 1.0f;
+
+		int count = 0;
+
+		for (size_t i = 0; i < mTriangles.size(); ++i)
+		{
+			NavTriangle* tri = mTriangles[i];
+			if (!tri->mPassable)
+				continue;
+			if (NavPhysics::RayIntersectTriangle(vPos, Vector3::DOWN,
+				tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], &hit))
+			{
+				(*height) = hit.hitPoint.y;
+				++count;
+			}
+		}
+		return count;
+	}
+
 	void NavMesh::UpdateAdjacent(bool calcBounds)
 	{
 		for (unsigned int i = 0; i < mTriangles.size(); ++i)

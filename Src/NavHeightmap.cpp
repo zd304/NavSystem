@@ -67,6 +67,8 @@ namespace Nav
 		mSizeX = (int)(ceilf(vSize.x / mCellSize.x) + 0.5f);
 		mSizeZ = (int)(ceilf(vSize.y / mCellSize.y) + 0.5f);
 
+		mCellPassability = new char[mSizeZ * mSizeX];
+
 		Vector2* arrMap = new Vector2[(mSizeZ + 1) * (mSizeX + 1)];
 		bool* arrMapMask = new bool[(mSizeZ + 1) * (mSizeX + 1)];
 		mHeights = new float[(mSizeZ + 1) * (mSizeX + 1)];
@@ -77,7 +79,7 @@ namespace Nav
 				int index = j * (mSizeX + 1) + i;
 				arrMap[index] = mMin + Vector2(mCellSize.x * i, mCellSize.y * j);
 				arrMapMask[index] = false;
-				mHeights[index] = 0.0f;
+				mHeights[index] = -10000.0f;
 			}
 		}
 		for (unsigned int i = 0; i + 2 < vertices.size(); i += 3)
@@ -107,13 +109,17 @@ namespace Nav
 					if (!arrMapMask[y * (mSizeX + 1) + x])
 					{
 						Vector2 vPos = arrMap[y * (mSizeX + 1) + x];
-						Vector3 orig(vPos.x, 100.0f, vPos.y);
+						Vector3 orig(vPos.x, 1000.0f, vPos.y);
 
-						NavPhysics::NavHit hitInfo;
-						bool bInside = NavPhysics::RayIntersectTriangle(orig, Vector3::DOWN, vVertex0, vVertex1, vVertex2, &hitInfo);
-						if (bInside)
+						float h = 0.0f;
+						int hitCount = mesh->GetHeightCount(orig, &h);
+						//NavPhysics::NavHit hitInfo;
+						//bool bInside = NavPhysics::RayIntersectTriangle(orig, Vector3::DOWN, vVertex0, vVertex1, vVertex2, &hitInfo);
+						bool bInside = false;
+						if (hitCount == 1)
 						{
-							mHeights[y * (mSizeX + 1) + x] = hitInfo.hitPoint.y;
+							mHeights[y * (mSizeX + 1) + x] = h;
+							bInside = true;
 						}
 						arrMapMask[y * (mSizeX + 1) + x] = bInside;
 					}
@@ -121,7 +127,6 @@ namespace Nav
 			}
 		}
 
-		mCellPassability = new char[mSizeZ * mSizeX];
 		for (int j = 0; j < mSizeZ; ++j)
 		{
 			for (int i = 0; i < mSizeX; ++i)

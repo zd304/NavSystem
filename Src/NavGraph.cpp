@@ -151,11 +151,24 @@ namespace Nav
 			NavEdge* edge = mMesh->mBounds[i];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 				continue;
+
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
 			Vector2 hitInfo;
 			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 				continue;
+
+			// 如果交点离边界高度差超过0.5米，则不算碰撞;
+			float edgeLength = (v1 - v0).Length();
+			float hitLength = (hitInfo - v0).Length();
+			float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
+
+			float lineLength = (hitInfo - start2D).Length();
+			float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
+
+			if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
+				continue;
+
 			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 			return true;
 		}
@@ -167,11 +180,24 @@ namespace Nav
 				NavEdge* edge = gate->mBounds[j];
 				if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 					continue;
+
 				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
 				Vector2 hitInfo;
 				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 					continue;
+
+				// 如果交点离边界高度差超过0.5米，则不算碰撞;
+				float edgeLength = (v1 - v0).Length();
+				float hitLength = (hitInfo - v0).Length();
+				float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
+
+				float lineLength = (hitInfo - start2D).Length();
+				float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
+
+				if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
+					continue;
+
 				hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 				return true;
 			}
@@ -199,6 +225,18 @@ namespace Nav
 			Vector2 hitInfo;
 			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 				continue;
+
+			// 如果交点离边界高度差超过0.5米，则不算碰撞;
+			float edgeLength = (v1 - v0).Length();
+			float hitLength = (hitInfo - v0).Length();
+			float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
+
+			float lineLength = (hitInfo - start2D).Length();
+			float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
+
+			if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
+				continue;
+
 			edgePoint0 = edge->mPoint[0];
 			edgePoint1 = edge->mPoint[1];
 			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
@@ -217,6 +255,18 @@ namespace Nav
 				Vector2 hitInfo;
 				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 					continue;
+
+				// 如果交点离边界高度差超过0.5米，则不算碰撞;
+				float edgeLength = (v1 - v0).Length();
+				float hitLength = (hitInfo - v0).Length();
+				float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
+
+				float lineLength = (hitInfo - start2D).Length();
+				float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
+
+				if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
+					continue;
+
 				edgePoint0 = edge->mPoint[0];
 				edgePoint1 = edge->mPoint[1];
 				hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
@@ -242,8 +292,21 @@ namespace Nav
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-			if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
+			Vector2 hitInfo;
+			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 				continue;
+
+			// 如果交点离边界高度差超过0.5米，则不算碰撞;
+			float edgeLength = (v1 - v0).Length();
+			float hitLength = (hitInfo - v0).Length();
+			float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
+
+			float lineLength = (hitInfo - start2D).Length();
+			float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
+
+			if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
+				continue;
+
 			return true;
 		}
 		for (unsigned int i = 0; i < mGates.size(); ++i)
@@ -256,8 +319,21 @@ namespace Nav
 					continue;
 				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-				if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
+				Vector2 hitInfo;
+				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 					continue;
+
+				// 如果交点离边界高度差超过0.5米，则不算碰撞;
+				float edgeLength = (v1 - v0).Length();
+				float hitLength = (hitInfo - v0).Length();
+				float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
+
+				float lineLength = (hitInfo - start2D).Length();
+				float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
+
+				if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
+					continue;
+
 				return true;
 			}
 		}
