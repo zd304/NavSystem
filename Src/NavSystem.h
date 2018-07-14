@@ -17,6 +17,8 @@ namespace Nav
 
 		bool LoadFromFile(const char* path);
 
+		bool LoadFromMemory(char* data);
+
 		void SaveAs(const char* path);
 
 		void AddGraph(NavGraph* graph);

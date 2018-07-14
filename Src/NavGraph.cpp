@@ -144,6 +144,7 @@ namespace Nav
 		Vector2 dir = end2D - start2D;
 		float distance = dir.Length();
 		dir.Normalize();
+		Vector2 offset = dir * (-0.1f);
 
 		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 		{
@@ -155,7 +156,7 @@ namespace Nav
 			Vector2 hitInfo;
 			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 				continue;
-			hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 			return true;
 		}
 		for (unsigned int i = 0; i < mGates.size(); ++i)
@@ -171,7 +172,7 @@ namespace Nav
 				Vector2 hitInfo;
 				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 					continue;
-				hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+				hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 				return true;
 			}
 		}
@@ -186,6 +187,7 @@ namespace Nav
 		Vector2 dir = end2D - start2D;
 		float distance = dir.Length();
 		dir.Normalize();
+		Vector2 offset = dir * (-0.1f);
 
 		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 		{
@@ -199,7 +201,7 @@ namespace Nav
 				continue;
 			edgePoint0 = edge->mPoint[0];
 			edgePoint1 = edge->mPoint[1];
-			hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 			return true;
 		}
 		for (unsigned int i = 0; i < mGates.size(); ++i)
@@ -217,7 +219,7 @@ namespace Nav
 					continue;
 				edgePoint0 = edge->mPoint[0];
 				edgePoint1 = edge->mPoint[1];
-				hitPoint.Set(hitInfo.x, start.y, hitInfo.y);
+				hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 				return true;
 			}
 		}

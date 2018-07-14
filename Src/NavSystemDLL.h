@@ -34,6 +34,13 @@ extern "C"
 	_DLLExprot bool Nav_CreateW(const unsigned char* path, unsigned int len);
 
 	//************************************
+	// Method:    从内存创建当前场景的导航;
+	// Returns:   是否创建成功;
+	// Parameter: [data]nav文件的二进制数据;
+	//************************************
+	_DLLExprot bool Nav_CreateFromMemory(char* data);
+
+	//************************************
 	// Method:    释放当前场景的导航;
 	// Returns:   void
 	//************************************

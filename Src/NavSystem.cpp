@@ -148,6 +148,24 @@ namespace Nav
 		return true;
 	}
 
+	bool NavSystem::LoadFromMemory(char* data)
+	{
+		unsigned int ptr = 0;
+		memcpy(&mVersion, data + ptr, sizeof(unsigned int));
+		ptr += sizeof(unsigned int);
+		unsigned int graphCount = 0;
+		memcpy(&graphCount, data + ptr, sizeof(unsigned int));
+		ptr += sizeof(unsigned int);
+		for (unsigned int i = 0; i < graphCount; ++i)
+		{
+			NavGraph* graph = new NavGraph();
+			ptr = graph->ReadFrom(data, ptr);
+			AddGraph(graph);
+		}
+
+		return true;
+	}
+
 	void NavSystem::SaveAs(const char* path)
 	{
 		unsigned int fileSize = sizeof(unsigned int);

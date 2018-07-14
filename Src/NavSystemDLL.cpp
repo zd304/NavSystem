@@ -37,6 +37,18 @@ extern "C"
 		return true;
 	}
 
+	bool Nav_CreateFromMemory(char* data)
+	{
+		navSystem = new Nav::NavSystem();
+
+		if (!navSystem->LoadFromMemory(data))
+		{
+			SAFE_DELETE(navSystem);
+			return false;
+		}
+		return true;
+	}
+
 	void Nav_Release()
 	{
 		SAFE_DELETE(navSystem);

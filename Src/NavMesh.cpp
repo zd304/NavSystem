@@ -163,13 +163,14 @@ namespace Nav
 	bool NavMesh::GetHeight(const Vector3& pos, float* height)
 	{
 		NavPhysics::NavHit hit;
+		Vector3 vPos = pos;
+		vPos.y += 1.0f;
+
 		for (size_t i = 0; i < mTriangles.size(); ++i)
 		{
 			NavTriangle* tri = mTriangles[i];
 			if (!tri->mPassable)
 				continue;
-			Vector3 vPos = pos;
-			vPos.y += 10.0f;
 			if (NavPhysics::RayIntersectTriangle(vPos, Vector3::DOWN,
 				tri->mPoint[0], tri->mPoint[1], tri->mPoint[2], &hit))
 			{
