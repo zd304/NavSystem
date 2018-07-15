@@ -23,6 +23,12 @@ void Camera::SetForward(const Nav::Vector3& forward)
 {
 	mForward = forward;
 	mForward.Normalize();
+	if (mForward == Nav::Vector3::UP || mForward == Nav::Vector3::DOWN)
+	{
+		// ·ÀÖ¹ÍòÏòËø;
+		mForward.x = FLT_EPSILON;
+		mForward.Normalize();
+	}
 	UpdateView();
 }
 
