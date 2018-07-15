@@ -1,5 +1,6 @@
 #include "Test.h"
 #include "imgui/imgui.h"
+#include "Camera.h"
 #include "MeshRenderer.h"
 #include "NavMesh.h"
 #include "NavTriangle.h"
@@ -36,7 +37,10 @@ Test::Test()
 	mPathFindLogic = NULL;
 	mGateLogic = NULL;
 	mCheckInfoLogic = NULL;
+	mCamera = NULL;
 	mInstance = this;
+	mModelSize = 0.0f;
+	mDeltaTime = 0;
 
 	char szPath[MAX_PATH] = { 0 };
 	GetCurrentDirectory(MAX_PATH, szPath);
@@ -51,6 +55,7 @@ Test::Test()
 	mOpenNav->SetDefaultDirectory(sCurPath);
 
 	mLeftUIWidth = 256;
+	mModelSize = 0.0f;
 }
 
 Test::~Test()
@@ -127,25 +132,12 @@ void Test::OnInit(HWND hwnd, IDirect3DDevice9* device)
 	io.Fonts->AddFontFromFileTTF("./Font/msyh.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesChinese());
 	LoadTextures(device);
 
-	rot = 0.0f;
-	D3DXMATRIX matProj;
-	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4.0f, (float)mWidth / (float)mHeight, 0.1f, 10000.0f);
-	device->SetTransform(D3DTS_PROJECTION, &matProj);
+	mCamera = new Camera(Nav::Vector3::ZERO, Nav::Vector3(0.0f, 0.0f, 1.0f),
+		D3DX_PI / 4.0f, (float)mWidth / (float)mHeight, 0.1f, 10000.0f);
 
 	device->SetRenderState(D3DRS_LIGHTING, TRUE);
 	device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	mDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-}
-
-void Test::UpdateView()
-{
-	D3DXMATRIX matView;
-	D3DXMatrixLookAtLH(&matView, &D3DXVECTOR3(mCameraX, mCameraHeight, -mCameraDistance),
-		&D3DXVECTOR3(mCameraX, 0.0f, 0.0f), &D3DXVECTOR3(0.0f, 1.0f, 0.0f));
-	mDevice->SetTransform(D3DTS_VIEW, &matView);
-
-	D3DXMatrixRotationYawPitchRoll(&mWorldMtrix, -rot, 0.0f, 0.0f);
-	mDevice->SetTransform(D3DTS_WORLD, &mWorldMtrix);
 }
 
 void Test::OnGUI()
@@ -318,40 +310,68 @@ void Test::OnInput()
 {
 	if (mOpenFBX && mOpenFBX->IsOpen())
 		return;
+	if (!mCamera)
+		return;
+
+	float delta = (float)mDeltaTime;
+
+	Nav::Vector3 pos = mCamera->GetPosition();
+	Nav::Vector3 forward = mCamera->GetDir();
 
 	if (ImGui::IsKeyPressed('A'))
 	{
-		mCameraX -= (mCameraDistance * 0.01f);
-		UpdateView();
+		Nav::Vector3 right = mCamera->GetRight();
+		mCamera->SetPosition(pos - right * pos.Length() * delta * 30.0f);
+		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyPressed('D'))
 	{
-		mCameraX += (mCameraDistance * 0.01f);
-		UpdateView();
+		Nav::Vector3 right = mCamera->GetRight();
+		mCamera->SetPosition(pos + right * pos.Length() * delta * 30.0f);
+		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyPressed('W'))
 	{
-		mCameraDistance -= (mCameraDistance * 0.01f);
-		UpdateView();
+		mCamera->SetPosition(pos + forward * pos.Length() * delta * 30.0f);
+		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyPressed('S'))
 	{
-		mCameraDistance += (mCameraDistance * 0.01f);
-		UpdateView();
+		mCamera->SetPosition(pos - forward * pos.Length() * delta * 30.0f);
+		mCamera->Update(mDevice);
+	}
+	if (ImGui::IsKeyReleased('F'))
+	{
+		mCamera->SetPosition(Nav::Vector3(0.0f, 2.0f * mModelSize, -2.0f * mModelSize));
+		mCamera->SetForward(Nav::Vector3(0.0f, -1.0f, 1.0f));
+		mCamera->Update(mDevice);
 	}
 	ImGuiIO& io = ImGui::GetIO();
 	if (fabs(io.MouseWheel) > FLT_EPSILON)
 	{
-		mCameraHeight += (io.MouseWheel * (mCameraDistance + 1.0f) * 0.1f);
-		UpdateView();
+		mCamera->SetPosition(pos + io.MouseWheel * forward * pos.Length() * delta * 800.0f);
+		mCamera->Update(mDevice);
 	}
-	if (ImGui::IsMouseDragging(0))
-	{
-		ImVec2 dragDelta = ImGui::GetMouseDragDelta(0);
-		rot -= dragDelta.x * 0.01f;
-		UpdateView();
 
-		ImGui::ResetMouseDragDelta(0);
+	if (ImGui::IsMouseDragging(1))
+	{
+		ImVec2 dragDelta = ImGui::GetMouseDragDelta(1);
+
+		Nav::Vector3 right = mCamera->GetRight();
+
+		D3DXMATRIX rot, rotYaw, rotPitch;
+		D3DXVECTOR3 vR(right.x, right.y, right.z);
+		D3DXMatrixRotationAxis(&rotYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), dragDelta.x * delta * 10.0f);
+		D3DXMatrixRotationAxis(&rotPitch, &vR, dragDelta.y * delta * 10.0f);
+
+		D3DXVECTOR3 dir(forward.x, forward.y, forward.z);
+		rot = rotYaw * rotPitch;
+		D3DXVec3TransformNormal(&dir, &dir, &rot);
+		forward.Set(dir.x, dir.y, dir.z);
+		mCamera->SetForward(forward);
+		mCamera->Update(mDevice);
+
+		ImGui::ResetMouseDragDelta(1);
 	}
 }
 
@@ -375,12 +395,14 @@ void Test::OpenFBX(const char* filePath)
 
 	D3DXVECTOR3 max, min;
 	FBXHelper::GetBox(max, min);
-	float boxSize = D3DXVec3Length(&(max - min));
-	mCameraDistance = 2.0f * boxSize;
-	mCameraHeight = 2.0f * boxSize;
-	mCameraX = 0.0f;// -boxSize;
+	mModelSize = D3DXVec3Length(&(max - min));
 
-	UpdateView();
+	if (mCamera)
+	{
+		mCamera->SetPosition(Nav::Vector3(0.0f, 2.0f * mModelSize, -2.0f * mModelSize));
+		mCamera->SetForward(Nav::Vector3(0.0f, -1.0f, 1.0f));
+		mCamera->Update(mDevice);
+	}
 
 	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
 
@@ -449,12 +471,14 @@ void Test::OpenNav(const char* filePath)
 
 	D3DXVECTOR3 max, min;
 	FBXHelper::GetBox(max, min);
-	float boxSize = D3DXVec3Length(&(max - min));
-	mCameraDistance = 2.0f * boxSize;
-	mCameraHeight = 2.0f * boxSize;
-	mCameraX = 0.0f;// -boxSize;
+	mModelSize = D3DXVec3Length(&(max - min));
 
-	UpdateView();
+	if (mCamera)
+	{
+		mCamera->SetPosition(Nav::Vector3(0.0f, 2.0f * mModelSize, -2.0f * mModelSize));
+		mCamera->SetForward(Nav::Vector3(0.0f, -1.0f, 1.0f));
+		mCamera->Update(mDevice);
+	}
 }
 
 void Test::CloseFile()
@@ -527,7 +551,7 @@ void Test::Pick(int x, int y)
 	GetWorldRay(mDevice, x, y, w, h, orig, dir);
 	
 	D3DXMATRIX worldInv;
-	D3DXMatrixInverse(&worldInv, NULL, &mWorldMtrix);
+	D3DXMatrixIdentity(&worldInv); //D3DXMatrixInverse(&worldInv, NULL, &mWorldMtrix);
 	D3DXVec3TransformCoord((D3DXVECTOR3*)&orig, (D3DXVECTOR3*)&orig, &worldInv);
 	D3DXVec3TransformNormal((D3DXVECTOR3*)&dir, (D3DXVECTOR3*)&dir, &worldInv);
 
@@ -569,7 +593,7 @@ void Test::Pick(int x, int y)
 
 void Test::TransformPos(Nav::Vector3& pos)
 {
-	D3DXVECTOR3 v(pos.x, pos.y, pos.z);
-	D3DXVec3TransformCoord(&v, &v, &mWorldMtrix);
-	pos.Set(v.x, v.y, v.z);
+	//D3DXVECTOR3 v(pos.x, pos.y, pos.z);
+	//D3DXVec3TransformCoord(&v, &v, &mWorldMtrix);
+	//pos.Set(v.x, v.y, v.z);
 }

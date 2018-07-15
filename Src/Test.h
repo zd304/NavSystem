@@ -15,6 +15,7 @@ class FileDialog;
 class PathFindLogic;
 class GateLogic;
 class CheckInfoLogic;
+class Camera;
 
 class Test
 {
@@ -38,8 +39,6 @@ private:
 
 	bool IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, Nav::NavGraph*& outFinder);
 
-	void UpdateView();
-
 	void TransformPos(Nav::Vector3& pos);
 
 	void OnMenu();
@@ -57,6 +56,8 @@ public:
 	float mLeftUIWidth;
 
 	Nav::NavSystem* mNavSystem;
+
+	float mDeltaTime;
 private:
 	IDirect3DDevice9* mDevice;
 	HWND mHwnd;
@@ -73,11 +74,8 @@ private:
 	FileDialog* mSaveNav;
 
 	// Camera
-	float mCameraDistance;
-	float mCameraHeight;
-	float mCameraX;// -boxSize;
-	D3DXMATRIX mWorldMtrix;
-	float rot;
+	Camera* mCamera;
+	float mModelSize;
 
 	static Test* mInstance;
 };

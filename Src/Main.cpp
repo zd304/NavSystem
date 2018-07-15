@@ -141,7 +141,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	//ÏûÏ¢Ñ­»·;
 	MSG msg = { 0 };
-	float lastTime = (float)timeGetTime();
+
+	LARGE_INTEGER litmp;
+	QueryPerformanceFrequency(&litmp);
+	double freq = (double)litmp.QuadPart;
+	QueryPerformanceCounter(&litmp);
+	LONGLONG lastQuadPart = litmp.QuadPart;
+
 	while (msg.message != WM_QUIT)
 	{
 		if (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
@@ -152,10 +158,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		else
 		{
 			ImGui_ImplDX9_NewFrame();
+
+			QueryPerformanceCounter(&litmp);
+			double deltaMS = (double)(litmp.QuadPart - lastQuadPart);
+			float timeDelta = (float)(deltaMS / freq);
+			lastQuadPart = litmp.QuadPart;
+			test->mDeltaTime = timeDelta;
+
 			test->OnGUI();
 
-			float curTime = (float)timeGetTime();
-			float timeDelta = (curTime - lastTime)*0.001f;
 			if (Device)
 			{
 				Device->BeginScene();
@@ -168,7 +179,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 				Device->Present(0, 0, 0, 0);
 			}
-			lastTime = curTime;
 		}
 	}
 
