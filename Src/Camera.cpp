@@ -21,14 +21,21 @@ void Camera::SetPosition(const Nav::Vector3& pos)
 
 void Camera::SetForward(const Nav::Vector3& forward)
 {
-	mForward = forward;
-	mForward.Normalize();
-	if (mForward == Nav::Vector3::UP || mForward == Nav::Vector3::DOWN)
+	Nav::Vector3 f = forward;
+	f.Normalize();
+
+	float cos = Nav::Vector3::Vector3Dot(f, Nav::Vector3::UP);
+	if (cos > 0.9f)
 	{
-		// ·ÀÖ¹ÍòÏòËø;
-		mForward.x = FLT_EPSILON;
-		mForward.Normalize();
+		return;
 	}
+	cos = Nav::Vector3::Vector3Dot(f, Nav::Vector3::DOWN);
+	if (cos > 0.9f)
+	{
+		return;
+	}
+	mForward = f;
+
 	UpdateView();
 }
 

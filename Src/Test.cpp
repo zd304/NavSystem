@@ -361,8 +361,8 @@ void Test::OnInput()
 
 		D3DXMATRIX rot, rotYaw, rotPitch;
 		D3DXVECTOR3 vR(right.x, right.y, right.z);
-		D3DXMatrixRotationAxis(&rotYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), dragDelta.x * delta * 10.0f);
-		D3DXMatrixRotationAxis(&rotPitch, &vR, dragDelta.y * delta * 10.0f);
+		D3DXMatrixRotationAxis(&rotYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), dragDelta.x * delta * 8.0f);
+		D3DXMatrixRotationAxis(&rotPitch, &vR, dragDelta.y * delta * 8.0f);
 
 		D3DXVECTOR3 dir(forward.x, forward.y, forward.z);
 		rot = rotYaw * rotPitch;
