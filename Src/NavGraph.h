@@ -43,6 +43,8 @@ namespace Nav
 		NavTriangle* GetTriangleByPoint(const Vector3& point) const;
 
 		void SmoothPath(std::vector<Vector3>* path) const;
+
+		bool IsLineTest_Inner(const Vector3& start, const Vector3& end) const;
 	public:
 		NavMesh* mMesh;
 		NavHeightmap* mHeightmap;

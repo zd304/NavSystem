@@ -340,6 +340,46 @@ namespace Nav
 		return false;
 	}
 
+	bool NavGraph::IsLineTest_Inner(const Vector3& start, const Vector3& end) const
+	{
+		Vector2 start2D(start.x, start.z);
+		Vector2 end2D(end.x, end.z);
+
+		Vector2 dir = end2D - start2D;
+		float distance = dir.Length();
+		dir.Normalize();
+
+		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
+		{
+			NavEdge* edge = mMesh->mBounds[i];
+			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+				continue;
+			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+			if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
+				continue;
+
+			return true;
+		}
+		for (unsigned int i = 0; i < mGates.size(); ++i)
+		{
+			NavGate* gate = mGates[i];
+			for (unsigned int j = 0; j < gate->mBounds.size(); ++j)
+			{
+				NavEdge* edge = gate->mBounds[j];
+				if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
+					continue;
+				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
+				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+				if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
+					continue;
+
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void NavGraph::SmoothPath(std::vector<Vector3>* path) const
 	{
 		unsigned int pathSize = (unsigned int)path->size();
@@ -353,7 +393,7 @@ namespace Nav
 		while (endIndex > 0)
 		{
 			Vector3 end = oldPath[endIndex];
-			if (IsLineTest(oldPath[0], end))
+			if (IsLineTest_Inner(oldPath[0], end))
 			{
 				--endIndex;
 				continue;
