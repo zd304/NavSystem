@@ -356,6 +356,10 @@ namespace Nav
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+			Vector2 e01 = v1 - v0;
+			e01.Normalize();
+			v0 -= (e01 * 0.01f);
+			v1 += (e01 * 0.01f);
 			if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
 				continue;
 
@@ -371,6 +375,10 @@ namespace Nav
 					continue;
 				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
+				Vector2 e01 = v1 - v0;
+				e01.Normalize();
+				v0 -= (e01 * 0.01f);
+				v1 += (e01 * 0.01f);
 				if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
 					continue;
 
