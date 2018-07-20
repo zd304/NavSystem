@@ -9,6 +9,7 @@ namespace Nav
 	class NavTriangle;
 	class NavHeightmap;
 	class NavGate;
+	struct NavEdge;
 
 	class NavGraph : public micropather::Graph
 	{
@@ -42,9 +43,9 @@ namespace Nav
 	private:
 		NavTriangle* GetTriangleByPoint(const Vector3& point) const;
 
-		void SmoothPath(std::vector<Vector3>* path) const;
+		void SmoothPath(std::vector<Vector3>* path, const std::vector<NavEdge*>& bounds) const;
 
-		bool IsLineTest_Inner(const Vector3& start, const Vector3& end) const;
+		bool IsLineTest_Inner(const Vector3& start, const Vector3& end, const std::vector<NavEdge*>& bounds) const;
 	public:
 		NavMesh* mMesh;
 		NavHeightmap* mHeightmap;

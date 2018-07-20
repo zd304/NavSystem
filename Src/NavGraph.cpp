@@ -99,6 +99,7 @@ namespace Nav
 		NavTriangle* triStart = GetTriangleByPoint(start);
 		NavTriangle* triEnd = GetTriangleByPoint(end);
 		std::vector<NavTriangle*> triPath;
+		std::vector<NavEdge*> bounds;
 		bool rst = Solve(triStart, triEnd, &triPath, cost);
 		if (rst)
 		{
@@ -108,25 +109,58 @@ namespace Nav
 			{
 				NavTriangle* tri = triPath[i];
 				path->push_back(tri->mCenter);
+				NavTriangle* triNext = NULL;
+				NavTriangle* triPre = NULL;
 
 				if (i < (nodeCount - 1))
 				{
-					NavTriangle* triNext = triPath[i + 1];
-					for (unsigned int j = 0; j < tri->mNeighbors.size(); ++j)
+					triNext = triPath[i + 1];
+				}
+				if (i > 0)
+				{
+					triPre = triPath[i - 1];
+				}
+				int boudsIndices[3] {0, 1, 2};
+				unsigned int neighborCount = tri->mNeighbors.size();
+				for (unsigned int j = 0; j < neighborCount; ++j)
+				{
+					if (tri->mNeighbors[j] == triNext)
 					{
-						if (tri->mNeighbors[j] != triNext)
-							continue;
 						path->push_back(tri->mEdgeCenter[j]);
-						break;
 					}
+					if ((tri->mNeighbors[j] == triPre
+						|| tri->mNeighbors[j] == triNext)
+						&& smoothPath) // not pre not next;
+					{
+						int edgeIndex = tri->mShareEdgeIndices[j];
+						boudsIndices[edgeIndex] = -1;
+					}
+				}
+				for (unsigned int j = 0; j < 3; ++j)
+				{
+					int index = boudsIndices[j];
+					if (index == -1)
+						continue;
+					int ptIndex0, ptIndex1;
+					DecodeEdgeIndex(index, &ptIndex0, &ptIndex1);
+					Vector3 pt0 = tri->mPoint[ptIndex0];
+					Vector3 pt1 = tri->mPoint[ptIndex1];
+					NavEdge* edge = new NavEdge();
+					edge->mPoint[0] = pt0;
+					edge->mPoint[1] = pt1;
+					bounds.push_back(edge);
 				}
 			}
 			path->push_back(end);
 
 			if (smoothPath)
 			{
-				SmoothPath(path);
+				SmoothPath(path, bounds);
 			}
+		}
+		for (unsigned int i = 0; i < bounds.size(); ++i)
+		{
+			SAFE_DELETE(bounds[i]);
 		}
 		return rst;
 	}
@@ -340,7 +374,7 @@ namespace Nav
 		return false;
 	}
 
-	bool NavGraph::IsLineTest_Inner(const Vector3& start, const Vector3& end) const
+	bool NavGraph::IsLineTest_Inner(const Vector3& start, const Vector3& end, const std::vector<NavEdge*>& bounds) const
 	{
 		Vector2 start2D(start.x, start.z);
 		Vector2 end2D(end.x, end.z);
@@ -349,9 +383,9 @@ namespace Nav
 		float distance = dir.Length();
 		dir.Normalize();
 
-		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
+		for (unsigned int i = 0; i < bounds.size(); ++i)
 		{
-			NavEdge* edge = mMesh->mBounds[i];
+			NavEdge* edge = bounds[i];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
@@ -388,7 +422,7 @@ namespace Nav
 		return false;
 	}
 
-	void NavGraph::SmoothPath(std::vector<Vector3>* path) const
+	void NavGraph::SmoothPath(std::vector<Vector3>* path, const std::vector<NavEdge*>& bounds) const
 	{
 		unsigned int pathSize = (unsigned int)path->size();
 		Vector3* oldPath = new Vector3[pathSize];
@@ -401,7 +435,26 @@ namespace Nav
 		while (endIndex > 0)
 		{
 			Vector3 end = oldPath[endIndex];
-			if (IsLineTest_Inner(oldPath[0], end))
+			if (!mHeightmap->HasHeightmap(oldPath[0]))
+			{
+				if (oldPath[0] != (*path)[0])
+				{
+					path->push_back(oldPath[0]);
+				}
+				pathSize = pathSize - 1;
+				if (pathSize == 1)
+				{
+					path->push_back(end);
+					break;
+				}
+				Vector3* temp = new Vector3[pathSize];
+				memcpy(temp, &(oldPath[1]), pathSize * sizeof(Vector3));
+				SAFE_DELETE_ARRAY(oldPath);
+				oldPath = temp;
+				endIndex = pathSize - 1;
+				continue;
+			}
+			if (IsLineTest_Inner(oldPath[0], end, bounds))
 			{
 				--endIndex;
 				continue;

@@ -193,6 +193,24 @@ namespace Nav
 		return true;
 	}
 
+	bool NavHeightmap::HasHeightmap(const Vector3& pos)
+	{
+		if (pos.x < mMin.x || pos.z < mMin.y
+			|| pos.x > mMax.x || pos.z > mMax.y)
+		{
+			return false;
+		}
+		Vector3 p = pos;
+		p.x -= mMin.x;
+		p.z -= mMin.y;
+		int col = (int)floorf(p.x / mCellSize.x);
+		int row = (int)floorf(p.z / mCellSize.y);
+
+		if (mCellPassability[row * mSizeX + col] == 0)
+			return false;
+		return true;
+	}
+
 	void NavHeightmap::SwitchCellPassability(const Vector3& v0, const Vector3& v1, const Vector3& v2, bool passable)
 	{
 		Vector2 vSubMin;

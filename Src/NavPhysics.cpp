@@ -149,6 +149,12 @@ namespace NavPhysics
 			return false;
 		if (z > v0.z && z > v1.z && z > v2.z)
 			return false;
+
+		float y = point2D.y;
+		if (y + 0.5f < v0.y && y + 0.5f < v1.y && y + 0.5f < v2.y)
+			return false;
+		if (y - 0.5f > v0.y && y - 0.5f > v1.y && y - 0.5f > v2.y)
+			return false;
 		return true;
 	}
 
