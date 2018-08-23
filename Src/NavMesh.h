@@ -18,8 +18,6 @@ namespace Nav
 
 		bool GetHeight(const Vector3& pos, float* height);
 
-		int GetHeightCount(const Vector3& pos, float* height) const;
-
 		void GetBound(Vector3* min, Vector3* max);
 
 		unsigned int GetSize();

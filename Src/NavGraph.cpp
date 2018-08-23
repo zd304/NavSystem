@@ -99,7 +99,6 @@ namespace Nav
 		NavTriangle* triStart = GetTriangleByPoint(start);
 		NavTriangle* triEnd = GetTriangleByPoint(end);
 		std::vector<NavTriangle*> triPath;
-		std::vector<NavEdge*> bounds;
 		bool rst = Solve(triStart, triEnd, &triPath, cost);
 		if (rst)
 		{
@@ -109,58 +108,25 @@ namespace Nav
 			{
 				NavTriangle* tri = triPath[i];
 				path->push_back(tri->mCenter);
-				NavTriangle* triNext = NULL;
-				NavTriangle* triPre = NULL;
 
 				if (i < (nodeCount - 1))
 				{
-					triNext = triPath[i + 1];
-				}
-				if (i > 0)
-				{
-					triPre = triPath[i - 1];
-				}
-				int boudsIndices[3] {0, 1, 2};
-				unsigned int neighborCount = tri->mNeighbors.size();
-				for (unsigned int j = 0; j < neighborCount; ++j)
-				{
-					if (tri->mNeighbors[j] == triNext)
+					NavTriangle* triNext = triPath[i + 1];
+					for (unsigned int j = 0; j < tri->mNeighbors.size(); ++j)
 					{
+						if (tri->mNeighbors[j] != triNext)
+							continue;
 						path->push_back(tri->mEdgeCenter[j]);
+						break;
 					}
-					if ((tri->mNeighbors[j] == triPre
-						|| tri->mNeighbors[j] == triNext)
-						&& smoothPath) // not pre not next;
-					{
-						int edgeIndex = tri->mShareEdgeIndices[j];
-						boudsIndices[edgeIndex] = -1;
-					}
-				}
-				for (unsigned int j = 0; j < 3; ++j)
-				{
-					int index = boudsIndices[j];
-					if (index == -1)
-						continue;
-					int ptIndex0, ptIndex1;
-					DecodeEdgeIndex(index, &ptIndex0, &ptIndex1);
-					Vector3 pt0 = tri->mPoint[ptIndex0];
-					Vector3 pt1 = tri->mPoint[ptIndex1];
-					NavEdge* edge = new NavEdge();
-					edge->mPoint[0] = pt0;
-					edge->mPoint[1] = pt1;
-					bounds.push_back(edge);
 				}
 			}
 			path->push_back(end);
 
 			if (smoothPath)
 			{
-				SmoothPath(path, bounds);
+				SmoothPath(path);
 			}
-		}
-		for (unsigned int i = 0; i < bounds.size(); ++i)
-		{
-			SAFE_DELETE(bounds[i]);
 		}
 		return rst;
 	}
@@ -185,24 +151,11 @@ namespace Nav
 			NavEdge* edge = mMesh->mBounds[i];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 				continue;
-
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
 			Vector2 hitInfo;
 			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 				continue;
-
-			// 如果交点离边界高度差超过0.5米，则不算碰撞;
-			float edgeLength = (v1 - v0).Length();
-			float hitLength = (hitInfo - v0).Length();
-			float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
-
-			float lineLength = (hitInfo - start2D).Length();
-			float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
-
-			if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
-				continue;
-
 			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 			return true;
 		}
@@ -214,24 +167,11 @@ namespace Nav
 				NavEdge* edge = gate->mBounds[j];
 				if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 					continue;
-
 				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
 				Vector2 hitInfo;
 				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 					continue;
-
-				// 如果交点离边界高度差超过0.5米，则不算碰撞;
-				float edgeLength = (v1 - v0).Length();
-				float hitLength = (hitInfo - v0).Length();
-				float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
-
-				float lineLength = (hitInfo - start2D).Length();
-				float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
-
-				if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
-					continue;
-
 				hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 				return true;
 			}
@@ -259,18 +199,6 @@ namespace Nav
 			Vector2 hitInfo;
 			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 				continue;
-
-			// 如果交点离边界高度差超过0.5米，则不算碰撞;
-			float edgeLength = (v1 - v0).Length();
-			float hitLength = (hitInfo - v0).Length();
-			float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
-
-			float lineLength = (hitInfo - start2D).Length();
-			float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
-
-			if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
-				continue;
-
 			edgePoint0 = edge->mPoint[0];
 			edgePoint1 = edge->mPoint[1];
 			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
@@ -289,18 +217,6 @@ namespace Nav
 				Vector2 hitInfo;
 				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
 					continue;
-
-				// 如果交点离边界高度差超过0.5米，则不算碰撞;
-				float edgeLength = (v1 - v0).Length();
-				float hitLength = (hitInfo - v0).Length();
-				float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
-
-				float lineLength = (hitInfo - start2D).Length();
-				float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
-
-				if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
-					continue;
-
 				edgePoint0 = edge->mPoint[0];
 				edgePoint1 = edge->mPoint[1];
 				hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
@@ -326,77 +242,8 @@ namespace Nav
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-			Vector2 hitInfo;
-			if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
-				continue;
-
-			// 如果交点离边界高度差超过0.5米，则不算碰撞;
-			float edgeLength = (v1 - v0).Length();
-			float hitLength = (hitInfo - v0).Length();
-			float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
-
-			float lineLength = (hitInfo - start2D).Length();
-			float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
-
-			if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
-				continue;
-
-			return true;
-		}
-		for (unsigned int i = 0; i < mGates.size(); ++i)
-		{
-			NavGate* gate = mGates[i];
-			for (unsigned int j = 0; j < gate->mBounds.size(); ++j)
-			{
-				NavEdge* edge = gate->mBounds[j];
-				if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
-					continue;
-				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
-				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-				Vector2 hitInfo;
-				if (!NavPhysics::SegmentIntersectSegment(start2D, end2D, v0, v1, &hitInfo))
-					continue;
-
-				// 如果交点离边界高度差超过0.5米，则不算碰撞;
-				float edgeLength = (v1 - v0).Length();
-				float hitLength = (hitInfo - v0).Length();
-				float edgeY = edge->mPoint[0].y + (edge->mPoint[1].y - edge->mPoint[0].y) * hitLength / (edgeLength + FLT_EPSILON);
-
-				float lineLength = (hitInfo - start2D).Length();
-				float lineY = start.y + (end.y - start.y) * lineLength / (distance + FLT_EPSILON);
-
-				if (lineY > edgeY + 0.5f || lineY < edgeY - 0.5f)
-					continue;
-
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool NavGraph::IsLineTest_Inner(const Vector3& start, const Vector3& end, const std::vector<NavEdge*>& bounds) const
-	{
-		Vector2 start2D(start.x, start.z);
-		Vector2 end2D(end.x, end.z);
-
-		Vector2 dir = end2D - start2D;
-		float distance = dir.Length();
-		dir.Normalize();
-
-		for (unsigned int i = 0; i < bounds.size(); ++i)
-		{
-			NavEdge* edge = bounds[i];
-			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
-				continue;
-			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
-			Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-			Vector2 e01 = v1 - v0;
-			e01.Normalize();
-			v0 -= (e01 * 0.01f);
-			v1 += (e01 * 0.01f);
 			if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
 				continue;
-
 			return true;
 		}
 		for (unsigned int i = 0; i < mGates.size(); ++i)
@@ -409,20 +256,15 @@ namespace Nav
 					continue;
 				Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
 				Vector2 v1(edge->mPoint[1].x, edge->mPoint[1].z);
-				Vector2 e01 = v1 - v0;
-				e01.Normalize();
-				v0 -= (e01 * 0.01f);
-				v1 += (e01 * 0.01f);
 				if (!NavPhysics::IsSegmentsInterct(start2D, end2D, v0, v1))
 					continue;
-
 				return true;
 			}
 		}
 		return false;
 	}
 
-	void NavGraph::SmoothPath(std::vector<Vector3>* path, const std::vector<NavEdge*>& bounds) const
+	void NavGraph::SmoothPath(std::vector<Vector3>* path) const
 	{
 		unsigned int pathSize = (unsigned int)path->size();
 		Vector3* oldPath = new Vector3[pathSize];
@@ -435,26 +277,7 @@ namespace Nav
 		while (endIndex > 0)
 		{
 			Vector3 end = oldPath[endIndex];
-			if (!mHeightmap->HasHeightmap(oldPath[0]))
-			{
-				if (oldPath[0] != (*path)[0])
-				{
-					path->push_back(oldPath[0]);
-				}
-				pathSize = pathSize - 1;
-				if (pathSize == 1)
-				{
-					path->push_back(end);
-					break;
-				}
-				Vector3* temp = new Vector3[pathSize];
-				memcpy(temp, &(oldPath[1]), pathSize * sizeof(Vector3));
-				SAFE_DELETE_ARRAY(oldPath);
-				oldPath = temp;
-				endIndex = pathSize - 1;
-				continue;
-			}
-			if (IsLineTest_Inner(oldPath[0], end, bounds))
+			if (IsLineTest(oldPath[0], end))
 			{
 				--endIndex;
 				continue;

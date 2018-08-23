@@ -349,7 +349,7 @@ void Test::OnInput()
 	ImGuiIO& io = ImGui::GetIO();
 	if (fabs(io.MouseWheel) > FLT_EPSILON)
 	{
-		mCamera->SetPosition(pos + io.MouseWheel * forward * pos.Length() * delta * 800.0f);
+		mCamera->SetPosition(pos + io.MouseWheel * forward * pos.Length() * delta * 200.0f);
 		mCamera->Update(mDevice);
 	}
 
