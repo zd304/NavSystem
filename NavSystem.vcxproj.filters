@@ -112,6 +112,9 @@
     <ClInclude Include="Src\Camera.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\GraphEditLogic.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -190,6 +193,9 @@
       <Filter>nav</Filter>
     </ClCompile>
     <ClCompile Include="Src\Camera.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\GraphEditLogic.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

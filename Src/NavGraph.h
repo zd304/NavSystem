@@ -29,6 +29,10 @@ namespace Nav
 
 		void ResetCost();
 
+		unsigned int GetSceneID() const;
+
+		unsigned int GetLayerID() const;
+
 		unsigned int GetSize();
 
 		unsigned int WriteTo(char* dest, unsigned int ptr);

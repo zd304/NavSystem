@@ -15,6 +15,7 @@ class FileDialog;
 class PathFindLogic;
 class GateLogic;
 class CheckInfoLogic;
+class GraphEditLogic;
 class Camera;
 
 class Test
@@ -67,6 +68,7 @@ private:
 	PathFindLogic* mPathFindLogic;
 	GateLogic* mGateLogic;
 	CheckInfoLogic* mCheckInfoLogic;
+	GraphEditLogic* mGraphEditLogic;
 
 	// FileDialog
 	FileDialog* mOpenFBX;

@@ -67,7 +67,7 @@ extern "C"
 		const Nav::Vector3 vPos((float*)pos);
 		for (unsigned int i = 0; i < navSystem->GetGraphCount(); ++i)
 		{
-			Nav::NavGraph* graph = navSystem->GetGraphByID(i);
+			Nav::NavGraph* graph = navSystem->GetGraphByIndex(i);
 			float height = 0.0f;
 			if (graph->mHeightmap->GetHeight(vPos, &height))
 			{
@@ -91,7 +91,7 @@ extern "C"
 		const Nav::Vector3 vPos((float*)pos);
 		for (unsigned int i = 0; i < navSystem->GetGraphCount(); ++i)
 		{
-			Nav::NavGraph* graph = navSystem->GetGraphByID(i);
+			Nav::NavGraph* graph = navSystem->GetGraphByIndex(i);
 			float height = 0.0f;
 			if (graph->mHeightmap->GetHeight(vPos, &height))
 			{

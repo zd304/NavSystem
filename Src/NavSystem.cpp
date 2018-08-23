@@ -15,7 +15,7 @@ namespace Nav
 
 	NavSystem::NavSystem()
 	{
-		mVersion = 100;
+		mVersion = 101;
 	}
 
 	NavSystem::~NavSystem()
@@ -35,8 +35,25 @@ namespace Nav
 
 	void NavSystem::AddGraph(NavGraph* graph)
 	{
-		graph->mID = (unsigned int)mGraphs.size();
+		if (graph->mID == 0)
+		{
+			graph->mID = (unsigned int)mGraphs.size();
+		}
 		mGraphs.push_back(graph);
+		mGraphsMap[graph->mID] = graph;
+	}
+
+	void NavSystem::ResetGraphID(unsigned int oldId, unsigned int newId)
+	{
+		std::map<unsigned int, NavGraph*>::iterator it;
+		it = mGraphsMap.find(oldId);
+		if (it == mGraphsMap.end())
+			return;
+		NavGraph* graph = it->second;
+		graph->mID = newId;
+		mGraphsMap.erase(it);
+
+		mGraphsMap[newId] = graph;
 	}
 
 	unsigned int NavSystem::GetGraphCount()
@@ -46,9 +63,18 @@ namespace Nav
 
 	NavGraph* NavSystem::GetGraphByID(unsigned int id)
 	{
-		if (id < 0 || id >= mGraphs.size())
+		std::map<unsigned int, NavGraph*>::iterator it;
+		it = mGraphsMap.find(id);
+		if (it == mGraphsMap.end())
 			return NULL;
-		return mGraphs[id];
+		return it->second;
+	}
+
+	NavGraph* NavSystem::GetGraphByIndex(unsigned int index)
+	{
+		if (index < 0 || mGraphs.size() <= index)
+			return NULL;
+		return mGraphs[index];
 	}
 
 	void NavSystem::GetBound(Vector3* min, Vector3* max)

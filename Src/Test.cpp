@@ -11,6 +11,7 @@
 #include "PathFindLogic.h"
 #include "GateLogic.h"
 #include "CheckInfoLogic.h"
+#include "GraphEditLogic.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -37,6 +38,8 @@ Test::Test()
 	mPathFindLogic = NULL;
 	mGateLogic = NULL;
 	mCheckInfoLogic = NULL;
+	mGraphEditLogic = NULL;
+
 	mCamera = NULL;
 	mInstance = this;
 	mModelSize = 0.0f;
@@ -60,11 +63,13 @@ Test::Test()
 
 Test::~Test()
 {
+	SAFE_DELETE(mCamera);
 	SAFE_DELETE(mNavSystem);
 	SAFE_DELETE(mRenderer);
 	SAFE_DELETE(mPathFindLogic);
 	SAFE_DELETE(mGateLogic);
 	SAFE_DELETE(mCheckInfoLogic);
+	SAFE_DELETE(mGraphEditLogic);
 	SAFE_DELETE(mOpenFBX);
 	SAFE_DELETE(mSaveNav);
 	SAFE_DELETE(mOpenNav);
@@ -175,7 +180,7 @@ void Test::OnGUI()
 		OpenNav(path.c_str());
 	}
 
-	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic)
+	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic && !mGraphEditLogic)
 	{
 		if (ImGui::Button(STU("寻路模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
 		{
@@ -189,6 +194,10 @@ void Test::OnGUI()
 		{
 			mCheckInfoLogic = new CheckInfoLogic(this);
 		}
+		if (ImGui::Button(STU("ID编辑模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		{
+			mGraphEditLogic = new GraphEditLogic(this);
+		}
 	}
 	else
 	{
@@ -197,6 +206,7 @@ void Test::OnGUI()
 			SAFE_DELETE(mPathFindLogic);
 			SAFE_DELETE(mGateLogic);
 			SAFE_DELETE(mCheckInfoLogic);
+			SAFE_DELETE(mGraphEditLogic);
 		}
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -214,6 +224,10 @@ void Test::OnGUI()
 	if (mCheckInfoLogic)
 	{
 		mCheckInfoLogic->OnGUI();
+	}
+	if (mGraphEditLogic)
+	{
+		mGraphEditLogic->OnGUI();
 	}
 
 	ImGui::End();
@@ -437,7 +451,7 @@ void Test::OpenNav(const char* filePath)
 	FBXHelper::FBXMeshDatas datas;
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		Nav::NavGraph* graph = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* graph = mNavSystem->GetGraphByIndex(i);
 		FBXHelper::FBXMeshData* data = new FBXHelper::FBXMeshData();
 		int index = -1;
 		for (size_t j = 0; j < graph->mMesh->mTriangles.size(); ++j)
@@ -464,7 +478,7 @@ void Test::OpenNav(const char* filePath)
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		Nav::NavGraph* graph = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* graph = mNavSystem->GetGraphByIndex(i);
 		mRenderer->SetHeightmap(graph->mHeightmap, i);
 	}
 	mRenderer->CalcAllCloseGates();
@@ -496,7 +510,7 @@ bool Test::IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, 
 	{
 		bool exist1 = false;
 		bool exist2 = false;
-		Nav::NavGraph* finder = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* finder = mNavSystem->GetGraphByIndex(i);
 		for (size_t j = 0; j < finder->mMesh->mTriangles.size(); ++j)
 		{
 			Nav::NavTriangle* tri = finder->mMesh->mTriangles[j];
@@ -561,7 +575,7 @@ void Test::Pick(int x, int y)
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
 	{
-		Nav::NavGraph* navPathFinder = mNavSystem->GetGraphByID(i);
+		Nav::NavGraph* navPathFinder = mNavSystem->GetGraphByIndex(i);
 		Nav::NavMesh* navMesh = navPathFinder->mMesh;
 		for (size_t j = 0; j < navMesh->mTriangles.size(); ++j)
 		{
@@ -589,6 +603,8 @@ void Test::Pick(int x, int y)
 		mGateLogic->OnPick(hitTri, hitPoint, hitGraph);
 	if (mCheckInfoLogic)
 		mCheckInfoLogic->OnPick(hitTri, hitPoint, hitGraph);
+	if (mGraphEditLogic)
+		mGraphEditLogic->OnPick(hitTri, hitPoint, hitGraph);
 }
 
 void Test::TransformPos(Nav::Vector3& pos)

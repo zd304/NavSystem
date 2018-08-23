@@ -38,6 +38,8 @@ public:
 	void CalcAllCloseGates();
 
 	void ClearGate();
+
+	void SetEditGraph(const Nav::NavGraph* graph);
 public:
 	Test* mTest;
 	IDirect3DDevice9* mDevice;
@@ -59,6 +61,9 @@ public:
 	// Gate;
 	ID3DXMesh* mGateMeshInGraph;
 	ID3DXMesh* mGateMeshSingle;
+
+	// GraphEdit;
+	ID3DXMesh* mGraphEditMesh;
 };
 
 #endif

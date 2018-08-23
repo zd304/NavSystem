@@ -4,6 +4,7 @@
 #define _CRT_SECURE_NO_WARNINGS 
 
 #include <vector>
+#include <map>
 #include <string>
 #include "math/Vector3.h"
 #include "micropather/micropather.h"

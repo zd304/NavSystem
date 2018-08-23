@@ -22,6 +22,7 @@ namespace Nav
 		void SaveAs(const char* path);
 
 		void AddGraph(NavGraph* graph);
+		void ResetGraphID(unsigned int oldId, unsigned int newId);
 
 		void Clear();
 
@@ -29,11 +30,14 @@ namespace Nav
 
 		NavGraph* GetGraphByID(unsigned int id);
 
+		NavGraph* GetGraphByIndex(unsigned int index);
+
 		void GetBound(Vector3* min, Vector3* max);
 
 		unsigned int GetVersion();
 	private:
 		std::vector<NavGraph*> mGraphs;
+		std::map<unsigned int, NavGraph*> mGraphsMap;
 		unsigned int mVersion;
 	};
 

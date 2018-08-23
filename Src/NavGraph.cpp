@@ -5,6 +5,7 @@
 #include "NavHeightmap.h"
 #include "NavGate.h"
 #include "NavPhysics.h"
+#include "NavSystem.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -134,6 +135,16 @@ namespace Nav
 	void NavGraph::ResetCost()
 	{
 		mPather->Reset();
+	}
+
+	unsigned int NavGraph::GetSceneID() const
+	{
+		return mID / 100;
+	}
+
+	unsigned int NavGraph::GetLayerID() const
+	{
+		return mID % 100;
 	}
 
 	bool NavGraph::LineTest(const Vector3& start, const Vector3& end, Vector3& hitPoint) const
@@ -336,6 +347,8 @@ namespace Nav
 
 	unsigned int NavGraph::WriteTo(char* dest, unsigned int ptr)
 	{
+		memcpy(dest + ptr, &mID, sizeof(unsigned int));
+		ptr += sizeof(unsigned int);
 		ptr = mMesh->WriteTo(dest, ptr);
 		ptr = mHeightmap->WriteTo(dest, ptr);
 		unsigned int gateCount = (unsigned int)mGates.size();
@@ -362,7 +375,11 @@ namespace Nav
 		SAFE_DELETE(mHeightmap);
 		mMesh = new NavMesh();
 		mHeightmap = new NavHeightmap();
-
+		if (gNavSystem->GetVersion() > 100)
+		{
+			memcpy(&mID, &src[ptr], sizeof(unsigned int));
+			ptr += sizeof(unsigned int);
+		}
 		ptr = mMesh->ReadFrom(src, ptr);
 		ptr = mHeightmap->ReadFrom(src, ptr);
 		unsigned int gateCount = 0;
