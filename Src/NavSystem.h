@@ -6,12 +6,15 @@
 namespace Nav
 {
 	class NavGraph;
+	class NavSceneTree;
 
 	class NavSystem
 	{
 	public:
 		NavSystem();
 		~NavSystem();
+
+		void InitSceneTree(float x, float y, float width, float height, int maxLevel);
 
 		bool LoadFromFileW(const wchar_t* path);
 
@@ -22,7 +25,10 @@ namespace Nav
 		void SaveAs(const char* path);
 
 		void AddGraph(NavGraph* graph);
+
 		void ResetGraphID(unsigned int oldId, unsigned int newId);
+
+		bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost, bool smoothPath) const;
 
 		void Clear();
 
@@ -38,6 +44,7 @@ namespace Nav
 	private:
 		std::vector<NavGraph*> mGraphs;
 		std::map<unsigned int, NavGraph*> mGraphsMap;
+		NavSceneTree* mScene;
 		unsigned int mVersion;
 	};
 

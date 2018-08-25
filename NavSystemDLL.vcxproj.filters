@@ -14,6 +14,9 @@
     <Filter Include="Src\math">
       <UniqueIdentifier>{b60dac9c-025e-47ba-b324-0e4b71d7fb83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\quadtree">
+      <UniqueIdentifier>{411da0d5-7f7a-42b0-a20b-28aa76db4d92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Nav.h">
@@ -61,6 +64,18 @@
     <ClInclude Include="Src\NavLog.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\quadtree\QuadTreeNode.h">
+      <Filter>Src\quadtree</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavSceneTree.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavLinkInfo.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavSceneNode.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\NavGate.cpp">
@@ -100,6 +115,18 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\NavInc.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavLinkInfo.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSceneTree.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\quadtree\QuadTreeNode.cpp">
+      <Filter>Src\quadtree</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSceneNode.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

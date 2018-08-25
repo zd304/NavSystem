@@ -2,6 +2,7 @@
 #include "NavMesh.h"
 #include "NavHeightmap.h"
 #include "NavGraph.h"
+#include "NavSceneTree.h"
 //#include <stdio.h>
 #include <fstream>
 
@@ -15,6 +16,8 @@ namespace Nav
 
 	NavSystem::NavSystem()
 	{
+		gNavSystem = this;
+		mScene = NULL;
 		mVersion = 101;
 	}
 
@@ -25,6 +28,8 @@ namespace Nav
 
 	void NavSystem::Clear()
 	{
+		SAFE_DELETE(mScene);
+		mGraphsMap.clear();
 		for (unsigned int i = 0; i < mGraphs.size(); ++i)
 		{
 			NavGraph* graph = mGraphs[i];
@@ -33,11 +38,40 @@ namespace Nav
 		mGraphs.clear();
 	}
 
+	void NavSystem::InitSceneTree(float x, float y, float width, float height, int maxLevel)
+	{
+		SAFE_DELETE(mScene);
+
+		mScene = new NavSceneTree(this);
+		mScene->InitSceneTree(x, y, width, height, maxLevel);
+	}
+
 	void NavSystem::AddGraph(NavGraph* graph)
 	{
 		if (graph->mID == 0)
 		{
-			graph->mID = (unsigned int)mGraphs.size();
+			unsigned int newID = 1;
+			bool find = true;
+			while (find)
+			{
+				bool isBreak = false;
+				for (size_t i = 0; i < mGraphs.size(); ++i)
+				{
+					NavGraph* graph = mGraphs[i];
+					if (!graph)
+						continue;
+					if (graph->mID == newID)
+					{
+						++newID;
+						isBreak = true;
+						break;
+					}
+				}
+				if (isBreak)
+					break;
+				find = false;
+			}
+			graph->mID = newID;
 		}
 		mGraphs.push_back(graph);
 		mGraphsMap[graph->mID] = graph;
@@ -54,6 +88,11 @@ namespace Nav
 		mGraphsMap.erase(it);
 
 		mGraphsMap[newId] = graph;
+	}
+
+	bool NavSystem::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost, bool smoothPath) const
+	{
+
 	}
 
 	unsigned int NavSystem::GetGraphCount()

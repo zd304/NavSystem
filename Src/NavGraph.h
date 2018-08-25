@@ -29,6 +29,10 @@ namespace Nav
 
 		void ResetCost();
 
+		NavTriangle* GetTriangleByPoint(const Vector3& point) const;
+
+		void SmoothPath(std::vector<Vector3>* path) const;
+
 		unsigned int GetSceneID() const;
 
 		unsigned int GetLayerID() const;
@@ -43,16 +47,17 @@ namespace Nav
 		float LeastCostEstimate(void* stateStart, void* stateEnd);
 		void AdjacentCost(void* state, std::vector<micropather::StateCost> *adjacent);
 		void PrintStateInfo(void* state);
-	private:
-		NavTriangle* GetTriangleByPoint(const Vector3& point) const;
-
-		void SmoothPath(std::vector<Vector3>* path) const;
 	public:
 		NavMesh* mMesh;
 		NavHeightmap* mHeightmap;
 		std::vector<NavGate*> mGates;
 		micropather::MicroPather* mPather;
 		unsigned int mID;
+
+		float x;
+		float y;
+		float width;
+		float height;
 	};
 }
 

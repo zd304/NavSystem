@@ -6,6 +6,7 @@
 namespace Nav
 {
 	class NavTriangle;
+	class NavLinkInfo;
 	struct NavEdge;
 	struct AdjacentEdgePair;
 
@@ -31,7 +32,10 @@ namespace Nav
 		bool IsTriangleAdjacent(NavTriangle* tri1, NavTriangle* tri2, AdjacentEdgePair* aep);
 	public:
 		std::vector<NavTriangle*> mTriangles;
+		std::vector<NavLinkInfo*> mNavLinkInfos;
 		std::vector<NavEdge*> mBounds;
+		Vector3 mMin;
+		Vector3 mMax;
 	};
 
 	void DecodeEdgeIndex(int edgeIndex, int* pointIndex1, int* pointIndex2);

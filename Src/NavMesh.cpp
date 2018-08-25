@@ -2,6 +2,8 @@
 #include "NavTriangle.h"
 #include "NavEdge.h"
 #include "NavPhysics.h"
+#include "NavLinkInfo.h"
+#include "NavSystem.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -119,11 +121,14 @@ namespace Nav
 
 	NavMesh::NavMesh()
 	{
-
+		mMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+		mMax.Set(FLT_MIN, FLT_MIN, FLT_MIN);
 	}
 
 	NavMesh::NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int indicesNum)
 	{
+		mMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+		mMax.Set(FLT_MIN, FLT_MIN, FLT_MIN);
 		for (int i = 0; i < indicesNum; i += 3)
 		{
 			unsigned int index0 = indices[i];
@@ -132,32 +137,27 @@ namespace Nav
 
 			NavTriangle* tri = new NavTriangle(vertices[index0], vertices[index1], vertices[index2]);
 			mTriangles.push_back(tri);
+
+			Vector3 triMax, triMin;
+			tri->GetBound(&triMin, &triMax);
+			mMin.Set(
+				MinFloat(triMin.x, mMin.x),
+				MinFloat(triMin.y, mMin.y),
+				MinFloat(triMin.z, mMin.z)
+				);
+			mMax.Set(
+				MaxFloat(triMax.x, mMax.x),
+				MaxFloat(triMax.y, mMax.y),
+				MaxFloat(triMax.z, mMax.z)
+				);
 		}
 		UpdateAdjacent();
 	}
 
 	void NavMesh::GetBound(Vector3* min, Vector3* max)
 	{
-		if (min == NULL || max == NULL)
-			return;
-		min->Set(FLT_MAX, FLT_MAX, FLT_MAX);
-		max->Set(FLT_MIN, FLT_MIN, FLT_MIN);
-		for (size_t i = 0; i < mTriangles.size(); ++i)
-		{
-			NavTriangle* tri = mTriangles[i];
-			Vector3 triMax, triMin;
-			tri->GetBound(&triMin, &triMax);
-			min->Set(
-				MinFloat(triMin.x, min->x),
-				MinFloat(triMin.y, min->y),
-				MinFloat(triMin.z, min->z)
-			);
-			max->Set(
-				MaxFloat(triMax.x, max->x),
-				MaxFloat(triMax.y, max->y),
-				MaxFloat(triMax.z, max->z)
-			);
-		}
+		(*min) = mMin;
+		(*max) = mMax;
 	}
 
 	bool NavMesh::GetHeight(const Vector3& pos, float* height)
@@ -227,6 +227,20 @@ namespace Nav
 		for (unsigned int i = 0; i < mTriangles.size(); ++i)
 		{
 			NavTriangle* tri = mTriangles[i];
+
+			bool isLinkTri = false;
+			for (unsigned int j = 0; j < mNavLinkInfos.size(); ++j)
+			{
+				NavLinkInfo* linkInfo = mNavLinkInfos[j];
+				if (linkInfo->mTriIndex == j)
+				{
+					isLinkTri = true;
+					break;
+				}
+			}
+			if (isLinkTri)
+				continue;
+
 			bool hasEdge[3] { false, false, false };
 			for (unsigned int j = 0; j < tri->mShareEdgeIndices.size(); ++j)
 			{
@@ -291,6 +305,13 @@ namespace Nav
 		}
 		mTriangles.clear();
 
+		for (unsigned int i = 0; i < mNavLinkInfos.size(); ++i)
+		{
+			NavLinkInfo* link = mNavLinkInfos[i];
+			SAFE_DELETE(link);
+		}
+		mNavLinkInfos.clear();
+
 		for (unsigned int i = 0; i < mBounds.size(); ++i)
 		{
 			NavEdge* edge = mBounds[i];
@@ -307,6 +328,13 @@ namespace Nav
 			NavTriangle* tri = mTriangles[i];
 			size += tri->GetSize();
 		}
+		size += sizeof(unsigned int);
+		for (unsigned int i = 0; i < mNavLinkInfos.size(); ++i)
+		{
+			NavLinkInfo* linkInfo = mNavLinkInfos[i];
+			size += linkInfo->GetSize();
+		}
+
 		//size += sizeof(unsigned int);
 		//for (unsigned int i = 0; i < mBounds.size(); ++i)
 		//{
@@ -326,6 +354,16 @@ namespace Nav
 		{
 			NavTriangle* tri = mTriangles[i];
 			ptr = tri->WriteTo(dest, ptr);
+		}
+
+		unsigned int linkCount = (unsigned int)mNavLinkInfos.size();
+		memcpy(dest + ptr, &linkCount, sizeof(unsigned int));
+		ptr += sizeof(unsigned int);
+
+		for (unsigned int i = 0; i < linkCount; ++i)
+		{
+			NavLinkInfo* link = mNavLinkInfos[i];
+			ptr = link->WriteTo(dest, ptr);
 		}
 
 		//unsigned int boundsCount = mBounds.size();
@@ -348,11 +386,40 @@ namespace Nav
 		memcpy(&triCount, &src[ptr], sizeof(unsigned int));
 		ptr += sizeof(unsigned int);
 
+		mMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
+		mMax.Set(FLT_MIN, FLT_MIN, FLT_MIN);
 		for (unsigned int i = 0; i < triCount; ++i)
 		{
 			NavTriangle* tri = new NavTriangle();
 			ptr = tri->ReadFrom(src, ptr);
 			mTriangles.push_back(tri);
+
+			Vector3 triMax, triMin;
+			tri->GetBound(&triMin, &triMax);
+			mMin.Set(
+				MinFloat(triMin.x, mMin.x),
+				MinFloat(triMin.y, mMin.y),
+				MinFloat(triMin.z, mMin.z)
+				);
+			mMax.Set(
+				MaxFloat(triMax.x, mMax.x),
+				MaxFloat(triMax.y, mMax.y),
+				MaxFloat(triMax.z, mMax.z)
+				);
+		}
+
+		if (gNavSystem->GetVersion() > 100)
+		{
+			unsigned int linkCount = 0;
+			memcpy(&linkCount, &src[ptr], sizeof(unsigned int));
+			ptr += sizeof(unsigned int);
+
+			for (unsigned int i = 0; i < linkCount; ++i)
+			{
+				NavLinkInfo* linkInfo = new NavLinkInfo();
+				ptr = linkInfo->ReadFrom(src, ptr);
+				mNavLinkInfos.push_back(linkInfo);
+			}
 		}
 
 		UpdateAdjacent();

@@ -8,6 +8,7 @@
 #include <string>
 #include "math/Vector3.h"
 #include "micropather/micropather.h"
+#include "quadtree/QuadTreeNode.h"
 
 #define SAFE_DELETE(x) if (x) { delete x; x = NULL; }
 #define SAFE_DELETE_ARRAY(x) if (x) { delete [] x; x = NULL; }
