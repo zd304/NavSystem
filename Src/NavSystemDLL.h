@@ -41,6 +41,20 @@ extern "C"
 	_DLLExprot bool Nav_CreateFromMemory(char* data);
 
 	//************************************
+	// Method:    从文件创建简图;
+	// Returns:   是否创建成功;
+	// Parameter: [path]简图文件路径;
+	//************************************
+	_DLLExprot bool Nav_LoadSketchSceneFromFile(const char* path);
+
+	//************************************
+	// Method:    从内存创建简图;
+	// Returns:   是否创建成功;
+	// Parameter: [data]简图的二进制路径;
+	//************************************
+	_DLLExprot bool Nav_LoadSketchSceneFromMemory(char* data);
+
+	//************************************
 	// Method:    释放当前场景的导航;
 	// Returns:   void
 	//************************************

@@ -20,6 +20,9 @@
     <Filter Include="nav">
       <UniqueIdentifier>{721b9c2d-c7c0-431d-8383-9ed588990845}</UniqueIdentifier>
     </Filter>
+    <Filter Include="quadtree">
+      <UniqueIdentifier>{cd31be66-70a0-4242-8626-1e0a4efab07d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\imgui\imconfig.h">
@@ -115,6 +118,21 @@
     <ClInclude Include="Src\GraphEditLogic.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\NavLinkInfo.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavSceneNode.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NavSceneTree.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\quadtree\QuadTreeNode.h">
+      <Filter>quadtree</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\SketchSceneLogic.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -196,6 +214,21 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\GraphEditLogic.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavLinkInfo.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSceneNode.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSceneTree.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\quadtree\QuadTreeNode.cpp">
+      <Filter>quadtree</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\SketchSceneLogic.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

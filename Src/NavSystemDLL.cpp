@@ -49,6 +49,30 @@ extern "C"
 		return true;
 	}
 
+	bool Nav_LoadSketchSceneFromFile(const char* path)
+	{
+		if (!navSystem) return false;
+		if (!navSystem->LoadSketchScneneFromFile(path))
+		{
+			SAFE_DELETE(navSystem);
+			return false;
+		}
+		return true;
+	}
+
+	bool Nav_LoadSketchSceneFromMemory(char* data)
+	{
+		if (!navSystem) return false;
+
+		if (!navSystem->LoadSketchScneneFromMemory(data))
+		{
+			SAFE_DELETE(navSystem);
+			return false;
+		}
+
+		return true;
+	}
+
 	void Nav_Release()
 	{
 		SAFE_DELETE(navSystem);

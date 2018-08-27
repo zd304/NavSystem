@@ -18,7 +18,7 @@ namespace Nav
 
 		void Clear();
 
-		void AddSceneNode(NavSceneNode* node);
+		bool AddSceneNode(NavSceneNode* node);
 
 		void InitSceneTree(float x, float y, float width, float height, int maxLevel);
 
@@ -42,6 +42,7 @@ namespace Nav
 		NavSystem* mNavSystem;
 		micropather::MicroPather* mPather;
 		QuadTreeNode<NavSceneNode>* mQuadTree;
+	public:
 		std::map<unsigned int, NavSceneNode*> mNodes;
 	};
 }

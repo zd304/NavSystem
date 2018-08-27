@@ -7,6 +7,7 @@ namespace Nav
 {
 	class NavGraph;
 	class NavSceneTree;
+	class NavSceneNode;
 
 	class NavSystem
 	{
@@ -16,19 +17,23 @@ namespace Nav
 
 		void InitSceneTree(float x, float y, float width, float height, int maxLevel);
 
+		bool AddSceneNode(NavSceneNode* node);
+
 		bool LoadFromFileW(const wchar_t* path);
 
 		bool LoadFromFile(const char* path);
 
 		bool LoadFromMemory(char* data);
 
+		bool LoadSketchScneneFromFile(const char* path);
+
+		bool LoadSketchScneneFromMemory(char* data);
+
 		void SaveAs(const char* path);
 
 		void AddGraph(NavGraph* graph);
 
 		void ResetGraphID(unsigned int oldId, unsigned int newId);
-
-		bool Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost, bool smoothPath) const;
 
 		void Clear();
 
@@ -44,8 +49,9 @@ namespace Nav
 	private:
 		std::vector<NavGraph*> mGraphs;
 		std::map<unsigned int, NavGraph*> mGraphsMap;
-		NavSceneTree* mScene;
 		unsigned int mVersion;
+	public:
+		NavSceneTree* mScene;
 	};
 
 	extern NavSystem* gNavSystem;

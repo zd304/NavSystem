@@ -76,10 +76,17 @@ namespace Nav
 		// Empty;
 	}
 
-	void NavSceneTree::AddSceneNode(NavSceneNode* node)
+	bool NavSceneTree::AddSceneNode(NavSceneNode* node)
 	{
+		std::map<unsigned int, NavSceneNode*>::iterator it;
+		it = mNodes.find(node->mScnID);
+		if (it != mNodes.end())
+		{
+			return false;
+		}
 		mNodes[node->mScnID] = node;
 		mQuadTree->InsertObject(node);
+		return true;
 	}
 
 	void NavSceneTree::InitSceneTree(float x, float y, float width, float height, int maxLevel)
@@ -122,7 +129,7 @@ namespace Nav
 			unsigned int nextSceneID = nextScnNode->mScnID;
 			float targetMinDist = FLT_MAX;
 			
-			for (int i = 0; i < startGraph->mMesh->mNavLinkInfos.size(); ++i)
+			for (size_t i = 0; i < startGraph->mMesh->mNavLinkInfos.size(); ++i)
 			{
 				NavLinkInfo* linkInfo = startGraph->mMesh->mNavLinkInfos[i];
 				if (linkInfo->mLinkID == nextSceneID)

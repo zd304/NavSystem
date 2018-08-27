@@ -12,6 +12,9 @@
 #include "GateLogic.h"
 #include "CheckInfoLogic.h"
 #include "GraphEditLogic.h"
+#include "NavSceneNode.h"
+#include "NavSceneTree.h"
+#include "SketchSceneLogic.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -39,6 +42,7 @@ Test::Test()
 	mGateLogic = NULL;
 	mCheckInfoLogic = NULL;
 	mGraphEditLogic = NULL;
+	mSketchScnLogic = NULL;
 
 	mCamera = NULL;
 	mInstance = this;
@@ -56,6 +60,8 @@ Test::Test()
 	mSaveNav->SetDefaultDirectory(sCurPath);
 	mOpenNav = new FileDialog("打开导航", "nav", eFileDialogUsage_OpenFile);
 	mOpenNav->SetDefaultDirectory(sCurPath);
+	mGenSketchScn = new FileDialog("生成大地图", "", eFileDialogUsage_OpenFolder);
+	mGenSketchScn->SetDefaultDirectory(sCurPath);
 
 	mLeftUIWidth = 256;
 	mModelSize = 0.0f;
@@ -70,9 +76,11 @@ Test::~Test()
 	SAFE_DELETE(mGateLogic);
 	SAFE_DELETE(mCheckInfoLogic);
 	SAFE_DELETE(mGraphEditLogic);
+	SAFE_DELETE(mSketchScnLogic);
 	SAFE_DELETE(mOpenFBX);
 	SAFE_DELETE(mSaveNav);
 	SAFE_DELETE(mOpenNav);
+	SAFE_DELETE(mGenSketchScn);
 }
 
 void LoadTextures(IDirect3DDevice9* device)
@@ -179,8 +187,64 @@ void Test::OnGUI()
 
 		OpenNav(path.c_str());
 	}
+	if (mGenSketchScn->DoModal())
+	{
+		std::string path;
+		path += mGenSketchScn->GetDirectory();
+		path += mGenSketchScn->GetFileName();
 
-	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic && !mGraphEditLogic)
+		std::list<Nav::NavSceneNode*> scnNodes;
+		GenerateSketchScene(path.c_str(), scnNodes);
+
+		Nav::Vector2 vMin(FLT_MAX, FLT_MAX);
+		Nav::Vector2 vMax(FLT_MIN, FLT_MIN);
+
+		std::list<Nav::NavSceneNode*>::iterator it;
+		for (it = scnNodes.begin(); it != scnNodes.end(); ++it)
+		{
+			Nav::NavSceneNode* node = *it;
+			if (vMin.x > node->x)
+				vMin.x = node->x;
+			if (vMin.y > node->y)
+				vMin.y = node->y;
+			float x1 = node->x + node->width;
+			float y1 = node->y + node->height;
+			if (vMax.x < x1)
+				vMax.x = x1;
+			if (vMax.y < y1)
+				vMax.y = y1;
+		}
+		mNavSystem->InitSceneTree(vMin.x, vMin.y, vMax.x - vMin.x, vMax.y - vMin.y, 5);
+		for (it = scnNodes.begin(); it != scnNodes.end(); ++it)
+		{
+			Nav::NavSceneNode* node = *it;
+			if (!mNavSystem->AddSceneNode(node))
+			{
+				SAFE_DELETE(node);
+			}
+		}
+
+		mModelSize = D3DXVec2Length((D3DXVECTOR2*)&(vMax - vMin));
+		if (mCamera)
+		{
+			mCamera->SetPosition(Nav::Vector3(0.0f, 2.0f * mModelSize, -2.0f * mModelSize));
+			mCamera->SetForward(Nav::Vector3(0.0f, -1.0f, 1.0f));
+			mCamera->Update(mDevice);
+		}
+
+		SAFE_DELETE(mRenderer);
+		SAFE_DELETE(mPathFindLogic);
+		SAFE_DELETE(mGateLogic);
+		SAFE_DELETE(mCheckInfoLogic);
+		SAFE_DELETE(mSketchScnLogic);
+		mSketchScnLogic = new SketchSceneLogic(this);
+
+		SAFE_DELETE(mRenderer);
+		mRenderer = new MeshRenderer(mDevice, this);
+		mSketchScnLogic->SetNavSceneTree(mNavSystem->mScene);
+	}
+
+	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic && !mGraphEditLogic && !mSketchScnLogic)
 	{
 		if (ImGui::Button(STU("寻路模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
 		{
@@ -207,6 +271,7 @@ void Test::OnGUI()
 			SAFE_DELETE(mGateLogic);
 			SAFE_DELETE(mCheckInfoLogic);
 			SAFE_DELETE(mGraphEditLogic);
+			SAFE_DELETE(mSketchScnLogic);
 		}
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -250,6 +315,7 @@ void Test::OnMenu()
 	bool openFlag = false;
 	bool open1Flag = false;
 	bool saveFlag = false;
+	bool genSketchScn = false;
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -270,6 +336,15 @@ void Test::OnMenu()
 			if (ImGui::MenuItem(STU("清除导航").c_str(), NULL))
 			{
 				CloseFile();
+			}
+			ImGui::Separator();
+			if (ImGui::MenuItem(STU("生成大地图信息").c_str(), NULL))
+			{
+				genSketchScn = true;
+			}
+			if (ImGui::MenuItem(STU("加载大地图信息").c_str(), NULL))
+			{
+
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem(STU("关闭").c_str(), NULL))
@@ -318,6 +393,11 @@ void Test::OnMenu()
 		mSaveNav->Open();
 		saveFlag = false;
 	}
+	if (genSketchScn)
+	{
+		mGenSketchScn->Open();
+		genSketchScn = false;
+	}
 }
 
 void Test::OnInput()
@@ -332,26 +412,33 @@ void Test::OnInput()
 	Nav::Vector3 pos = mCamera->GetPosition();
 	Nav::Vector3 forward = mCamera->GetDir();
 
+	float scale = 1.0f;
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.KeyShift)
+	{
+		scale = 10.0f;
+	}
+
 	if (ImGui::IsKeyPressed('A'))
 	{
 		Nav::Vector3 right = mCamera->GetRight();
-		mCamera->SetPosition(pos - right * pos.Length() * delta * 30.0f);
+		mCamera->SetPosition(pos - right * delta * scale * pos.Length() * 30.0f);
 		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyPressed('D'))
 	{
 		Nav::Vector3 right = mCamera->GetRight();
-		mCamera->SetPosition(pos + right * pos.Length() * delta * 30.0f);
+		mCamera->SetPosition(pos + right * delta * scale * pos.Length() * 30.0f);
 		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyPressed('W'))
 	{
-		mCamera->SetPosition(pos + forward * pos.Length() * delta * 30.0f);
+		mCamera->SetPosition(pos + forward * delta * scale * pos.Length() * 30.0f);
 		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyPressed('S'))
 	{
-		mCamera->SetPosition(pos - forward * pos.Length() * delta * 30.0f);
+		mCamera->SetPosition(pos - forward * delta * scale * pos.Length() * 30.0f);
 		mCamera->Update(mDevice);
 	}
 	if (ImGui::IsKeyReleased('F'))
@@ -360,10 +447,10 @@ void Test::OnInput()
 		mCamera->SetForward(Nav::Vector3(0.0f, -1.0f, 1.0f));
 		mCamera->Update(mDevice);
 	}
-	ImGuiIO& io = ImGui::GetIO();
+	
 	if (fabs(io.MouseWheel) > FLT_EPSILON)
 	{
-		mCamera->SetPosition(pos + io.MouseWheel * forward * pos.Length() * delta * 200.0f);
+		mCamera->SetPosition(pos + io.MouseWheel * forward * delta * scale * pos.Length() * 200.0f);
 		mCamera->Update(mDevice);
 	}
 
@@ -420,7 +507,8 @@ void Test::OpenFBX(const char* filePath)
 
 	FBXHelper::FBXMeshDatas* meshDatas = FBXHelper::GetMeshDatas();
 
-	mRenderer = new MeshRenderer(mDevice, meshDatas, this);
+	mRenderer = new MeshRenderer(mDevice, this);
+	mRenderer->SetMeshData(meshDatas);
 
 	for (size_t i = 0; i < meshDatas->datas.size(); ++i)
 	{
@@ -473,7 +561,8 @@ void Test::OpenNav(const char* filePath)
 		}
 		datas.datas.push_back(data);
 	}
-	mRenderer = new MeshRenderer(mDevice, &datas, this);
+	mRenderer = new MeshRenderer(mDevice, this);
+	mRenderer->SetMeshData(&datas);
 	//mPathFindLogic = new PathFindLogic(this);
 
 	for (size_t i = 0; i < mNavSystem->GetGraphCount(); ++i)
@@ -502,6 +591,76 @@ void Test::CloseFile()
 	SAFE_DELETE(mPathFindLogic);
 	SAFE_DELETE(mGateLogic);
 	SAFE_DELETE(mCheckInfoLogic);
+	SAFE_DELETE(mSketchScnLogic);
+}
+
+void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& scnNodes)
+{
+	if (!mNavSystem) return;
+
+	intptr_t handle;
+	_finddata_t findData;
+	std::string p;
+	handle = _findfirst(p.assign(path).append("\\*").c_str(), &findData); // 查找目录中的第一个文件;
+	if (handle == -1)
+	{
+		return;
+	}
+	do
+	{
+		
+		if ((findData.attrib & _A_SUBDIR) != NULL) // 目录
+		{
+			if (strcmp(findData.name, ".") != 0
+				&& strcmp(findData.name, "..") != 0)
+			{
+				GenerateSketchScene(p.assign(path).append("\\").append(findData.name).c_str(), scnNodes);
+			}
+		}
+		else
+		{
+			std::string file = findData.name;
+			int findPos = (int)file.find_last_of('.');
+			if (findPos > 0)
+			{
+				std::string ext = file.substr(findPos);
+				if (ext != ".nav")
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
+			Nav::NavSystem navSys;
+			navSys.LoadFromFile(p.assign(path).append("\\").append(findData.name).c_str());
+
+			Nav::NavSceneNode* scnNode = new Nav::NavSceneNode();
+
+			Nav::Vector2 vMin(FLT_MAX, FLT_MAX);
+			Nav::Vector2 vMax(FLT_MIN, FLT_MIN);
+			for (unsigned int i = 0; i < navSys.GetGraphCount(); ++i)
+			{
+				Nav::NavGraph* graph = navSys.GetGraphByIndex(i);
+				Nav::Vector3 min, max;
+				graph->mMesh->GetBound(&min, &max);
+				vMin.x = vMin.x > min.x ? min.x : vMin.x;
+				vMin.y = vMin.y > min.z ? min.z : vMin.y;
+				vMax.x = vMax.x < max.x ? max.x : vMax.x;
+				vMax.y = vMax.y < max.z ? max.z : vMax.y;
+			}
+
+			scnNode->x = vMin.x;
+			scnNode->y = vMin.y;
+			scnNode->width = vMax.x - vMin.x;
+			scnNode->height = vMax.y - vMin.y;
+
+			scnNodes.push_back(scnNode);
+		}
+	} while (_findnext(handle, &findData) == 0); // 查找目录中的下一个文件;
+
+	_findclose(handle);
 }
 
 bool Test::IsTriangleInSameMesh(Nav::NavTriangle* tri1, Nav::NavTriangle* tri2, Nav::NavGraph*& outFinder)

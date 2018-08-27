@@ -18,6 +18,7 @@ namespace Nav
 	{
 		gNavSystem = this;
 		mScene = NULL;
+		mScene = NULL;
 		mVersion = 101;
 	}
 
@@ -44,6 +45,13 @@ namespace Nav
 
 		mScene = new NavSceneTree(this);
 		mScene->InitSceneTree(x, y, width, height, maxLevel);
+	}
+
+	bool NavSystem::AddSceneNode(NavSceneNode* node)
+	{
+		if (!mScene)
+			return false;
+		return mScene->AddSceneNode(node);
 	}
 
 	void NavSystem::AddGraph(NavGraph* graph)
@@ -88,11 +96,6 @@ namespace Nav
 		mGraphsMap.erase(it);
 
 		mGraphsMap[newId] = graph;
-	}
-
-	bool NavSystem::Solve(const Vector3& start, const Vector3& end, std::vector<Vector3>* path, float* cost, bool smoothPath) const
-	{
-
 	}
 
 	unsigned int NavSystem::GetGraphCount()
@@ -227,6 +230,42 @@ namespace Nav
 			ptr = graph->ReadFrom(data, ptr);
 			AddGraph(graph);
 		}
+
+		return true;
+	}
+
+	bool NavSystem::LoadSketchScneneFromFile(const char* path)
+	{
+		FILE* fp = fopen(path, "rb");
+		if (fp == NULL)
+			return false;
+		fseek(fp, 0, SEEK_END);
+		long fileSize = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+
+		char* data = new char[fileSize];
+		fread(data, 1, fileSize, fp);
+		fclose(fp);
+
+		SAFE_DELETE(mScene);
+
+		mScene = new NavSceneTree(this);
+		unsigned int ptr = 0;
+		ptr = mScene->ReadFrom(data, ptr);
+
+		SAFE_DELETE_ARRAY(data);
+
+		return true;
+	}
+
+	bool NavSystem::LoadSketchScneneFromMemory(char* data)
+	{
+		unsigned int ptr = 0;
+
+		SAFE_DELETE(mScene);
+
+		mScene = new NavSceneTree(this);
+		ptr = mScene->ReadFrom(data, ptr);
 
 		return true;
 	}

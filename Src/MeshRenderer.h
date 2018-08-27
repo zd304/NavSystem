@@ -10,16 +10,19 @@ namespace Nav
 	class NavHeightmap;
 	class NavGraph;
 	class NavGate;
+	class NavSceneTree;
 }
 class Test;
 
 class MeshRenderer
 {
 public:
-	MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mDatas, Test* test);
+	MeshRenderer(IDirect3DDevice9* device, Test* test);
 	~MeshRenderer();
 
 	void Render();
+
+	void SetMeshData(FBXHelper::FBXMeshDatas* mDatas);
 
 	void SetPointMesh(const Nav::Vector3& v0, const Nav::Vector3& v1, const Nav::Vector3& v2, const Nav::Vector3& point, bool isStart);
 
@@ -40,6 +43,8 @@ public:
 	void ClearGate();
 
 	void SetEditGraph(const Nav::NavGraph* graph);
+
+	void SetSketchScene(Nav::NavSceneTree* tree);
 public:
 	Test* mTest;
 	IDirect3DDevice9* mDevice;
@@ -64,6 +69,9 @@ public:
 
 	// GraphEdit;
 	ID3DXMesh* mGraphEditMesh;
+
+	// SketchScene;
+	std::vector<MeshVertex> mSketchSceneArea;
 };
 
 #endif

@@ -6,6 +6,8 @@
 #include "NavGate.h"
 #include "NavMesh.h"
 #include "NavSystem.h"
+#include "NavSceneTree.h"
+#include "NavSceneNode.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -19,68 +21,13 @@ struct MeshVertex
 	static const int fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE;
 };
 
-MeshRenderer::MeshRenderer(IDirect3DDevice9* device, FBXHelper::FBXMeshDatas* mDatas, Test* test)
+MeshRenderer::MeshRenderer(IDirect3DDevice9* device, Test* test)
 {
 	mTest = test;
 	mDevice = device;
 	mShowNavMesh = true;
 	mShowWireMesh = true;
 	mShowHeightmap = false;
-
-	if (mDatas == NULL)
-		return;
-	for (size_t i = 0; i < mDatas->datas.size(); ++i)
-	{
-		FBXHelper::FBXMeshData* data = mDatas->datas[i];
-		
-		DWORD faceNum = (DWORD)(data->indices.size() / 3);
-		DWORD vertexNum = (DWORD)data->pos.size();
-		{
-			ID3DXMesh* mesh = NULL;
-			HRESULT hr = D3DXCreateMeshFVF(faceNum, vertexNum, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mesh);
-			if (FAILED(hr))
-				continue;
-			mMeshes.push_back(mesh);
-			mHeightMeshes.push_back(NULL);
-
-			MeshVertex* vb = NULL;
-			mesh->LockVertexBuffer(NULL, (void**)&vb);
-			for (size_t j = 0; j < data->pos.size(); ++j)
-			{
-				vb[j].pos = data->pos[j];
-				vb[j].color = 0xffffffff;
-			}
-			//memcpy(vb, &data->pos[0], vertexNum * sizeof(D3DXVECTOR3));
-			mesh->UnlockVertexBuffer();
-
-			void* ib = NULL;
-			mesh->LockIndexBuffer(NULL, &ib);
-			memcpy(ib, &data->indices[0], faceNum * 3 * sizeof(unsigned int));
-			mesh->UnlockIndexBuffer();
-		}
-		{
-			ID3DXMesh* mesh = NULL;
-			HRESULT hr = D3DXCreateMeshFVF(faceNum, vertexNum, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mesh);
-			if (FAILED(hr))
-				continue;
-			mWireMeshes.push_back(mesh);
-
-			MeshVertex* vb = NULL;
-			mesh->LockVertexBuffer(NULL, (void**)&vb);
-			for (size_t j = 0; j < data->pos.size(); ++j)
-			{
-				vb[j].pos = data->pos[j];
-				vb[j].color = 0xff000000;
-			}
-			//memcpy(vb, &data->pos[0], vertexNum * sizeof(D3DXVECTOR3));
-			mesh->UnlockVertexBuffer();
-
-			void* ib = NULL;
-			mesh->LockIndexBuffer(NULL, &ib);
-			memcpy(ib, &data->indices[0], faceNum * 3 * sizeof(unsigned int));
-			mesh->UnlockIndexBuffer();
-		}
-	}
 
 	mStartMesh = NULL;
 	mEndMesh = NULL;
@@ -124,6 +71,7 @@ MeshRenderer::~MeshRenderer()
 	SAFE_RELEASE(mGateMeshInGraph);
 	SAFE_RELEASE(mGateMeshSingle);
 	SAFE_RELEASE(mGraphEditMesh);
+	mSketchSceneArea.clear();
 }
 
 void MeshRenderer::Render()
@@ -200,6 +148,74 @@ void MeshRenderer::Render()
 
 	if (mGraphEditMesh)
 		mGraphEditMesh->DrawSubset(0);
+
+	if (mSketchSceneArea.size() > 0)
+	{
+		mDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+		mDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+		mDevice->SetFVF(MeshVertex::fvf);
+		mDevice->DrawPrimitiveUP(D3DPT_LINELIST, mSketchSceneArea.size() / 2, &mSketchSceneArea[0], sizeof(MeshVertex));
+		mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+		mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	}
+}
+
+void MeshRenderer::SetMeshData(FBXHelper::FBXMeshDatas* mDatas)
+{
+	if (mDatas == NULL)
+		return;
+	for (size_t i = 0; i < mDatas->datas.size(); ++i)
+	{
+		FBXHelper::FBXMeshData* data = mDatas->datas[i];
+
+		DWORD faceNum = (DWORD)(data->indices.size() / 3);
+		DWORD vertexNum = (DWORD)data->pos.size();
+		{
+			ID3DXMesh* mesh = NULL;
+			HRESULT hr = D3DXCreateMeshFVF(faceNum, vertexNum, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mesh);
+			if (FAILED(hr))
+				continue;
+			mMeshes.push_back(mesh);
+			mHeightMeshes.push_back(NULL);
+
+			MeshVertex* vb = NULL;
+			mesh->LockVertexBuffer(NULL, (void**)&vb);
+			for (size_t j = 0; j < data->pos.size(); ++j)
+			{
+				vb[j].pos = data->pos[j];
+				vb[j].color = 0xffffffff;
+			}
+			//memcpy(vb, &data->pos[0], vertexNum * sizeof(D3DXVECTOR3));
+			mesh->UnlockVertexBuffer();
+
+			void* ib = NULL;
+			mesh->LockIndexBuffer(NULL, &ib);
+			memcpy(ib, &data->indices[0], faceNum * 3 * sizeof(unsigned int));
+			mesh->UnlockIndexBuffer();
+		}
+		{
+			ID3DXMesh* mesh = NULL;
+			HRESULT hr = D3DXCreateMeshFVF(faceNum, vertexNum, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mesh);
+			if (FAILED(hr))
+				continue;
+			mWireMeshes.push_back(mesh);
+
+			MeshVertex* vb = NULL;
+			mesh->LockVertexBuffer(NULL, (void**)&vb);
+			for (size_t j = 0; j < data->pos.size(); ++j)
+			{
+				vb[j].pos = data->pos[j];
+				vb[j].color = 0xff000000;
+			}
+			//memcpy(vb, &data->pos[0], vertexNum * sizeof(D3DXVECTOR3));
+			mesh->UnlockVertexBuffer();
+
+			void* ib = NULL;
+			mesh->LockIndexBuffer(NULL, &ib);
+			memcpy(ib, &data->indices[0], faceNum * 3 * sizeof(unsigned int));
+			mesh->UnlockIndexBuffer();
+		}
+	}
 }
 
 void MeshRenderer::SetPointMesh(const Nav::Vector3& pt0, const Nav::Vector3& pt1, const Nav::Vector3& pt2, const Nav::Vector3& point, bool isStart)
@@ -550,4 +566,42 @@ void MeshRenderer::SetEditGraph(const Nav::NavGraph* graph)
 
 	mGraphEditMesh->UnlockIndexBuffer();
 	mGraphEditMesh->UnlockVertexBuffer();
+}
+
+void MeshRenderer::SetSketchScene(Nav::NavSceneTree* tree)
+{
+	mSketchSceneArea.clear();
+	if (!tree)
+		return;
+
+	std::map<unsigned int, Nav::NavSceneNode*>::iterator it;
+	for (it = tree->mNodes.begin(); it != tree->mNodes.end(); ++it)
+	{
+		Nav::NavSceneNode* node = it->second;
+		MeshVertex v[4];
+
+		v[0].pos = D3DXVECTOR3(node->x, 0.0f, node->y);
+		v[0].color = 0xff0000ff;
+
+		v[1].pos = D3DXVECTOR3(node->x, 0.0f, node->y + node->height);
+		v[1].color = 0xff0000ff;
+
+		v[3].pos = D3DXVECTOR3(node->x + node->width, 0.0f, node->y);
+		v[3].color = 0xff0000ff;
+
+		v[2].pos = D3DXVECTOR3(node->x + node->width, 0.0f, node->y + node->height);
+		v[2].color = 0xff0000ff;
+
+		mSketchSceneArea.push_back(v[0]);
+		mSketchSceneArea.push_back(v[1]);
+
+		mSketchSceneArea.push_back(v[1]);
+		mSketchSceneArea.push_back(v[2]);
+
+		mSketchSceneArea.push_back(v[2]);
+		mSketchSceneArea.push_back(v[3]);
+
+		mSketchSceneArea.push_back(v[3]);
+		mSketchSceneArea.push_back(v[0]);
+	}
 }

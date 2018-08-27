@@ -10,12 +10,14 @@ namespace Nav
 	class NavTriangle;
 	class NavGraph;
 	class NavSystem;
+	class NavSceneNode;
 }
 class FileDialog;
 class PathFindLogic;
 class GateLogic;
 class CheckInfoLogic;
 class GraphEditLogic;
+class SketchSceneLogic;
 class Camera;
 
 class Test
@@ -51,6 +53,8 @@ private:
 	void OpenNav(const char* filePath);
 
 	void CloseFile();
+
+	void GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& output);
 public:
 	MeshRenderer* mRenderer;
 	// UILayout
@@ -69,11 +73,13 @@ private:
 	GateLogic* mGateLogic;
 	CheckInfoLogic* mCheckInfoLogic;
 	GraphEditLogic* mGraphEditLogic;
+	SketchSceneLogic* mSketchScnLogic;
 
 	// FileDialog
 	FileDialog* mOpenFBX;
 	FileDialog* mOpenNav;
 	FileDialog* mSaveNav;
+	FileDialog* mGenSketchScn;
 
 	// Camera
 	Camera* mCamera;

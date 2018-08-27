@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <Windows.h>
 #include <d3d9.h>
