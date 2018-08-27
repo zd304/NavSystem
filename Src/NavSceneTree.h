@@ -41,9 +41,9 @@ namespace Nav
 	private:
 		NavSystem* mNavSystem;
 		micropather::MicroPather* mPather;
-		QuadTreeNode<NavSceneNode>* mQuadTree;
 	public:
 		std::map<unsigned int, NavSceneNode*> mNodes;
+		QuadTreeNode<NavSceneNode>* mQuadTree;
 	};
 }
 

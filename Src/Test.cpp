@@ -60,8 +60,12 @@ Test::Test()
 	mSaveNav->SetDefaultDirectory(sCurPath);
 	mOpenNav = new FileDialog("打开导航", "nav", eFileDialogUsage_OpenFile);
 	mOpenNav->SetDefaultDirectory(sCurPath);
-	mGenSketchScn = new FileDialog("生成大地图", "", eFileDialogUsage_OpenFolder);
+	mGenSketchScn = new FileDialog("生成大地图信息", "", eFileDialogUsage_OpenFolder);
 	mGenSketchScn->SetDefaultDirectory(sCurPath);
+	mSaveSketchScn = new FileDialog("保存大地图信息", "sketch", eFileDialogUsage_SaveFile);
+	mSaveSketchScn->SetDefaultDirectory(sCurPath);
+	mOpenSketchScn = new FileDialog("打开大地图信息", "sketch", eFileDialogUsage_OpenFile);
+	mOpenSketchScn->SetDefaultDirectory(sCurPath);
 
 	mLeftUIWidth = 256;
 	mModelSize = 0.0f;
@@ -81,6 +85,8 @@ Test::~Test()
 	SAFE_DELETE(mSaveNav);
 	SAFE_DELETE(mOpenNav);
 	SAFE_DELETE(mGenSketchScn);
+	SAFE_DELETE(mSaveSketchScn);
+	SAFE_DELETE(mOpenSketchScn);
 }
 
 void LoadTextures(IDirect3DDevice9* device)
@@ -243,6 +249,48 @@ void Test::OnGUI()
 		mRenderer = new MeshRenderer(mDevice, this);
 		mSketchScnLogic->SetNavSceneTree(mNavSystem->mScene);
 	}
+	if (mSaveSketchScn->DoModal())
+	{
+		std::string path;
+		path += mSaveSketchScn->GetDirectory();
+		path += mSaveSketchScn->GetFileName();
+
+		mNavSystem->SaveSketchScn(path.c_str());
+	}
+	if (mOpenSketchScn->DoModal())
+	{
+		std::string path;
+		path += mOpenSketchScn->GetDirectory();
+		path += mOpenSketchScn->GetFileName();
+
+		mNavSystem->LoadSketchSceneFromFile(path.c_str());
+
+		if (mNavSystem->mScene && mNavSystem->mScene->mQuadTree)
+		{
+			QuadTreeNode<Nav::NavSceneNode>* node = mNavSystem->mScene->mQuadTree;
+			float x, y, width, height;
+			node->GetRect(&x, &y, &width, &height);
+
+			mModelSize = width;
+			if (mCamera)
+			{
+				mCamera->SetPosition(Nav::Vector3(0.0f, 2.0f * mModelSize, -2.0f * mModelSize));
+				mCamera->SetForward(Nav::Vector3(0.0f, -1.0f, 1.0f));
+				mCamera->Update(mDevice);
+			}
+
+			SAFE_DELETE(mRenderer);
+			SAFE_DELETE(mPathFindLogic);
+			SAFE_DELETE(mGateLogic);
+			SAFE_DELETE(mCheckInfoLogic);
+			SAFE_DELETE(mSketchScnLogic);
+			mSketchScnLogic = new SketchSceneLogic(this);
+
+			SAFE_DELETE(mRenderer);
+			mRenderer = new MeshRenderer(mDevice, this);
+			mSketchScnLogic->SetNavSceneTree(mNavSystem->mScene);
+		}
+	}
 
 	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic && !mGraphEditLogic && !mSketchScnLogic)
 	{
@@ -316,6 +364,8 @@ void Test::OnMenu()
 	bool open1Flag = false;
 	bool saveFlag = false;
 	bool genSketchScn = false;
+	bool saveSketchScn = false;
+	bool openSketchScn = false;
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -342,9 +392,13 @@ void Test::OnMenu()
 			{
 				genSketchScn = true;
 			}
-			if (ImGui::MenuItem(STU("加载大地图信息").c_str(), NULL))
+			if (ImGui::MenuItem(STU("打开大地图信息").c_str(), NULL))
 			{
-
+				openSketchScn = true;
+			}
+			if (ImGui::MenuItem(STU("保存大地图信息").c_str(), NULL))
+			{
+				saveSketchScn = true;
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem(STU("关闭").c_str(), NULL))
@@ -397,6 +451,16 @@ void Test::OnMenu()
 	{
 		mGenSketchScn->Open();
 		genSketchScn = false;
+	}
+	if (saveSketchScn)
+	{
+		mSaveSketchScn->Open();
+		saveSketchScn = false;
+	}
+	if (openSketchScn)
+	{
+		mOpenSketchScn->Open();
+		openSketchScn = false;
 	}
 }
 

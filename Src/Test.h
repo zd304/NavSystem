@@ -80,6 +80,8 @@ private:
 	FileDialog* mOpenNav;
 	FileDialog* mSaveNav;
 	FileDialog* mGenSketchScn;
+	FileDialog* mSaveSketchScn;
+	FileDialog* mOpenSketchScn;
 
 	// Camera
 	Camera* mCamera;

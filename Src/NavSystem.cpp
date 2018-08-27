@@ -234,7 +234,7 @@ namespace Nav
 		return true;
 	}
 
-	bool NavSystem::LoadSketchScneneFromFile(const char* path)
+	bool NavSystem::LoadSketchSceneFromFile(const char* path)
 	{
 		FILE* fp = fopen(path, "rb");
 		if (fp == NULL)
@@ -258,7 +258,7 @@ namespace Nav
 		return true;
 	}
 
-	bool NavSystem::LoadSketchScneneFromMemory(char* data)
+	bool NavSystem::LoadSketchSceneFromMemory(char* data)
 	{
 		unsigned int ptr = 0;
 
@@ -293,6 +293,28 @@ namespace Nav
 			NavGraph* graph = mGraphs[i];
 			ptr = graph->WriteTo(data, ptr);
 		}
+
+		FILE* fp = fopen(path, "wb");
+		if (!fp)
+		{
+			SAFE_DELETE_ARRAY(data);
+			return;
+		}
+		fwrite(data, 1, fileSize, fp);
+		fclose(fp);
+
+		SAFE_DELETE_ARRAY(data);
+	}
+
+	void NavSystem::SaveSketchScn(const char* path)
+	{
+		if (!mScene)
+			return;
+		unsigned int fileSize = mScene->GetSize();
+		char* data = new char[fileSize];
+
+		unsigned int ptr = 0;
+		mScene->WriteTo(data, ptr);
 
 		FILE* fp = fopen(path, "wb");
 		if (!fp)

@@ -25,11 +25,13 @@ namespace Nav
 
 		bool LoadFromMemory(char* data);
 
-		bool LoadSketchScneneFromFile(const char* path);
+		bool LoadSketchSceneFromFile(const char* path);
 
-		bool LoadSketchScneneFromMemory(char* data);
+		bool LoadSketchSceneFromMemory(char* data);
 
 		void SaveAs(const char* path);
+
+		void SaveSketchScn(const char* path);
 
 		void AddGraph(NavGraph* graph);
 
