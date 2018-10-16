@@ -136,8 +136,8 @@ bool QuadTreeNode<T>::IsContainPoint(QuadTreeNode<T>* quadTreeNode, float px, fl
 {
 	if (quadTreeNode->x <= px
 		&& quadTreeNode->y <= py
-		&& quadTreeNode->x >= px
-		&& quadTreeNode->y >= py)
+		&& quadTreeNode->x + quadTreeNode->width >= px
+		&& quadTreeNode->y + quadTreeNode->height >= py)
 	{
 		return true;
 	}

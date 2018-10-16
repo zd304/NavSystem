@@ -163,7 +163,26 @@ namespace Nav
 
 		if (graphs.size() > 0)
 		{
-			return *graphs.begin();
+			NavSceneNode* rst = NULL;
+			float maxHeight = -9999999.9f;
+
+			std::list<NavSceneNode*>::iterator it;
+			for (it = graphs.begin(); it != graphs.end(); ++it)
+			{
+				NavSceneNode* node = *it;
+				if (!node)
+					continue;
+				NavGraph* graph = mNavSystem->GetGraphByID(node->mScnID);
+				if (!graph) continue;
+				NavTriangle* tri = graph->GetTriangleByPoint(p);
+				if (!tri) continue;
+				if (maxHeight < tri->mCenter.y)
+				{
+					maxHeight = tri->mCenter.y;
+					rst = node;
+				}
+			}
+			return rst;
 		}
 		return NULL;
 	}
@@ -177,7 +196,7 @@ namespace Nav
 			NavGraph* graph = mNavSystem->GetGraphByIndex(i);
 			if (!graph || !graph->mMesh)
 				continue;
-			if (graph->GetSceneID() != scnNode->mScnID)
+			if (graph->mID != scnNode->mScnID)
 				continue;
 			NavTriangle* tri = graph->GetTriangleByPoint(p);
 			if (!tri) continue;
