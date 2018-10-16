@@ -14,6 +14,7 @@
 #include "GraphEditLogic.h"
 #include "NavSceneNode.h"
 #include "NavSceneTree.h"
+#include "NavLinkInfo.h"
 #include "SketchSceneLogic.h"
 
 #ifdef _CHECK_LEAK
@@ -594,7 +595,7 @@ void Test::OpenFBX(const char* filePath)
 
 void Test::OpenNav(const char* filePath)
 {
-	CloseFile();
+	//CloseFile();
 
 	mNavSystem->LoadFromFile(filePath);
 
@@ -625,7 +626,10 @@ void Test::OpenNav(const char* filePath)
 		}
 		datas.datas.push_back(data);
 	}
-	mRenderer = new MeshRenderer(mDevice, this);
+	if (mRenderer == NULL)
+	{
+		mRenderer = new MeshRenderer(mDevice, this);
+	}
 	mRenderer->SetMeshData(&datas);
 	//mPathFindLogic = new PathFindLogic(this);
 
@@ -700,8 +704,6 @@ void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& 
 			Nav::NavSystem navSys;
 			navSys.LoadFromFile(p.assign(path).append("\\").append(findData.name).c_str());
 
-			Nav::NavSceneNode* scnNode = new Nav::NavSceneNode();
-
 			Nav::Vector2 vMin(FLT_MAX, FLT_MAX);
 			Nav::Vector2 vMax(FLT_MIN, FLT_MIN);
 			for (unsigned int i = 0; i < navSys.GetGraphCount(); ++i)
@@ -713,14 +715,22 @@ void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& 
 				vMin.y = vMin.y > min.z ? min.z : vMin.y;
 				vMax.x = vMax.x < max.x ? max.x : vMax.x;
 				vMax.y = vMax.y < max.z ? max.z : vMax.y;
+
+				Nav::NavSceneNode* scnNode = new Nav::NavSceneNode();
+
+				scnNode->mScnID = graph->mID;
+				scnNode->x = vMin.x;
+				scnNode->y = vMin.y;
+				scnNode->width = vMax.x - vMin.x;
+				scnNode->height = vMax.y - vMin.y;
+				for (unsigned int j = 0; j < graph->mMesh->mNavLinkInfos.size(); ++j)
+				{
+					Nav::NavLinkInfo* link = graph->mMesh->mNavLinkInfos[j];
+					scnNode->mLinkScnIDs.push_back(link->mLinkID);
+				}
+
+				scnNodes.push_back(scnNode);
 			}
-
-			scnNode->x = vMin.x;
-			scnNode->y = vMin.y;
-			scnNode->width = vMax.x - vMin.x;
-			scnNode->height = vMax.y - vMin.y;
-
-			scnNodes.push_back(scnNode);
 		}
 	} while (_findnext(handle, &findData) == 0); // 查找目录中的下一个文件;
 

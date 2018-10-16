@@ -2,6 +2,8 @@
 #include "Test.h"
 #include "NavTriangle.h"
 #include "NavGraph.h"
+#include "NavSystem.h"
+#include "NavSceneTree.h"
 #include "MeshRenderer.h"
 
 #ifdef _CHECK_LEAK
@@ -70,6 +72,14 @@ void PathFindLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& poin
 				}
 			}
 			std::vector<Nav::Vector3> findVectorPath;
+			Nav::NavSceneTree* tree = mTest->mNavSystem->mScene;
+			if (tree)
+			{
+				if (tree->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost, mSmoothPath))
+				{
+					mTest->mRenderer->SetSelectedPath(findVectorPath);
+				}
+			}
 			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost, mSmoothPath))
 			{
 				mTest->mRenderer->SetSelectedPath(findVectorPath);

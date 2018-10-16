@@ -147,7 +147,7 @@ namespace Nav
 				}
 			}
 
-			if (targetMinDist == FLT_MAX)
+			if (targetMinDist < 0.0f)
 				return false;
 		}
 		if (rstBool)

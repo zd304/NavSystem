@@ -52,7 +52,7 @@ extern "C"
 	bool Nav_LoadSketchSceneFromFile(const char* path)
 	{
 		if (!navSystem) return false;
-		if (!navSystem->LoadSketchScneneFromFile(path))
+		if (!navSystem->LoadSketchSceneFromFile(path))
 		{
 			SAFE_DELETE(navSystem);
 			return false;
@@ -64,7 +64,7 @@ extern "C"
 	{
 		if (!navSystem) return false;
 
-		if (!navSystem->LoadSketchScneneFromMemory(data))
+		if (!navSystem->LoadSketchSceneFromFile(data))
 		{
 			SAFE_DELETE(navSystem);
 			return false;
@@ -265,7 +265,7 @@ extern "C"
 		unsigned int layerCount = (unsigned int)navSystem->GetGraphCount();
 		for (unsigned int layer = 0; layer < layerCount; ++layer)
 		{
-			Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
+			Nav::NavGraph* graph = navSystem->GetGraphByIndex(layer);
 			for (size_t i = 0; i < graph->mMesh->mTriangles.size(); ++i)
 			{
 				Nav::NavTriangle* tri = graph->mMesh->mTriangles[i];

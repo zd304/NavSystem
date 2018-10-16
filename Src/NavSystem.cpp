@@ -185,7 +185,7 @@ namespace Nav
 
 	bool NavSystem::LoadFromFile(const char* path)
 	{
-		Clear();
+		//Clear();
 
 		FILE* fp = fopen(path, "rb");
 		if (fp == NULL)
@@ -198,7 +198,7 @@ namespace Nav
 		fread(data, 1, fileSize, fp);
 		fclose(fp);
 
-		mGraphs.clear();
+		//mGraphs.clear();
 
 		unsigned int ptr = 0;
 		memcpy(&mVersion, data + ptr, sizeof(unsigned int));

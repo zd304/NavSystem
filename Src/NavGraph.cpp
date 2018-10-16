@@ -334,7 +334,8 @@ namespace Nav
 
 	unsigned int NavGraph::GetSize()
 	{
-		unsigned int size = mMesh->GetSize();
+		unsigned int size = sizeof(unsigned int);
+		size += mMesh->GetSize();
 		size += mHeightmap->GetSize();
 		size += sizeof(unsigned int);
 		for (unsigned int i = 0; i < mGates.size(); ++i)

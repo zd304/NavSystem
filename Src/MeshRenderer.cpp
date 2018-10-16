@@ -539,7 +539,7 @@ void MeshRenderer::SetEditGraph(const Nav::NavGraph* graph)
 	if (graph == NULL)
 		return;
 
-	unsigned int vbCount = graph->mMesh->mTriangles.size();
+	unsigned int vbCount = graph->mMesh->mTriangles.size() * 3;
 	HRESULT hr = D3DXCreateMeshFVF(vbCount / 3, vbCount, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mGraphEditMesh);
 	if (FAILED(hr))
 		return;
