@@ -19,7 +19,7 @@ namespace Nav
 		gNavSystem = this;
 		mScene = NULL;
 		mScene = NULL;
-		mVersion = 101;
+		mVersion = CURRENT_VERSION;
 	}
 
 	NavSystem::~NavSystem()
@@ -177,6 +177,7 @@ namespace Nav
 			AddGraph(graph);
 		}
 		SAFE_DELETE_ARRAY(data);
+		mVersion = CURRENT_VERSION;
 		return true;
 #else
 		return false;
@@ -213,6 +214,7 @@ namespace Nav
 			AddGraph(graph);
 		}
 		SAFE_DELETE_ARRAY(data);
+		mVersion = CURRENT_VERSION;
 		return true;
 	}
 
@@ -230,6 +232,8 @@ namespace Nav
 			ptr = graph->ReadFrom(data, ptr);
 			AddGraph(graph);
 		}
+
+		mVersion = CURRENT_VERSION;
 
 		return true;
 	}
@@ -272,6 +276,8 @@ namespace Nav
 
 	void NavSystem::SaveAs(const char* path)
 	{
+		mVersion = CURRENT_VERSION;
+
 		unsigned int fileSize = sizeof(unsigned int);
 		fileSize += sizeof(unsigned int);
 		for (unsigned int i = 0; i < mGraphs.size(); ++i)

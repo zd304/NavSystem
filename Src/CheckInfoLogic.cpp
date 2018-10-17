@@ -2,6 +2,7 @@
 #include "Nav.h"
 #include "Test.h"
 #include "MeshRenderer.h"
+#include "NavLinkInfo.h"
 
 CheckInfoLogic::CheckInfoLogic(Test* test)
 {
@@ -19,14 +20,16 @@ CheckInfoLogic::~CheckInfoLogic()
 
 void CheckInfoLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph)
 {
+	if (mGraph && !graph)
+		return;
 	if (!mTest->mRenderer)
 		return;
-	if (mTri)
-	{
-		mTri = NULL;
-		mTest->mRenderer->ClearPath();
-		return;
-	}
+	//if (mTri)
+	//{
+	//	mTri = NULL;
+	//	mTest->mRenderer->ClearPath();
+	//	return;
+	//}
 	if (tri != NULL && graph != NULL)
 	{
 		mTri = (Nav::NavTriangle*)tri;
@@ -68,4 +71,55 @@ void CheckInfoLogic::OnGUI()
 		mTri->mPassable ? "是" : "否",
 		mGraph->GetLayerID(), mGraph->GetSceneID());
 	ImGui::Text(STU(szContent).c_str());
+
+	Nav::NavLinkInfo* linkInfo = NULL;
+	for (size_t i = 0; i < mGraph->mMesh->mNavLinkInfos.size(); ++i)
+	{
+		Nav::NavLinkInfo* lk = mGraph->mMesh->mNavLinkInfos[i];
+		if (lk->mTriIndex == triIndex)
+		{
+			linkInfo = lk;
+			break;
+		}
+	}
+
+	ImGui::Separator();
+
+	if (linkInfo)
+	{
+		int lkScnID = (int)linkInfo->mLinkID / 100;
+		int lkLayerID = (int)linkInfo->mLinkID % 100;
+		ImGui::Text(STU("连接场景ID").c_str());
+		ImGui::SameLine();
+		ImGui::InputInt("##LKSCNID", &lkScnID);
+
+		ImGui::Text(STU("连接层的ID").c_str());
+		ImGui::SameLine();
+		ImGui::InputInt("##LKLAYERID", &lkLayerID);
+
+		linkInfo->mLinkID = (unsigned int)(lkScnID * 100 + lkLayerID);
+	}
+
+	if (!linkInfo && ImGui::Button(STU("创建连接").c_str(), ImVec2(mTest->mLeftUIWidth - 20.0f, 30.0f)))
+	{
+		Nav::NavLinkInfo* linkInfo = new Nav::NavLinkInfo();
+		linkInfo->mTriIndex = triIndex;
+		linkInfo->mLinkID = 0;
+		mGraph->mMesh->mNavLinkInfos.push_back(linkInfo);
+	}
+	if (linkInfo && ImGui::Button(STU("删除连接").c_str(), ImVec2(mTest->mLeftUIWidth - 20.0f, 30.0f)))
+	{
+		std::vector<Nav::NavLinkInfo*>::iterator it;
+		for (it = mGraph->mMesh->mNavLinkInfos.begin();
+			it != mGraph->mMesh->mNavLinkInfos.end(); ++it)
+		{
+			Nav::NavLinkInfo* lk = *it;
+			if (lk->mTriIndex == triIndex)
+			{
+				SAFE_DELETE(lk);
+				mGraph->mMesh->mNavLinkInfos.erase(it);
+				break;
+			}
+		}
+	}
 }

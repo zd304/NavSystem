@@ -80,7 +80,7 @@ void PathFindLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& poin
 					mTest->mRenderer->SetSelectedPath(findVectorPath);
 				}
 			}
-			if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost, mSmoothPath))
+			else if (finder->Solve(mStartPoint, mEndPoint, &findVectorPath, &cost, mSmoothPath))
 			{
 				mTest->mRenderer->SetSelectedPath(findVectorPath);
 			}
