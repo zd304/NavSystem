@@ -8,6 +8,7 @@
 #include "NavHeightmap.h"
 #include "NavGraph.h"
 #include "NavGate.h"
+#include "NavSceneTree.h"
 #include "NavSystem.h"
 
 #endif

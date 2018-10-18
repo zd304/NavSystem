@@ -155,11 +155,21 @@ extern "C"
 	_DLLExprot bool Nav_CalcLayerPath(const NAV_VEC3* start, const NAV_VEC3* end, unsigned int layer, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount);
 
 	//************************************
-	// Method:    释放CalcLayerPath计算出来的路径数据;
+	// Method:    AStar算法计算出一条最优寻路路径;
+	// Returns:   是否成功计算出寻路路径，计算出则返回true;
+	// Parameter: [start]寻路起点;
+	// Parameter: [end]寻路终点;
+	// Parameter: [pathBuffer]按先后顺序返回路径点集合;
+	// Parameter: [pathNodeCount]路径点数量;
+	//************************************
+	_DLLExprot bool Nav_CalcPath(const NAV_VEC3* start, const NAV_VEC3* end, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount);
+
+	//************************************
+	// Method:    释放CalcLayerPath和CalcPath计算出来的路径数据;
 	// Returns:   是否释放成功;
 	// Parameter: [pathBuffer]CalcLayerPath计算出来的路径数据;
 	//************************************
-	_DLLExprot bool Nav_ReleaseLayerPath(NAV_VEC3** pathBuffer);
+	_DLLExprot bool Nav_ReleasePath(NAV_VEC3** pathBuffer);	
 
 	//************************************
 	// Method:    获取指定层导航的所有顶点（主要编辑器用）;

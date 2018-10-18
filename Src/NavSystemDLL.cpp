@@ -321,7 +321,47 @@ extern "C"
 		return false;
 	}
 
-	bool Nav_ReleaseLayerPath(NAV_VEC3** pathBuffer)
+	bool Nav_CalcPath(const NAV_VEC3* start, const NAV_VEC3* end, NAV_VEC3** pathBuffer, unsigned int* pathNodeCount)
+	{
+		if (!navSystem) return false;
+
+		if (!navSystem->mScene)
+		{
+			return false;
+		}
+
+		const Nav::Vector3 vStart((float*)start);
+		const Nav::Vector3 vEnd((float*)end);
+
+		std::vector<Nav::Vector3> path;
+		float cost;
+		if (navSystem->mScene->Solve(vStart, vEnd, &path, &cost, true))
+		{
+			*pathBuffer = new NAV_VEC3[path.size()];
+			for (size_t i = 0; i < path.size(); ++i)
+			{
+				Nav::Vector3& v = path[i];
+				//float height = v.y + 0.5f;
+				//if (!Nav_(v, &height))
+				//{
+				//	if (!graph->mMesh->GetHeight(v, &height))
+				//	{
+				//		return false;
+				//	}
+				//}
+
+				NAV_VEC3* node = &((*pathBuffer)[i]);
+				node->x = v.x;
+				node->y = v.y;
+				node->z = v.z;
+			}
+			(*pathNodeCount) = (unsigned int)path.size();
+			return true;
+		}
+		return false;
+	}
+
+	bool Nav_ReleasePath(NAV_VEC3** pathBuffer)
 	{
 		SAFE_DELETE_ARRAY(*pathBuffer);
 		return true;
