@@ -53,11 +53,6 @@ namespace Nav
 		std::vector<NavGate*> mGates;
 		micropather::MicroPather* mPather;
 		unsigned int mID;
-
-		float x;
-		float y;
-		float width;
-		float height;
 	};
 }
 

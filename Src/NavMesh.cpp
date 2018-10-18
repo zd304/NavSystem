@@ -361,7 +361,7 @@ namespace Nav
 
 		if (saveBounds)
 		{
-			unsigned int boundsCount = mBounds.size();
+			unsigned int boundsCount = (unsigned int)mBounds.size();
 			memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
 			ptr += sizeof(unsigned int);
 
