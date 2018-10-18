@@ -124,7 +124,7 @@ namespace Nav
 		if (min == NULL || max == NULL)
 			return;
 		min->Set(FLT_MAX, FLT_MAX, FLT_MAX);
-		max->Set(FLT_MIN, FLT_MIN, FLT_MIN);
+		max->Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		for (size_t i = 0; i < mGraphs.size(); ++i)
 		{
 			NavGraph* graph = mGraphs[i];

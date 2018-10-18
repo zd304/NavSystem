@@ -122,13 +122,13 @@ namespace Nav
 	NavMesh::NavMesh()
 	{
 		mMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
-		mMax.Set(FLT_MIN, FLT_MIN, FLT_MIN);
+		mMax.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 	}
 
 	NavMesh::NavMesh(Vector3* vertices, int vertexNum, unsigned int* indices, int indicesNum)
 	{
 		mMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
-		mMax.Set(FLT_MIN, FLT_MIN, FLT_MIN);
+		mMax.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		for (int i = 0; i < indicesNum; i += 3)
 		{
 			unsigned int index0 = indices[i];
@@ -383,7 +383,7 @@ namespace Nav
 		ptr += sizeof(unsigned int);
 
 		mMin.Set(FLT_MAX, FLT_MAX, FLT_MAX);
-		mMax.Set(FLT_MIN, FLT_MIN, FLT_MIN);
+		mMax.Set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		for (unsigned int i = 0; i < triCount; ++i)
 		{
 			NavTriangle* tri = new NavTriangle();

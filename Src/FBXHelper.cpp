@@ -128,9 +128,9 @@ namespace FBXHelper
 
 	void InitBox()
 	{
-		boxMax.x = FLT_MIN;
-		boxMax.y = FLT_MIN;
-		boxMax.z = FLT_MIN;
+		boxMax.x = -FLT_MAX;
+		boxMax.y = -FLT_MAX;
+		boxMax.z = -FLT_MAX;
 		boxMin.x = FLT_MAX;
 		boxMin.y = FLT_MAX;
 		boxMin.z = FLT_MAX;

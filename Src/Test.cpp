@@ -207,7 +207,7 @@ void Test::OnGUI()
 		GenerateSketchScene(path.c_str(), scnNodes);
 
 		Nav::Vector2 vMin(FLT_MAX, FLT_MAX);
-		Nav::Vector2 vMax(FLT_MIN, FLT_MIN);
+		Nav::Vector2 vMax(-FLT_MAX, -FLT_MAX);
 
 		std::list<Nav::NavSceneNode*>::iterator it;
 		for (it = scnNodes.begin(); it != scnNodes.end(); ++it)
@@ -720,7 +720,7 @@ void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& 
 			navSys.LoadFromFile(p.assign(path).append("\\").append(findData.name).c_str());
 
 			Nav::Vector2 vMin(FLT_MAX, FLT_MAX);
-			Nav::Vector2 vMax(FLT_MIN, FLT_MIN);
+			Nav::Vector2 vMax(-FLT_MAX, -FLT_MAX);
 			for (unsigned int i = 0; i < navSys.GetGraphCount(); ++i)
 			{
 				Nav::NavGraph* graph = navSys.GetGraphByIndex(i);

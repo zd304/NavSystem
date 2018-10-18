@@ -11,7 +11,7 @@ namespace Nav
 {
 	NavHeightmap::NavHeightmap()
 		: mMin(FLT_MAX, FLT_MAX),
-		mMax(FLT_MIN, FLT_MIN),
+		mMax(-FLT_MAX, -FLT_MAX),
 		mCellSize(1.0f, 1.0f)
 	{
 		mSizeX = 0;
@@ -31,7 +31,7 @@ namespace Nav
 		SAFE_DELETE_ARRAY(mCellPassability);
 		SAFE_DELETE_ARRAY(mHeights);
 		mMin = Vector2(FLT_MAX, FLT_MAX);
-		mMax = Vector2(FLT_MIN, FLT_MIN);
+		mMax = Vector2(-FLT_MAX, -FLT_MAX);
 
 		std::vector<Vector3> vertices;
 		for (unsigned int i = 0; i < mesh->mTriangles.size(); ++i)

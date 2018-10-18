@@ -190,7 +190,7 @@ namespace Nav
 	NavGraph* NavSceneTree::GetGraphByPoint(const Vector3& p, const NavSceneNode* scnNode) const
 	{
 		NavGraph* rst = NULL;
-		float maxHeight = FLT_MIN;
+		float maxHeight = -FLT_MAX;
 		for (unsigned int i = 0; i < mNavSystem->GetGraphCount(); ++i)
 		{
 			NavGraph* graph = mNavSystem->GetGraphByIndex(i);

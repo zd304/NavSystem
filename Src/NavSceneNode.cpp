@@ -64,6 +64,8 @@ namespace Nav
 
 			memcpy(&scnID, src + ptr, sizeof(unsigned int));
 			ptr += sizeof(unsigned int);
+
+			mLinkScnIDs.push_back(scnID);
 		}
 
 		memcpy(&x, src + ptr, sizeof(float));
