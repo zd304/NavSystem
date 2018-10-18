@@ -141,27 +141,12 @@ namespace Nav
 					// 查找targetPos;
 					NavSceneNode* nextScnNode = scnNodes[s + 1];
 					unsigned int nextSceneID = nextScnNode->mScnID;
-					float targetMinDist = FLT_MAX;
 
-					for (size_t i = 0; i < graph->mMesh->mNavLinkInfos.size(); ++i)
+					Vector3 rstPos;
+					if (GetGraphLinkPosition(graph, startPos, nextSceneID, rstPos))
 					{
-						NavLinkInfo* linkInfo = graph->mMesh->mNavLinkInfos[i];
-						if (linkInfo->mLinkID == nextSceneID)
-						{
-							unsigned int targetTriIndex = linkInfo->mTriIndex;
-							NavTriangle* tri = graph->mMesh->mTriangles[targetTriIndex];
-							Vector3 center = tri->mCenter;
-
-							float dist = (center - start).Length();
-							if (dist < targetMinDist)
-							{
-								targetMinDist = dist;
-								targetPos = center;
-							}
-						}
+						targetPos = rstPos;
 					}
-					if (targetMinDist < 0.0f)
-						return false;
 
 					std::vector<Vector3> subPath;
 					if (graph->Solve(startPos, targetPos, &subPath, cost, smoothPath))
@@ -174,28 +159,10 @@ namespace Nav
 					}
 
 					// 查找下一个场景的startPos;
-					targetMinDist = FLT_MAX;
-
 					NavGraph* nextGraph = GetGraphBySceneNode(nextScnNode);
-					if (nextGraph)
+					if (GetGraphLinkPosition(nextGraph, startPos, graph->mID, rstPos))
 					{
-						for (size_t i = 0; i < nextGraph->mMesh->mNavLinkInfos.size(); ++i)
-						{
-							NavLinkInfo* linkInfo = nextGraph->mMesh->mNavLinkInfos[i];
-							if (linkInfo->mLinkID == graph->mID)
-							{
-								unsigned int targetTriIndex = linkInfo->mTriIndex;
-								NavTriangle* tri = nextGraph->mMesh->mTriangles[targetTriIndex];
-								Vector3 center = tri->mCenter;
-
-								float dist = (center - start).Length();
-								if (dist < targetMinDist)
-								{
-									targetMinDist = dist;
-									startPos = center;
-								}
-							}
-						}
+						startPos = rstPos;
 					}
 				}
 				else
@@ -213,6 +180,33 @@ namespace Nav
 			}
 		}
 		return rstBool;
+	}
+
+	bool NavSceneTree::GetGraphLinkPosition(const NavGraph* graph, const Vector3& startPos, unsigned int linkID, Vector3& rst) const
+	{
+		if (!graph) return false;
+
+		float targetMinDist = FLT_MAX;
+		for (size_t i = 0; i < graph->mMesh->mNavLinkInfos.size(); ++i)
+		{
+			NavLinkInfo* linkInfo = graph->mMesh->mNavLinkInfos[i];
+			if (linkInfo->mLinkID == linkID)
+			{
+				unsigned int targetTriIndex = linkInfo->mTriIndex;
+				NavTriangle* tri = graph->mMesh->mTriangles[targetTriIndex];
+				Vector3 center = tri->mCenter;
+
+				float dist = (center - startPos).Length();
+				if (dist < targetMinDist)
+				{
+					targetMinDist = dist;
+					rst = center;
+				}
+			}
+		}
+		if (targetMinDist < 0.0f)
+			return false;
+		return true;
 	}
 
 	NavSceneNode* NavSceneTree::GetScnNodeByPoint(const Vector3& p) const

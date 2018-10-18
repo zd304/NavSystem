@@ -38,6 +38,8 @@ namespace Nav
 		NavSceneNode* GetScnNodeByPoint(const Vector3& p) const;
 
 		NavGraph* GetGraphBySceneNode(const NavSceneNode* scnNode) const;
+
+		bool GetGraphLinkPosition(const NavGraph* graph, const Vector3& startPos, unsigned int linkID, Vector3& rst) const;
 	private:
 		NavSystem* mNavSystem;
 		micropather::MicroPather* mPather;
