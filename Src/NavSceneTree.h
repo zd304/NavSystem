@@ -37,7 +37,7 @@ namespace Nav
 	private:
 		NavSceneNode* GetScnNodeByPoint(const Vector3& p) const;
 
-		NavGraph* GetGraphByPoint(const Vector3& p, const NavSceneNode* scnNode) const;
+		NavGraph* GetGraphBySceneNode(const NavSceneNode* scnNode) const;
 	private:
 		NavSystem* mNavSystem;
 		micropather::MicroPather* mPather;

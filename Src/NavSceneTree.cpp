@@ -103,7 +103,7 @@ namespace Nav
 
 		if (startScnNode == endScnNode)
 		{
-			NavGraph* startGraph = GetGraphByPoint(start, startScnNode);
+			NavGraph* startGraph = GetGraphBySceneNode(startScnNode);
 			if (!startGraph)
 				return false;
 
@@ -120,39 +120,97 @@ namespace Nav
 			|| rst == micropather::MicroPather::START_END_SAME)
 			rstBool = true;
 
-		NavGraph* startGraph = GetGraphByPoint(start, startScnNode);
-		Vector3 targetPos = end;
-
 		if (rst == micropather::MicroPather::SOLVED)
 		{
-			NavSceneNode* nextScnNode = scnNodes[1];
-			unsigned int nextSceneID = nextScnNode->mScnID;
-			float targetMinDist = FLT_MAX;
-			
-			for (size_t i = 0; i < startGraph->mMesh->mNavLinkInfos.size(); ++i)
-			{
-				NavLinkInfo* linkInfo = startGraph->mMesh->mNavLinkInfos[i];
-				if (linkInfo->mLinkID == nextSceneID)
-				{
-					unsigned int targetTriIndex = linkInfo->mTriIndex;
-					NavTriangle* tri = startGraph->mMesh->mTriangles[targetTriIndex];
-					Vector3 center = (tri->mPoint[0] + tri->mPoint[1] + tri->mPoint[2]) / 3.0f;
+			rstBool = false;
+			size_t scnNodeSize = scnNodes.size();
 
-					float dist = (center - start).Length();
-					if (dist < targetMinDist)
+			Vector3 startPos = start;
+
+			for (size_t s = 0; s < scnNodeSize; ++s)
+			{
+				NavSceneNode* scnNode = scnNodes[s];
+
+				NavGraph* graph = GetGraphBySceneNode(scnNode);
+				if (!graph) break;
+
+				Vector3 targetPos = end;
+				
+				if (s + 1 < scnNodeSize)
+				{
+					// 查找targetPos;
+					NavSceneNode* nextScnNode = scnNodes[s + 1];
+					unsigned int nextSceneID = nextScnNode->mScnID;
+					float targetMinDist = FLT_MAX;
+
+					for (size_t i = 0; i < graph->mMesh->mNavLinkInfos.size(); ++i)
 					{
-						targetMinDist = dist;
-						targetPos = center;
+						NavLinkInfo* linkInfo = graph->mMesh->mNavLinkInfos[i];
+						if (linkInfo->mLinkID == nextSceneID)
+						{
+							unsigned int targetTriIndex = linkInfo->mTriIndex;
+							NavTriangle* tri = graph->mMesh->mTriangles[targetTriIndex];
+							Vector3 center = tri->mCenter;
+
+							float dist = (center - start).Length();
+							if (dist < targetMinDist)
+							{
+								targetMinDist = dist;
+								targetPos = center;
+							}
+						}
+					}
+					if (targetMinDist < 0.0f)
+						return false;
+
+					std::vector<Vector3> subPath;
+					if (graph->Solve(startPos, targetPos, &subPath, cost, smoothPath))
+					{
+						for (size_t j = 0; j < subPath.size(); ++j)
+						{
+							path->push_back(subPath[j]);
+						}
+						rstBool = true;
+					}
+
+					// 查找下一个场景的startPos;
+					targetMinDist = FLT_MAX;
+
+					NavGraph* nextGraph = GetGraphBySceneNode(nextScnNode);
+					if (nextGraph)
+					{
+						for (size_t i = 0; i < nextGraph->mMesh->mNavLinkInfos.size(); ++i)
+						{
+							NavLinkInfo* linkInfo = nextGraph->mMesh->mNavLinkInfos[i];
+							if (linkInfo->mLinkID == graph->mID)
+							{
+								unsigned int targetTriIndex = linkInfo->mTriIndex;
+								NavTriangle* tri = nextGraph->mMesh->mTriangles[targetTriIndex];
+								Vector3 center = tri->mCenter;
+
+								float dist = (center - start).Length();
+								if (dist < targetMinDist)
+								{
+									targetMinDist = dist;
+									startPos = center;
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					std::vector<Vector3> subPath;
+					if (graph->Solve(startPos, targetPos, &subPath, cost, smoothPath))
+					{
+						for (size_t j = 0; j < subPath.size(); ++j)
+						{
+							path->push_back(subPath[j]);
+						}
+						rstBool = true;
 					}
 				}
 			}
-
-			if (targetMinDist < 0.0f)
-				return false;
-		}
-		if (rstBool)
-		{
-			return startGraph->Solve(start, targetPos, path, cost, smoothPath);
 		}
 		return rstBool;
 	}
@@ -187,30 +245,13 @@ namespace Nav
 		return NULL;
 	}
 
-	NavGraph* NavSceneTree::GetGraphByPoint(const Vector3& p, const NavSceneNode* scnNode) const
+	NavGraph* NavSceneTree::GetGraphBySceneNode(const NavSceneNode* scnNode) const
 	{
-		NavGraph* rst = NULL;
-		float maxHeight = -FLT_MAX;
-		for (unsigned int i = 0; i < mNavSystem->GetGraphCount(); ++i)
-		{
-			NavGraph* graph = mNavSystem->GetGraphByIndex(i);
-			if (!graph || !graph->mMesh)
-				continue;
-			if (graph->mID != scnNode->mScnID)
-				continue;
-			NavTriangle* tri = graph->GetTriangleByPoint(p);
-			if (!tri) continue;
+		NavGraph* graph = mNavSystem->GetGraphByID(scnNode->mScnID);
+		if (!graph || !graph->mMesh)
+			return NULL;
 
-			float h = (tri->mPoint[0].y + tri->mPoint[1].y + tri->mPoint[2].y) / 3.0f;
-			if (h > p.y + 0.5f) continue;
-
-			if (h > maxHeight)
-			{
-				maxHeight = h;
-				rst = graph;
-			}
-		}
-		return rst;
+		return graph;
 	}
 
 	unsigned int NavSceneTree::GetSize()
