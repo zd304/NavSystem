@@ -5,6 +5,7 @@
 #include "NavGraph.h"
 #include "NavGate.h"
 #include "NavMesh.h"
+#include "NavEdge.h"
 #include "NavSystem.h"
 #include "NavSceneTree.h"
 #include "NavSceneNode.h"
@@ -38,6 +39,8 @@ MeshRenderer::MeshRenderer(IDirect3DDevice9* device, Test* test)
 	mAllCloseGates = NULL;
 
 	mGraphEditMesh = NULL;
+
+	mBoundsMesh = NULL;
 }
 
 MeshRenderer::~MeshRenderer()
@@ -72,6 +75,7 @@ MeshRenderer::~MeshRenderer()
 	SAFE_RELEASE(mGateMeshSingle);
 	SAFE_RELEASE(mGraphEditMesh);
 	mSketchSceneArea.clear();
+	SAFE_RELEASE(mBoundsMesh);
 }
 
 void MeshRenderer::Render()
@@ -158,6 +162,9 @@ void MeshRenderer::Render()
 		mDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 		mDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 	}
+
+	if (mBoundsMesh)
+		mBoundsMesh->DrawSubset(0);
 }
 
 void MeshRenderer::SetMeshData(FBXHelper::FBXMeshDatas* mDatas)
@@ -604,4 +611,108 @@ void MeshRenderer::SetSketchScene(Nav::NavSceneTree* tree)
 		mSketchSceneArea.push_back(v[3]);
 		mSketchSceneArea.push_back(v[0]);
 	}
+}
+
+void MeshRenderer::SetBounds(const std::vector<Nav::NavEdge*>& curBounds, const std::vector<Nav::NavEdge*>& delBounds, const Nav::NavEdge* edge)
+{
+	SAFE_RELEASE(mBoundsMesh);
+
+	DWORD vc = (curBounds.size() + delBounds.size()) * 4;
+	DWORD fc = (curBounds.size() + delBounds.size()) * 2;
+	HRESULT hr = D3DXCreateMeshFVF(fc, vc, D3DXMESH_32BIT, MeshVertex::fvf, mDevice, &mBoundsMesh);
+	if (FAILED(hr))
+		return;
+
+	MeshVertex* vb = NULL;
+	unsigned int* ib = NULL;
+	mBoundsMesh->LockVertexBuffer(NULL, (void**)&vb);
+	mBoundsMesh->LockIndexBuffer(NULL, (void**)&ib);
+
+	memset(vb, 0, sizeof(MeshVertex) * vc);
+	memset(ib, 0, sizeof(unsigned int) * fc * 3);
+
+	DWORD color = 0xff0000ff;
+
+	for (size_t i = 0; i < curBounds.size(); ++i)
+	{
+		Nav::NavEdge* e = curBounds[i];
+		
+		Nav::Vector3 dir = e->mPoint[1] - e->mPoint[0];
+
+		if (dir == Nav::Vector3::ZERO || dir == Nav::Vector3::UP)
+			dir.Set(0.0f, 0.0f, 1.0f);
+
+		dir.Normalize();
+
+		Nav::Vector3 r;
+		Nav::Vector3::Vector3Cross(r, Nav::Vector3::UP, dir);
+		r = r * 0.5f;
+
+		DWORD c = color;
+		if (edge && edge == e)
+			c = 0xffff0000;
+
+		vb[4 * i].pos = *(D3DXVECTOR3*)&(e->mPoint[1] + 5.0f * r);
+		vb[4 * i].color = c;
+		vb[4 * i + 1].pos = *(D3DXVECTOR3*)&(e->mPoint[1] - 5.0f * r);
+		vb[4 * i + 1].color = c;
+		vb[4 * i + 2].pos = *(D3DXVECTOR3*)&(e->mPoint[0] - 5.0f * r);
+		vb[4 * i + 2].color = c;
+		vb[4 * i + 3].pos = *(D3DXVECTOR3*)&(e->mPoint[0] + 5.0f * r);
+		vb[4 * i + 3].color = c;
+
+		ib[6 * i] = 4 * i + 0;
+		ib[6 * i + 1] = 4 * i + 1;
+		ib[6 * i + 2] = 4 * i + 2;
+		ib[6 * i + 3] = 4 * i + 3;
+		ib[6 * i + 4] = 4 * i + 0;
+		ib[6 * i + 5] = 4 * i + 2;
+	}
+
+	color = 0xffff00ff;
+	size_t cbSize = curBounds.size();
+
+	for (size_t i = 0; i < delBounds.size(); ++i)
+	{
+		Nav::NavEdge* e = delBounds[i];
+
+		Nav::Vector3 dir = e->mPoint[1] - e->mPoint[0];
+
+		if (dir == Nav::Vector3::ZERO || dir == Nav::Vector3::UP)
+			dir.Set(0.0f, 0.0f, 1.0f);
+
+		dir.Normalize();
+
+		Nav::Vector3 r;
+		Nav::Vector3::Vector3Cross(r, Nav::Vector3::UP, dir);
+		r = r * 0.5f;
+
+		DWORD c = color;
+		if (edge && edge == e)
+			c = 0xffff0000;
+
+		vb[4 * (i + cbSize)].pos = *(D3DXVECTOR3*)&(e->mPoint[1] + 5.0f * r);
+		vb[4 * (i + cbSize)].color = c;
+		vb[4 * (i + cbSize) + 1].pos = *(D3DXVECTOR3*)&(e->mPoint[1] - 5.0f * r);
+		vb[4 * (i + cbSize) + 1].color = c;
+		vb[4 * (i + cbSize) + 2].pos = *(D3DXVECTOR3*)&(e->mPoint[0] - 5.0f * r);
+		vb[4 * (i + cbSize) + 2].color = c;
+		vb[4 * (i + cbSize) + 3].pos = *(D3DXVECTOR3*)&(e->mPoint[0] + 5.0f * r);
+		vb[4 * (i + cbSize) + 3].color = c;
+
+		ib[6 * (i + cbSize)] = 4 * (i + cbSize) + 0;
+		ib[6 * (i + cbSize) + 1] = 4 * (i + cbSize) + 1;
+		ib[6 * (i + cbSize) + 2] = 4 * (i + cbSize) + 2;
+		ib[6 * (i + cbSize) + 3] = 4 * (i + cbSize) + 3;
+		ib[6 * (i + cbSize) + 4] = 4 * (i + cbSize) + 0;
+		ib[6 * (i + cbSize) + 5] = 4 * (i + cbSize) + 2;
+	}
+
+	mBoundsMesh->UnlockIndexBuffer();
+	mBoundsMesh->UnlockVertexBuffer();
+}
+
+void MeshRenderer::ClearBounds()
+{
+	SAFE_RELEASE(mBoundsMesh);
 }

@@ -13,7 +13,7 @@
 #define SAFE_DELETE(x) if (x) { delete x; x = NULL; }
 #define SAFE_DELETE_ARRAY(x) if (x) { delete [] x; x = NULL; }
 #define SAFE_RELEASE(x) if (x) { x->Release(); x = NULL; }
-#define CURRENT_VERSION 101
+#define CURRENT_VERSION 102
 
 namespace Nav
 {

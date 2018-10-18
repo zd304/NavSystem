@@ -133,6 +133,9 @@
     <ClInclude Include="Src\SketchSceneLogic.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\EdgeLogic.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -229,6 +232,9 @@
       <Filter>quadtree</Filter>
     </ClCompile>
     <ClCompile Include="Src\SketchSceneLogic.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\EdgeLogic.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

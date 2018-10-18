@@ -11,6 +11,7 @@ namespace Nav
 	class NavGraph;
 	class NavGate;
 	class NavSceneTree;
+	struct NavEdge;
 }
 class Test;
 
@@ -45,6 +46,10 @@ public:
 	void SetEditGraph(const Nav::NavGraph* graph);
 
 	void SetSketchScene(Nav::NavSceneTree* tree);
+
+	void SetBounds(const std::vector<Nav::NavEdge*>& curBounds, const std::vector<Nav::NavEdge*>& delBounds, const Nav::NavEdge* edge);
+
+	void ClearBounds();
 public:
 	Test* mTest;
 	IDirect3DDevice9* mDevice;
@@ -72,6 +77,9 @@ public:
 
 	// SketchScene;
 	std::vector<MeshVertex> mSketchSceneArea;
+
+	// Bounds;
+	ID3DXMesh* mBoundsMesh;
 };
 
 #endif

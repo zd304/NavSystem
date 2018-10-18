@@ -12,6 +12,7 @@
 #include "GateLogic.h"
 #include "CheckInfoLogic.h"
 #include "GraphEditLogic.h"
+#include "EdgeLogic.h"
 #include "NavSceneNode.h"
 #include "NavSceneTree.h"
 #include "NavLinkInfo.h"
@@ -44,6 +45,7 @@ Test::Test()
 	mCheckInfoLogic = NULL;
 	mGraphEditLogic = NULL;
 	mSketchScnLogic = NULL;
+	mEdgeLogic = NULL;
 
 	mCamera = NULL;
 	mInstance = this;
@@ -82,6 +84,7 @@ Test::~Test()
 	SAFE_DELETE(mCheckInfoLogic);
 	SAFE_DELETE(mGraphEditLogic);
 	SAFE_DELETE(mSketchScnLogic);
+	SAFE_DELETE(mEdgeLogic);
 	SAFE_DELETE(mOpenFBX);
 	SAFE_DELETE(mSaveNav);
 	SAFE_DELETE(mOpenNav);
@@ -244,6 +247,7 @@ void Test::OnGUI()
 		SAFE_DELETE(mGateLogic);
 		SAFE_DELETE(mCheckInfoLogic);
 		SAFE_DELETE(mSketchScnLogic);
+		SAFE_DELETE(mEdgeLogic);
 		mSketchScnLogic = new SketchSceneLogic(this);
 
 		SAFE_DELETE(mRenderer);
@@ -285,6 +289,7 @@ void Test::OnGUI()
 			SAFE_DELETE(mGateLogic);
 			SAFE_DELETE(mCheckInfoLogic);
 			SAFE_DELETE(mSketchScnLogic);
+			SAFE_DELETE(mEdgeLogic);
 			mSketchScnLogic = new SketchSceneLogic(this);
 
 			SAFE_DELETE(mRenderer);
@@ -293,7 +298,7 @@ void Test::OnGUI()
 		}
 	}
 
-	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic && !mGraphEditLogic && !mSketchScnLogic)
+	if (!mGateLogic && !mPathFindLogic && !mCheckInfoLogic && !mGraphEditLogic && !mSketchScnLogic && !mEdgeLogic)
 	{
 		if (ImGui::Button(STU("寻路模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
 		{
@@ -311,6 +316,10 @@ void Test::OnGUI()
 		{
 			mGraphEditLogic = new GraphEditLogic(this);
 		}
+		if (ImGui::Button(STU("边界编辑模式").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+		{
+			mEdgeLogic = new EdgeLogic(this);
+		}
 	}
 	else
 	{
@@ -321,6 +330,7 @@ void Test::OnGUI()
 			SAFE_DELETE(mCheckInfoLogic);
 			SAFE_DELETE(mGraphEditLogic);
 			SAFE_DELETE(mSketchScnLogic);
+			SAFE_DELETE(mEdgeLogic);
 		}
 		ImGui::Spacing();
 		ImGui::Separator();
@@ -342,6 +352,10 @@ void Test::OnGUI()
 	if (mGraphEditLogic)
 	{
 		mGraphEditLogic->OnGUI();
+	}
+	if (mEdgeLogic)
+	{
+		mEdgeLogic->OnGUI();
 	}
 
 	ImGui::End();
@@ -660,6 +674,7 @@ void Test::CloseFile()
 	SAFE_DELETE(mGateLogic);
 	SAFE_DELETE(mCheckInfoLogic);
 	SAFE_DELETE(mSketchScnLogic);
+	SAFE_DELETE(mEdgeLogic);
 }
 
 void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& scnNodes)
@@ -838,6 +853,8 @@ void Test::Pick(int x, int y)
 		mCheckInfoLogic->OnPick(hitTri, hitPoint, hitGraph);
 	if (mGraphEditLogic)
 		mGraphEditLogic->OnPick(hitTri, hitPoint, hitGraph);
+	if (mEdgeLogic)
+		mEdgeLogic->OnPick(hitTri, hitPoint, hitGraph);
 }
 
 void Test::TransformPos(Nav::Vector3& pos)

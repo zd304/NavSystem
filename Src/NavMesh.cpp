@@ -228,19 +228,6 @@ namespace Nav
 		{
 			NavTriangle* tri = mTriangles[i];
 
-			bool isLinkTri = false;
-			for (unsigned int j = 0; j < mNavLinkInfos.size(); ++j)
-			{
-				NavLinkInfo* linkInfo = mNavLinkInfos[j];
-				if (linkInfo->mTriIndex == j)
-				{
-					isLinkTri = true;
-					break;
-				}
-			}
-			if (isLinkTri)
-				continue;
-
 			bool hasEdge[3] { false, false, false };
 			for (unsigned int j = 0; j < tri->mShareEdgeIndices.size(); ++j)
 			{
@@ -335,12 +322,16 @@ namespace Nav
 			size += linkInfo->GetSize();
 		}
 
-		//size += sizeof(unsigned int);
-		//for (unsigned int i = 0; i < mBounds.size(); ++i)
-		//{
-		//	NavEdge* edge = mBounds[i];
-		//	size += (sizeof(Vector3) * 2);
-		//}
+		bool saveBounds = gNavSystem->GetVersion() >= 102;
+
+		if (saveBounds)
+		{
+			size += sizeof(unsigned int);
+			for (unsigned int i = 0; i < mBounds.size(); ++i)
+			{
+				size += (sizeof(Vector3) * 2);
+			}
+		}
 		return size;
 	}
 
@@ -366,17 +357,22 @@ namespace Nav
 			ptr = link->WriteTo(dest, ptr);
 		}
 
-		//unsigned int boundsCount = mBounds.size();
-		//memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
-		//ptr += sizeof(unsigned int);
+		bool saveBounds = gNavSystem->GetVersion() >= 102;
 
-		//unsigned int edgeSize = sizeof(Vector3) * 2;
-		//for (unsigned int i = 0; i < mBounds.size(); ++i)
-		//{
-		//	NavEdge* edge = mBounds[i];
-		//	memcpy(dest + ptr, edge->mPoint, edgeSize);
-		//	ptr += edgeSize;
-		//}
+		if (saveBounds)
+		{
+			unsigned int boundsCount = mBounds.size();
+			memcpy(dest + ptr, &boundsCount, sizeof(unsigned int));
+			ptr += sizeof(unsigned int);
+
+			unsigned int edgeSize = sizeof(Vector3) * 2;
+			for (unsigned int i = 0; i < mBounds.size(); ++i)
+			{
+				NavEdge* edge = mBounds[i];
+				memcpy(dest + ptr, &edge->mPoint[0], edgeSize);
+				ptr += edgeSize;
+			}
+		}
 		return ptr;
 	}
 
@@ -422,24 +418,28 @@ namespace Nav
 			}
 		}
 
-		UpdateAdjacent();
+		bool calcBounds = gNavSystem->GetVersion() < 102;
+		UpdateAdjacent(calcBounds);
 
-		//unsigned int boundsCount = 0;
-		//memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
-		//ptr += sizeof(unsigned int);
-		//unsigned int edgeSize = sizeof(Vector3) * 2;
-		//for (unsigned int i = 0; i < boundsCount; ++i)
-		//{
-		//	NavEdge* edge = new NavEdge();
-		//	Vector3 v0, v1;
-		//	memcpy(v0.mem, &src[ptr], sizeof(Vector3));
-		//	ptr += sizeof(Vector3);
-		//	memcpy(v1.mem, &src[ptr], sizeof(Vector3));
-		//	ptr += sizeof(Vector3);
-		//	edge->mPoint[0] = v0;
-		//	edge->mPoint[1] = v1;
-		//	mBounds.push_back(edge);
-		//}
+		if (!calcBounds)
+		{
+			unsigned int boundsCount = 0;
+			memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
+			ptr += sizeof(unsigned int);
+			unsigned int edgeSize = sizeof(Vector3) * 2;
+			for (unsigned int i = 0; i < boundsCount; ++i)
+			{
+				NavEdge* edge = new NavEdge();
+				Vector3 v0, v1;
+				memcpy(v0.mem, &src[ptr], sizeof(Vector3));
+				ptr += sizeof(Vector3);
+				memcpy(v1.mem, &src[ptr], sizeof(Vector3));
+				ptr += sizeof(Vector3);
+				edge->mPoint[0] = v0;
+				edge->mPoint[1] = v1;
+				mBounds.push_back(edge);
+			}
+		}
 
 		return ptr;
 	}

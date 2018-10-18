@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClInclude Include="Src\Camera.h" />
     <ClInclude Include="Src\CheckInfoLogic.h" />
+    <ClInclude Include="Src\EdgeLogic.h" />
     <ClInclude Include="Src\FBXCommon.h" />
     <ClInclude Include="Src\FBXHelper.h" />
     <ClInclude Include="Src\FileDialog.h" />
@@ -126,6 +127,7 @@
   <ItemGroup>
     <ClCompile Include="Src\Camera.cpp" />
     <ClCompile Include="Src\CheckInfoLogic.cpp" />
+    <ClCompile Include="Src\EdgeLogic.cpp" />
     <ClCompile Include="Src\FBXCommon.cpp" />
     <ClCompile Include="Src\FBXHelper.cpp" />
     <ClCompile Include="Src\FileDialog.cpp" />
