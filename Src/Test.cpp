@@ -741,7 +741,20 @@ void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& 
 				for (unsigned int j = 0; j < graph->mMesh->mNavLinkInfos.size(); ++j)
 				{
 					Nav::NavLinkInfo* link = graph->mMesh->mNavLinkInfos[j];
-					scnNode->mLinkScnIDs.push_back(link->mLinkID);
+					bool linkIDExist = false;
+					for (unsigned int k = 0; k < scnNode->mLinkScnIDs.size(); ++k)
+					{
+						unsigned int linkScnID = scnNode->mLinkScnIDs[k];
+						if (linkScnID == link->mLinkID)
+						{
+							linkIDExist = true;
+							break;
+						}
+					}
+					if (!linkIDExist)
+					{
+						scnNode->mLinkScnIDs.push_back(link->mLinkID);
+					}
 				}
 
 				scnNodes.push_back(scnNode);
