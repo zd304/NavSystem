@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "imgui/imgui.h"
 #include "imgui_impl_dx9.h"
+#include "CommandMgr.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -29,6 +30,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG));
 	_CrtDumpMemoryLeaks();
 #endif
+
+	CommandMgr::Init();
 
 	test = new Test();
 

@@ -71,6 +71,27 @@ void StringReplace(std::string &strBase, const std::string& strSrc, const std::s
 	}
 }
 
+void StringSplit(const std::string& str, const std::string& delim, std::vector<std::string>& rst)
+{
+	if ("" == str) return;
+	//先将要切割的字符串从string类型转换为char*类型;
+	char * strs = new char[str.length() + 1];
+	//strcpy(strs, str.c_str());
+	strcpy_s(strs, str.length() + 1, str.c_str());
+
+	char * d = new char[delim.length() + 1];
+	//strcpy(d, delim.c_str());
+	strcpy_s(d, delim.length() + 1, delim.c_str());
+
+	char *p = strtok(strs, d);
+	while (p)
+	{
+		std::string s = p; //分割得到的字符串转换为string类型;
+		rst.push_back(s); //存入结果数组;
+		p = strtok(NULL, d);
+	}
+}
+
 ImTextureID Global::mFolderTexID = NULL;
 ImTextureID Global::mFileTexID = NULL;
 ImTextureID Global::mDiskTexID = NULL;

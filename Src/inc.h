@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <functional>
 #include <algorithm>
 #include <Windows.h>
 #include <d3d9.h>
@@ -23,6 +24,8 @@ std::string UTS(const std::string & str);
 std::string STU(const std::string & str);
 
 void StringReplace(std::string &strBase, const std::string& strSrc, const std::string& strDes);
+
+void StringSplit(const std::string& str, const std::string& delim, std::vector<std::string>& rst);
 
 class Global
 {

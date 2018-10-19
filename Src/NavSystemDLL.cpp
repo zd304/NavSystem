@@ -49,6 +49,12 @@ extern "C"
 		return true;
 	}
 
+	bool Nav_HasSketchScene()
+	{
+		if (!navSystem) return false;
+		return navSystem->mScene != NULL;
+	}
+
 	bool Nav_LoadSketchSceneFromFile(const char* path)
 	{
 		if (!navSystem) return false;
@@ -95,12 +101,12 @@ extern "C"
 			float height = 0.0f;
 			if (graph->mHeightmap->GetHeight(vPos, &height))
 			{
-				(*layer) = i;
+				(*layer) = graph->mID;
 				return true;
 			}
 			if (graph->mMesh->GetHeight(vPos, &height))
 			{
-				(*layer) = i;
+				(*layer) = graph->mID;
 				return true;
 			}
 		}
@@ -367,19 +373,19 @@ extern "C"
 		return true;
 	}
 
-	bool Nav_GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer)
+	bool Nav_GetTrianglesByIndex(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int index)
 	{
 		if (!verticesBuffer)
 			return false;
 		if (!navSystem) return false;
-		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
+		Nav::NavGraph* graph = navSystem->GetGraphByIndex(index);
 		if (!graph || !graph->mMesh) return false;
 
 		unsigned int faceCount = (unsigned int)graph->mMesh->mTriangles.size();
 		(*verticesBuffer) = new NAV_VEC3[faceCount * 3];
 		(*verticesCount) = faceCount * 3;
 
-		unsigned int index = -1;
+		unsigned int vbIndex = -1;
 		for (unsigned int i = 0; i < faceCount; ++i)
 		{
 			Nav::NavTriangle* tri = graph->mMesh->mTriangles[i];
@@ -387,7 +393,7 @@ extern "C"
 			{
 				Nav::Vector3 v = tri->mPoint[j];
 
-				NAV_VEC3* nv = &(*verticesBuffer)[++index];
+				NAV_VEC3* nv = &(*verticesBuffer)[++vbIndex];
 				nv->x = v.x;
 				nv->y = v.y;
 				nv->z = v.z;
@@ -396,7 +402,7 @@ extern "C"
 		return true;
 	}
 
-	bool Nav_ReleaseLayerTriangles(NAV_VEC3** verticesBuffer)
+	bool Nav_ReleaseTriangles(NAV_VEC3** verticesBuffer)
 	{
 		if (!verticesBuffer)
 			return false;

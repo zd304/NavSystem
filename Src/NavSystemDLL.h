@@ -41,6 +41,12 @@ extern "C"
 	_DLLExprot bool Nav_CreateFromMemory(char* data);
 
 	//************************************
+	// Method:    是否加载了简图;
+	// Returns:   是否加载了简图;
+	//************************************
+	_DLLExprot bool Nav_HasSketchScene();
+
+	//************************************
 	// Method:    从文件创建简图;
 	// Returns:   是否创建成功;
 	// Parameter: [path]简图文件路径;
@@ -178,14 +184,14 @@ extern "C"
 	// Parameter: [verticesCount]所有顶点数量;
 	// Parameter: [layer]指定层索引;
 	//************************************
-	_DLLExprot bool Nav_GetLayerTriangles(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int layer);
+	_DLLExprot bool Nav_GetTrianglesByIndex(NAV_VEC3** verticesBuffer, unsigned int* verticesCount, unsigned int index);
 
 	//************************************
-	// Method:    释放GetLayerTriangles获取出来的顶点数据（主要编辑器用）;
+	// Method:    释放Nav_GetTrianglesByIndex获取出来的顶点数据（主要编辑器用）;
 	// Returns:   是否释放成功;
-	// Parameter: [verticesBuffer]GetLayerTriangles获取出来的顶点数据;
+	// Parameter: [verticesBuffer]Nav_GetTrianglesByIndex获取出来的顶点数据;
 	//************************************
-	_DLLExprot bool Nav_ReleaseLayerTriangles(NAV_VEC3** verticesBuffer);
+	_DLLExprot bool Nav_ReleaseTriangles(NAV_VEC3** verticesBuffer);
 
 	//************************************
 	// Method:    获取指定层导航上，门的数量;

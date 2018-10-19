@@ -19,6 +19,7 @@ class CheckInfoLogic;
 class GraphEditLogic;
 class SketchSceneLogic;
 class EdgeLogic;
+class CommandMgr;
 class Camera;
 
 class Test
@@ -76,6 +77,8 @@ private:
 	GraphEditLogic* mGraphEditLogic;
 	SketchSceneLogic* mSketchScnLogic;
 	EdgeLogic* mEdgeLogic;
+
+	CommandMgr* mCommandMgr;
 
 	// FileDialog
 	FileDialog* mOpenFBX;

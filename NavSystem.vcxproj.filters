@@ -136,6 +136,12 @@
     <ClInclude Include="Src\EdgeLogic.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\NavSystemDLL.h">
+      <Filter>nav</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\CommandMgr.h">
+      <Filter>Src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\imgui\imgui.cpp">
@@ -235,6 +241,12 @@
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\EdgeLogic.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NavSystemDLL.cpp">
+      <Filter>nav</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\CommandMgr.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

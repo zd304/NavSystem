@@ -13,6 +13,7 @@
 #include "CheckInfoLogic.h"
 #include "GraphEditLogic.h"
 #include "EdgeLogic.h"
+#include "CommandMgr.h"
 #include "NavSceneNode.h"
 #include "NavSceneTree.h"
 #include "NavLinkInfo.h"
@@ -46,6 +47,8 @@ Test::Test()
 	mGraphEditLogic = NULL;
 	mSketchScnLogic = NULL;
 	mEdgeLogic = NULL;
+
+	mCommandMgr = NULL;
 
 	mCamera = NULL;
 	mInstance = this;
@@ -337,6 +340,19 @@ void Test::OnGUI()
 		ImGui::Spacing();
 	}
 
+	ImGui::Separator();
+	if (ImGui::Button(STU("ÃüÁîÐÐ¹¤¾ß").c_str(), ImVec2(mLeftUIWidth - 20.0f, 30.0f)))
+	{
+		if (mCommandMgr)
+		{
+			SAFE_DELETE(mCommandMgr);
+		}
+		else
+		{
+			mCommandMgr = new CommandMgr(this);
+		}
+	}
+
 	if (mGateLogic)
 	{
 		mGateLogic->OnGUI();
@@ -359,6 +375,11 @@ void Test::OnGUI()
 	}
 
 	ImGui::End();
+
+	if (mCommandMgr)
+	{
+		mCommandMgr->OnGui();
+	}
 }
 
 void Test::OnUpdate()
