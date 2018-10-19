@@ -16,6 +16,9 @@ LOCAL_SRC_FILES := \
 	../Src/NavPhysics.cpp\
 	../Src/NavSystem.cpp\
 	../Src/NavSystemDLL.cpp\
-	../Src/NavTriangle.cpp
+	../Src/NavTriangle.cpp\
+	../Src/NavSceneNode.cpp\
+	../Src/NavSceneTree.cpp\
+	../Src/NavLinkInfo.cpp
 
 include $(BUILD_SHARED_LIBRARY)
