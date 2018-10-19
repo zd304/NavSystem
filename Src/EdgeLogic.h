@@ -20,6 +20,8 @@ public:
 
 	void OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph);
 
+	void OnPick(const Nav::Vector3& orig, const Nav::Vector3& dir);
+
 	void OnGUI();
 
 	void Clear(); 

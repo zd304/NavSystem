@@ -32,7 +32,7 @@ namespace NavPhysics
 			det = -det;
 		}
 
-		if (det < 0.0001f)
+		if (det < 0.0f)
 		{
 			return false;
 		}

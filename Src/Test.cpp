@@ -888,7 +888,10 @@ void Test::Pick(int x, int y)
 	if (mGraphEditLogic)
 		mGraphEditLogic->OnPick(hitTri, hitPoint, hitGraph);
 	if (mEdgeLogic)
+	{
 		mEdgeLogic->OnPick(hitTri, hitPoint, hitGraph);
+		mEdgeLogic->OnPick(orig, dir);
+	}
 }
 
 void Test::TransformPos(Nav::Vector3& pos)

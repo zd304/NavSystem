@@ -3,6 +3,7 @@
 #include "NavMesh.h"
 #include "NavTriangle.h"
 #include "NavEdge.h"
+#include "NavPhysics.h"
 #include "Test.h"
 #include "MeshRenderer.h"
 
@@ -35,6 +36,10 @@ void EdgeLogic::Clear()
 
 void EdgeLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, const Nav::NavGraph* graph)
 {
+	if (mGraph)
+	{
+		return;
+	}
 	if (graph == NULL)
 	{
 		//Clear();
@@ -93,6 +98,81 @@ void EdgeLogic::OnPick(const Nav::NavTriangle* tri, const Nav::Vector3& point, c
 	}
 
 	mTest->mRenderer->SetBounds(mGraph->mMesh->mBounds, mDelBounds, NULL);
+}
+
+void EdgeLogic::OnPick(const Nav::Vector3& orig, const Nav::Vector3& vDir)
+{
+	if (!mGraph)
+	{
+		return;
+	}
+
+	Nav::Vector3 vb[4];
+
+	std::vector<Nav::NavEdge*>& curBounds = mGraph->mMesh->mBounds;
+	for (size_t i = 0; i < curBounds.size(); ++i)
+	{
+		Nav::NavEdge* e = curBounds[i];
+
+		Nav::Vector3 dir = e->mPoint[1] - e->mPoint[0];
+
+		if (dir == Nav::Vector3::ZERO || dir == Nav::Vector3::UP)
+			dir.Set(0.0f, 0.0f, 1.0f);
+
+		dir.Normalize();
+
+		Nav::Vector3 r;
+		Nav::Vector3::Vector3Cross(r, Nav::Vector3::UP, dir);
+		r = r * 0.5f;
+
+		vb[0] = e->mPoint[1] + 5.0f * r;
+		vb[1] = e->mPoint[1] - 5.0f * r;
+		vb[2] = e->mPoint[0] - 5.0f * r;
+		vb[3] = e->mPoint[0] + 5.0f * r;
+
+		NavPhysics::NavHit hitInfo;
+		bool sel = NavPhysics::RayIntersectTriangle(orig, vDir, vb[2], vb[1], vb[0], &hitInfo);
+		sel |= NavPhysics::RayIntersectTriangle(orig, vDir, vb[2], vb[0], vb[3], &hitInfo);
+		
+		if (sel == false)
+			continue;
+
+		selBoundsIndex = i;
+		mTest->mRenderer->SetBounds(mGraph->mMesh->mBounds, mDelBounds, e);
+		break;
+	}
+
+	for (size_t i = 0; i < mDelBounds.size(); ++i)
+	{
+		Nav::NavEdge* e = mDelBounds[i];
+
+		Nav::Vector3 dir = e->mPoint[1] - e->mPoint[0];
+
+		if (dir == Nav::Vector3::ZERO || dir == Nav::Vector3::UP)
+			dir.Set(0.0f, 0.0f, 1.0f);
+
+		dir.Normalize();
+
+		Nav::Vector3 r;
+		Nav::Vector3::Vector3Cross(r, Nav::Vector3::UP, dir);
+		r = r * 0.5f;
+
+		vb[0] = e->mPoint[1] + 5.0f * r;
+		vb[1] = e->mPoint[1] - 5.0f * r;
+		vb[2] = e->mPoint[0] - 5.0f * r;
+		vb[3] = e->mPoint[0] + 5.0f * r;
+
+		NavPhysics::NavHit hitInfo;
+		bool sel = NavPhysics::RayIntersectTriangle(orig, vDir, vb[0], vb[1], vb[2], &hitInfo);
+		sel |= NavPhysics::RayIntersectTriangle(orig, vDir, vb[3], vb[0], vb[2], &hitInfo);
+
+		if (sel == false)
+			continue;
+
+		selBoundsIndex = i + curBounds.size();
+		mTest->mRenderer->SetBounds(mGraph->mMesh->mBounds, mDelBounds, e);
+		break;
+	}
 }
 
 void EdgeLogic::OnGUI()
