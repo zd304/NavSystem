@@ -5,9 +5,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Src">
-      <UniqueIdentifier>{67e43b0c-dfc6-4fd2-8b92-c093d169e842}</UniqueIdentifier>
-    </Filter>
     <Filter Include="imgui">
       <UniqueIdentifier>{dc5a0377-f9ce-413c-9753-eeef14f989f3}</UniqueIdentifier>
     </Filter>
@@ -22,6 +19,9 @@
     </Filter>
     <Filter Include="quadtree">
       <UniqueIdentifier>{cd31be66-70a0-4242-8626-1e0a4efab07d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="editor">
+      <UniqueIdentifier>{67e43b0c-dfc6-4fd2-8b92-c093d169e842}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,24 +42,6 @@
     </ClInclude>
     <ClInclude Include="Src\imgui\stb_truetype.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\inc.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Test.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\imgui_impl_dx9.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\FBXHelper.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\FBXCommon.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\MeshRenderer.h">
-      <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\micropather\micropather.h">
       <Filter>micropather</Filter>
@@ -88,12 +70,6 @@
     <ClInclude Include="Src\NavGraph.h">
       <Filter>nav</Filter>
     </ClInclude>
-    <ClInclude Include="Src\PathFindLogic.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\FileDialog.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\NavSystem.h">
       <Filter>nav</Filter>
     </ClInclude>
@@ -105,18 +81,6 @@
     </ClInclude>
     <ClInclude Include="Src\NavGate.h">
       <Filter>nav</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\GateLogic.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\CheckInfoLogic.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Camera.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\GraphEditLogic.h">
-      <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\NavLinkInfo.h">
       <Filter>nav</Filter>
@@ -130,17 +94,53 @@
     <ClInclude Include="Src\quadtree\QuadTreeNode.h">
       <Filter>quadtree</Filter>
     </ClInclude>
-    <ClInclude Include="Src\SketchSceneLogic.h">
-      <Filter>Src</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\EdgeLogic.h">
-      <Filter>Src</Filter>
-    </ClInclude>
     <ClInclude Include="Src\NavSystemDLL.h">
       <Filter>nav</Filter>
     </ClInclude>
-    <ClInclude Include="Src\CommandMgr.h">
-      <Filter>Src</Filter>
+    <ClInclude Include="Src\editor\Camera.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\CheckInfoLogic.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\CommandMgr.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\EdgeLogic.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\FBXCommon.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\FBXHelper.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\FileDialog.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\GateLogic.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\GraphEditLogic.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\imgui_impl_dx9.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\inc.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\MeshRenderer.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\PathFindLogic.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\SketchSceneLogic.h">
+      <Filter>editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\editor\Test.h">
+      <Filter>editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,27 +152,6 @@
     </ClCompile>
     <ClCompile Include="Src\imgui\imgui_draw.cpp">
       <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\inc.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Main.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Test.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\imgui_impl_dx9.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\FBXCommon.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\FBXHelper.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\MeshRenderer.cpp">
-      <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\micropather\micropather.cpp">
       <Filter>micropather</Filter>
@@ -195,12 +174,6 @@
     <ClCompile Include="Src\NavGraph.cpp">
       <Filter>nav</Filter>
     </ClCompile>
-    <ClCompile Include="Src\PathFindLogic.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\FileDialog.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\NavSystem.cpp">
       <Filter>nav</Filter>
     </ClCompile>
@@ -210,20 +183,8 @@
     <ClCompile Include="Src\NavGate.cpp">
       <Filter>nav</Filter>
     </ClCompile>
-    <ClCompile Include="Src\GateLogic.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\CheckInfoLogic.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\NavInc.cpp">
       <Filter>nav</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Camera.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\GraphEditLogic.cpp">
-      <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="Src\NavLinkInfo.cpp">
       <Filter>nav</Filter>
@@ -237,17 +198,56 @@
     <ClCompile Include="Src\quadtree\QuadTreeNode.cpp">
       <Filter>quadtree</Filter>
     </ClCompile>
-    <ClCompile Include="Src\SketchSceneLogic.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\EdgeLogic.cpp">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="Src\NavSystemDLL.cpp">
       <Filter>nav</Filter>
     </ClCompile>
-    <ClCompile Include="Src\CommandMgr.cpp">
-      <Filter>Src</Filter>
+    <ClCompile Include="Src\editor\Camera.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\CheckInfoLogic.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\CommandMgr.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\EdgeLogic.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\FBXCommon.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\FBXHelper.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\FileDialog.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\GateLogic.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\GraphEditLogic.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\imgui_impl_dx9.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\inc.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\Main.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\MeshRenderer.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\PathFindLogic.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\SketchSceneLogic.cpp">
+      <Filter>editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\editor\Test.cpp">
+      <Filter>editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
