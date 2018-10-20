@@ -19,11 +19,9 @@ namespace Nav
 
 		bool AddSceneNode(NavSceneNode* node);
 
-		bool LoadFromFileW(const wchar_t* path);
+		bool LoadFromFile(const char* path, const char* scnName);
 
-		bool LoadFromFile(const char* path);
-
-		bool LoadFromMemory(char* data);
+		bool LoadFromMemory(char* data, const char* scnName);
 
 		bool LoadSketchSceneFromFile(const char* path);
 
@@ -44,6 +42,10 @@ namespace Nav
 		NavGraph* GetGraphByID(unsigned int id);
 
 		NavGraph* GetGraphByIndex(unsigned int index);
+
+		void DeleteGraphByID(unsigned int id);
+
+		void DeleteGraphByIndex(unsigned int index);
 
 		void GetBound(Vector3* min, Vector3* max);
 

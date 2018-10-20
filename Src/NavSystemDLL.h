@@ -23,22 +23,14 @@ extern "C"
 	// Parameter: [path]nav文件所在路径，UTF8编码;
 	// Parameter: [len]字节数;
 	//************************************
-	_DLLExprot bool Nav_Create(const char* path);
-
-	//************************************
-	// Method:    创建当前场景的导航;
-	// Returns:   是否创建成功;
-	// Parameter: [path]nav文件所在路径，Unicode编码，wchar_t*强转为unsinged char*;
-	// Parameter: [len]unsinged char*字节数;
-	//************************************
-	_DLLExprot bool Nav_CreateW(const unsigned char* path, unsigned int len);
+	_DLLExprot bool Nav_Create(const char* path, const char* scnName);
 
 	//************************************
 	// Method:    从内存创建当前场景的导航;
 	// Returns:   是否创建成功;
 	// Parameter: [data]nav文件的二进制数据;
 	//************************************
-	_DLLExprot bool Nav_CreateFromMemory(char* data);
+	_DLLExprot bool Nav_CreateFromMemory(char* data, const char* scnName);
 
 	//************************************
 	// Method:    是否加载了简图;
@@ -61,7 +53,21 @@ extern "C"
 	_DLLExprot bool Nav_LoadSketchSceneFromMemory(char* data);
 
 	//************************************
-	// Method:    释放当前场景的导航;
+	// Method:    释放一层导航的数据;
+	// Returns:   void
+	// Parameter: [layer]导航的层ID;
+	//************************************
+	_DLLExprot void Nav_ReleaseLayer(unsigned int layer);
+
+	//************************************
+	// Method:    通过层索引释放一层导航的数据;
+	// Returns:   void
+	// Parameter: [index]导航的层索引;
+	//************************************
+	_DLLExprot void Nav_ReleaseLayerByIndex(unsigned int index);
+
+	//************************************
+	// Method:    释放导航所有数据;
 	// Returns:   void
 	//************************************
 	_DLLExprot void Nav_Release();
@@ -72,6 +78,29 @@ extern "C"
 	// Parameter: [layerCount]返回获取的层数;
 	//************************************
 	_DLLExprot bool Nav_GetLayerCount(unsigned int* layerCount);
+
+	//************************************
+	// Method:    根据索引获取层ID;
+	// Returns:   是否成功获取层ID;
+	// Parameter: [layer]返回获取的层ID;
+	//************************************
+	_DLLExprot bool Nav_GetLayerByIndex(unsigned int index, unsigned int* layer);
+
+	//************************************
+	// Method:    根据索引获取场景名;
+	// Returns:   是否成功获取场景名;
+	// Parameter: [index]层索引;
+	// Parameter: [scnName]返回获得的场景名;
+	//************************************
+	_DLLExprot bool Nav_GetScnNameByIndex(unsigned int index, const char** scnName);
+
+	//************************************
+	// Method:    根据层ID获取场景名;
+	// Returns:   是否成功获取场景名;
+	// Parameter: [layer]层ID;
+	// Parameter: [scnName]返回获得的场景名;
+	//************************************
+	_DLLExprot bool Nav_GetScnNameByLayer(unsigned int layer, const char** scnName);
 
 	//************************************
 	// Method:    获得指定位置所在的层数。在pos指定位置，垂直向下发射一条射线，返回碰撞到的第一个导航的层数索引;

@@ -7,10 +7,10 @@ static Nav::NavSystem* navSystem = NULL;
 
 extern "C"
 {
-	bool Nav_Create(const char* path)
+	bool Nav_Create(const char* path, const char* scnName)
 	{
 		navSystem = new Nav::NavSystem();
-		if (!navSystem->LoadFromFile(path))
+		if (!navSystem->LoadFromFile(path, scnName))
 		{
 			SAFE_DELETE(navSystem);
 			return false;
@@ -18,30 +18,11 @@ extern "C"
 		return true;
 	}
 
-	bool Nav_CreateW(const unsigned char* path, unsigned int len)
+	bool Nav_CreateFromMemory(char* data, const char* scnName)
 	{
 		navSystem = new Nav::NavSystem();
 
-		unsigned long pathLen = len / (sizeof(wchar_t) / sizeof(unsigned char));
-		wchar_t* pathData = new wchar_t[pathLen];
-		memset(pathData, 0, sizeof(wchar_t) * pathLen);
-		memcpy(pathData, path, len);
-
-		if (!navSystem->LoadFromFileW(pathData))
-		{
-			SAFE_DELETE(navSystem);
-			SAFE_DELETE_ARRAY(pathData);
-			return false;
-		}
-		SAFE_DELETE_ARRAY(pathData);
-		return true;
-	}
-
-	bool Nav_CreateFromMemory(char* data)
-	{
-		navSystem = new Nav::NavSystem();
-
-		if (!navSystem->LoadFromMemory(data))
+		if (!navSystem->LoadFromMemory(data, scnName))
 		{
 			SAFE_DELETE(navSystem);
 			return false;
@@ -79,6 +60,20 @@ extern "C"
 		return true;
 	}
 
+	void Nav_ReleaseLayer(unsigned int layer)
+	{
+		if (!navSystem) return;
+
+		navSystem->DeleteGraphByID(layer);
+	}
+
+	void Nav_ReleaseLayerByIndex(unsigned int index)
+	{
+		if (!navSystem) return;
+
+		navSystem->DeleteGraphByIndex(index);
+	}
+
 	void Nav_Release()
 	{
 		SAFE_DELETE(navSystem);
@@ -88,6 +83,37 @@ extern "C"
 	{
 		if (!navSystem) return false;
 		(*layerCount) = navSystem->GetGraphCount();
+		return true;
+	}
+
+	bool Nav_GetLayerByIndex(unsigned int index, unsigned int* layer)
+	{
+		if (!navSystem) return false;
+		unsigned int layerCount = navSystem->GetGraphCount();
+		if (index < 0 || index >= layerCount)
+			return false;
+		Nav::NavGraph* graph = navSystem->GetGraphByIndex(index);
+		(*layer) = graph->mID;
+		return true;
+	}
+
+	bool Nav_GetScnNameByIndex(unsigned int index, const char** scnName)
+	{
+		if (!navSystem) return false;
+		unsigned int layerCount = navSystem->GetGraphCount();
+		if (index < 0 || index >= layerCount)
+			return false;
+		Nav::NavGraph* graph = navSystem->GetGraphByIndex(index);
+		(*scnName) = graph->mScnName.c_str();
+		return true;
+	}
+
+	bool Nav_GetScnNameByLayer(unsigned int layer, const char** scnName)
+	{
+		if (!navSystem) return false;
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph) return false;
+		(*scnName) = graph->mScnName.c_str();
 		return true;
 	}
 

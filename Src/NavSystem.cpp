@@ -119,6 +119,25 @@ namespace Nav
 		return mGraphs[index];
 	}
 
+	void NavSystem::DeleteGraphByID(unsigned int id)
+	{
+		std::map<unsigned int, NavGraph*>::iterator it;
+		it = mGraphsMap.find(id);
+		if (it == mGraphsMap.end())
+			return;
+		SAFE_DELETE(it->second);
+		mGraphsMap.erase(it);
+	}
+
+	void NavSystem::DeleteGraphByIndex(unsigned int index)
+	{
+		if (index < 0 || mGraphs.size() <= index)
+			return;
+		NavGraph* graph = mGraphs[index];
+		SAFE_DELETE(graph);
+		mGraphs.erase(mGraphs.begin() + index);
+	}
+
 	void NavSystem::GetBound(Vector3* min, Vector3* max)
 	{
 		if (min == NULL || max == NULL)
@@ -145,46 +164,7 @@ namespace Nav
 		}
 	}
 
-	bool NavSystem::LoadFromFileW(const wchar_t* path)
-	{
-		Clear();
-
-#ifdef _WINDOWS
-		std::ifstream stream;
-		stream.open(path, std::ios::in | std::ios::binary);
-		if (!stream.is_open())
-			return false;
-		stream.seekg(0, std::ios::end);
-		long long fileSize = stream.tellg();
-		stream.seekg(0, std::ios::beg);
-
-		char* data = new char[fileSize];
-		stream.read(data, fileSize);
-		stream.close();
-
-		mGraphs.clear();
-
-		unsigned int ptr = 0;
-		memcpy(&mVersion, data + ptr, sizeof(unsigned int));
-		ptr += sizeof(unsigned int);
-		unsigned int graphCount = 0;
-		memcpy(&graphCount, data + ptr, sizeof(unsigned int));
-		ptr += sizeof(unsigned int);
-		for (unsigned int i = 0; i < graphCount; ++i)
-		{
-			NavGraph* graph = new NavGraph();
-			ptr = graph->ReadFrom(data, ptr);
-			AddGraph(graph);
-		}
-		SAFE_DELETE_ARRAY(data);
-		mVersion = CURRENT_VERSION;
-		return true;
-#else
-		return false;
-#endif
-	}
-
-	bool NavSystem::LoadFromFile(const char* path)
+	bool NavSystem::LoadFromFile(const char* path, const char* scnName)
 	{
 		//Clear();
 
@@ -210,6 +190,7 @@ namespace Nav
 		for (unsigned int i = 0; i < graphCount; ++i)
 		{
 			NavGraph* graph = new NavGraph();
+			graph->mScnName = scnName;
 			ptr = graph->ReadFrom(data, ptr);
 			AddGraph(graph);
 		}
@@ -218,7 +199,7 @@ namespace Nav
 		return true;
 	}
 
-	bool NavSystem::LoadFromMemory(char* data)
+	bool NavSystem::LoadFromMemory(char* data, const char* scnName)
 	{
 		unsigned int ptr = 0;
 		memcpy(&mVersion, data + ptr, sizeof(unsigned int));
@@ -229,6 +210,7 @@ namespace Nav
 		for (unsigned int i = 0; i < graphCount; ++i)
 		{
 			NavGraph* graph = new NavGraph();
+			graph->mScnName = scnName;
 			ptr = graph->ReadFrom(data, ptr);
 			AddGraph(graph);
 		}

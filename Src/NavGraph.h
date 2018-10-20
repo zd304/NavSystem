@@ -52,6 +52,8 @@ namespace Nav
 		NavHeightmap* mHeightmap;
 		std::vector<NavGate*> mGates;
 		micropather::MicroPather* mPather;
+
+		std::string mScnName;
 		unsigned int mID;
 	};
 }
