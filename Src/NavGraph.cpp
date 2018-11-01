@@ -153,7 +153,6 @@ namespace Nav
 		Vector2 end2D(end.x, end.z);
 
 		Vector2 dir = end2D - start2D;
-		float distance = dir.Length();
 		dir.Normalize();
 		Vector2 offset = dir * (-0.1f);
 
@@ -196,7 +195,6 @@ namespace Nav
 		Vector2 end2D(end.x, end.z);
 
 		Vector2 dir = end2D - start2D;
-		float distance = dir.Length();
 		dir.Normalize();
 		Vector2 offset = dir * (-0.1f);
 
@@ -243,7 +241,6 @@ namespace Nav
 		Vector2 end2D(end.x, end.z);
 
 		Vector2 dir = end2D - start2D;
-		float distance = dir.Length();
 		dir.Normalize();
 
 		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)

@@ -64,7 +64,7 @@ void OnCreate(const std::string& cmdName, const std::string* cmdParams, int cmdP
 	if (cmdParamNum < 1)
 		return;
 	const std::string& path = cmdParams[0];
-	Nav_Create(path.c_str());
+	Nav_Create(path.c_str(), path.c_str());
 }
 
 void OnLoadSketchSceneFromFile(const std::string& cmdName, const std::string* cmdParams, int cmdParamNum)

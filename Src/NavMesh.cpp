@@ -426,7 +426,6 @@ namespace Nav
 			unsigned int boundsCount = 0;
 			memcpy(&boundsCount, &src[ptr], sizeof(unsigned int));
 			ptr += sizeof(unsigned int);
-			unsigned int edgeSize = sizeof(Vector3) * 2;
 			for (unsigned int i = 0; i < boundsCount; ++i)
 			{
 				NavEdge* edge = new NavEdge();

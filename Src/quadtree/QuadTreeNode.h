@@ -64,13 +64,13 @@ private:
 template <typename T>
 QuadTreeNode<T>::QuadTreeNode(float _x, float _y, float _width, float _height,
 	int _level, int _maxLevel, QuadType _quadType, QuadTreeNode *_parent) :
+	quadType(_quadType),
 	x(_x),
 	y(_y),
 	width(_width),
 	height(_height),
 	level(_level),
-	maxLevel(_maxLevel),
-	quadType(_quadType)
+	maxLevel(_maxLevel)
 {
 	parent = _parent;
 	upRightNode = NULL;

@@ -632,7 +632,7 @@ void Test::OpenNav(const char* filePath)
 {
 	//CloseFile();
 
-	mNavSystem->LoadFromFile(filePath);
+	mNavSystem->LoadFromFile(filePath, filePath);
 
 	FBXHelper::InitBox();
 
@@ -738,7 +738,8 @@ void Test::GenerateSketchScene(const char* path, std::list<Nav::NavSceneNode*>& 
 				continue;
 			}
 			Nav::NavSystem navSys;
-			navSys.LoadFromFile(p.assign(path).append("\\").append(findData.name).c_str());
+			std::string navPath = p.assign(path).append("\\").append(findData.name);
+			navSys.LoadFromFile(navPath.c_str(), navPath.c_str());
 
 			Nav::Vector2 vMin(FLT_MAX, FLT_MAX);
 			Nav::Vector2 vMax(-FLT_MAX, -FLT_MAX);

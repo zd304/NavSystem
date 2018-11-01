@@ -114,7 +114,7 @@ namespace Nav
 
 	NavGraph* NavSystem::GetGraphByIndex(unsigned int index)
 	{
-		if (index < 0 || mGraphs.size() <= index)
+		if (mGraphs.size() <= index)
 			return NULL;
 		return mGraphs[index];
 	}
@@ -131,7 +131,7 @@ namespace Nav
 
 	void NavSystem::DeleteGraphByIndex(unsigned int index)
 	{
-		if (index < 0 || mGraphs.size() <= index)
+		if (mGraphs.size() <= index)
 			return;
 		NavGraph* graph = mGraphs[index];
 		SAFE_DELETE(graph);

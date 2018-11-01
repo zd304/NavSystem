@@ -9,7 +9,7 @@ extern "C"
 {
 	bool Nav_Create(const char* path, const char* scnName)
 	{
-		navSystem = new Nav::NavSystem();
+		if (!navSystem) navSystem = new Nav::NavSystem();
 		if (!navSystem->LoadFromFile(path, scnName))
 		{
 			SAFE_DELETE(navSystem);
@@ -20,7 +20,7 @@ extern "C"
 
 	bool Nav_CreateFromMemory(char* data, const char* scnName)
 	{
-		navSystem = new Nav::NavSystem();
+		if (!navSystem) navSystem = new Nav::NavSystem();
 
 		if (!navSystem->LoadFromMemory(data, scnName))
 		{
