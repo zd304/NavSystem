@@ -47,6 +47,8 @@ namespace Nav
 
 		void DeleteGraphByIndex(unsigned int index);
 
+		void DeleteGraphByScnName(const char* scnName);
+
 		void GetBound(Vector3* min, Vector3* max);
 
 		unsigned int GetVersion();

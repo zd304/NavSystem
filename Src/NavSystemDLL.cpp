@@ -74,6 +74,13 @@ extern "C"
 		navSystem->DeleteGraphByIndex(index);
 	}
 
+	void Nav_ReleaseLayerByScnName(const char* scnName)
+	{
+		if (!navSystem) return;
+
+		navSystem->DeleteGraphByScnName(scnName);
+	}
+
 	void Nav_Release()
 	{
 		SAFE_DELETE(navSystem);

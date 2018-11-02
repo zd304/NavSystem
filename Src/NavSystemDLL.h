@@ -67,6 +67,13 @@ extern "C"
 	_DLLExprot void Nav_ReleaseLayerByIndex(unsigned int index);
 
 	//************************************
+	// Method:    通过场景名释放一层导航的数据;
+	// Returns:   void
+	// Parameter: [scnName]导航的场景名;
+	//************************************
+	_DLLExprot void Nav_ReleaseLayerByScnName(const char* scnName);
+
+	//************************************
 	// Method:    释放导航所有数据;
 	// Returns:   void
 	//************************************

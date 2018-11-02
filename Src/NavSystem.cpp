@@ -138,6 +138,20 @@ namespace Nav
 		mGraphs.erase(mGraphs.begin() + index);
 	}
 
+	void NavSystem::DeleteGraphByScnName(const char* scnName)
+	{
+		for (size_t i = 0; i < mGraphs.size(); ++i)
+		{
+			NavGraph* graph = mGraphs[i];
+			if (!graph) continue;
+			if (graph->mScnName == scnName)
+			{
+				DeleteGraphByIndex(i);
+				break;
+			}
+		}
+	}
+
 	void NavSystem::GetBound(Vector3* min, Vector3* max)
 	{
 		if (min == NULL || max == NULL)
