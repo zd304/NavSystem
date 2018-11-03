@@ -125,6 +125,13 @@ namespace Nav
 		it = mGraphsMap.find(id);
 		if (it == mGraphsMap.end())
 			return;
+		for (size_t i = 0; i < mGraphs.size(); ++i)
+		{
+			NavGraph* graph = mGraphs[i];
+			if (!graph) continue;
+			mGraphs.erase(mGraphs.begin() + i);
+			break;
+		}
 		SAFE_DELETE(it->second);
 		mGraphsMap.erase(it);
 	}
@@ -134,6 +141,15 @@ namespace Nav
 		if (mGraphs.size() <= index)
 			return;
 		NavGraph* graph = mGraphs[index];
+		if (graph)
+		{
+			std::map<unsigned int, NavGraph*>::iterator it;
+			it = mGraphsMap.find(graph->mID);
+			if (it != mGraphsMap.end())
+			{
+				mGraphsMap.erase(it);
+			}
+		}
 		SAFE_DELETE(graph);
 		mGraphs.erase(mGraphs.begin() + index);
 	}
@@ -146,7 +162,7 @@ namespace Nav
 			if (!graph) continue;
 			if (graph->mScnName == scnName)
 			{
-				DeleteGraphByIndex(i);
+				DeleteGraphByIndex((unsigned int)i);
 				break;
 			}
 		}
