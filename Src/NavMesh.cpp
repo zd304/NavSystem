@@ -4,6 +4,7 @@
 #include "NavPhysics.h"
 #include "NavLinkInfo.h"
 #include "NavSystem.h"
+#include "NavBoundsVolume.h"
 
 #ifdef _CHECK_LEAK
 #define new  new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -160,6 +161,42 @@ namespace Nav
 		(*max) = mMax;
 	}
 
+	void NavMesh::AddBoundsVolume(NavBoundsVolume* bv)
+	{
+		std::map<std::string, NavBoundsVolume*>::iterator it;
+		it = mBoundsVolumesMap.find(bv->mName);
+		if (it != mBoundsVolumesMap.end())
+		{
+			return;
+		}
+		mBoundsVolumesMap[bv->mName] = bv;
+		mBoundsVolumes.push_back(bv);
+	}
+
+	void NavMesh::DelBoundsVolume(const std::string& name)
+	{
+		std::map<std::string, NavBoundsVolume*>::iterator it;
+		it = mBoundsVolumesMap.find(name);
+		if (it == mBoundsVolumesMap.end())
+		{
+			return;
+		}
+		NavBoundsVolume* bv = it->second;
+		mBoundsVolumesMap.erase(it);
+
+		std::vector<NavBoundsVolume*>::iterator itv;
+		for (itv = mBoundsVolumes.begin(); itv != mBoundsVolumes.end(); ++itv)
+		{
+			if ((*itv) == bv)
+			{
+				mBoundsVolumes.erase(itv);
+				break;
+			}
+		}
+
+		SAFE_DELETE(bv);
+	}
+
 	bool NavMesh::GetHeight(const Vector3& pos, float* height)
 	{
 		NavPhysics::NavHit hit;
@@ -305,6 +342,13 @@ namespace Nav
 			SAFE_DELETE(edge);
 		}
 		mBounds.clear();
+
+		for (unsigned int i = 0; i < mBoundsVolumes.size(); ++i)
+		{
+			NavBoundsVolume* bv = mBoundsVolumes[i];
+			SAFE_DELETE(bv);
+		}
+		mBoundsVolumes.clear();
 	}
 
 	unsigned int NavMesh::GetSize()

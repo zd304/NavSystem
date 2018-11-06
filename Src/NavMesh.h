@@ -7,6 +7,7 @@ namespace Nav
 {
 	class NavTriangle;
 	class NavLinkInfo;
+	class NavBoundsVolume;
 	struct NavEdge;
 	struct AdjacentEdgePair;
 
@@ -21,6 +22,10 @@ namespace Nav
 
 		void GetBound(Vector3* min, Vector3* max);
 
+		void AddBoundsVolume(NavBoundsVolume* bv);
+
+		void DelBoundsVolume(const std::string& name);
+
 		unsigned int GetSize();
 
 		unsigned int WriteTo(char* dest, unsigned int ptr);
@@ -30,10 +35,13 @@ namespace Nav
 		void UpdateAdjacent(bool calcBounds = true);
 	private:
 		bool IsTriangleAdjacent(NavTriangle* tri1, NavTriangle* tri2, AdjacentEdgePair* aep);
+	private:
+		std::map<std::string, NavBoundsVolume*> mBoundsVolumesMap;
 	public:
 		std::vector<NavTriangle*> mTriangles;
 		std::vector<NavLinkInfo*> mNavLinkInfos;
 		std::vector<NavEdge*> mBounds;
+		std::vector<NavBoundsVolume*> mBoundsVolumes;
 		Vector3 mMin;
 		Vector3 mMax;
 	};

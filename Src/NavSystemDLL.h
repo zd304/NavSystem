@@ -288,6 +288,12 @@ extern "C"
 	// Parameter: [max]返回AABB盒的最大点;
 	//************************************
 	_DLLExprot bool Nav_GetNavBound(NAV_VEC3* min, NAV_VEC3* max);
+
+	_DLLExprot bool Nav_SetBoundsVolume(unsigned int layer, char* data, unsigned int len);
+
+	_DLLExprot bool Nav_GetLayerEdges(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* edgeCount);
+
+	_DLLExprot bool Nav_ReleaseLayerEdges(NAV_VEC3** verticesBuffer);
 }
 
 #endif

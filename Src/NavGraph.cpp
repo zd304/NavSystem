@@ -5,6 +5,7 @@
 #include "NavHeightmap.h"
 #include "NavGate.h"
 #include "NavPhysics.h"
+#include "NavBoundsVolume.h"
 #include "NavSystem.h"
 
 #ifdef _CHECK_LEAK
@@ -156,9 +157,25 @@ namespace Nav
 		dir.Normalize();
 		Vector2 offset = dir * (-0.1f);
 
+		std::vector<NavEdge*> edges;
 		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 		{
 			NavEdge* edge = mMesh->mBounds[i];
+			edges.push_back(edge);
+		}
+		for (unsigned int i = 0; i < mMesh->mBoundsVolumes.size(); ++i)
+		{
+			NavBoundsVolume* bv = mMesh->mBoundsVolumes[i];
+			if (!bv) continue;
+			for (unsigned int j = 0; j < bv->mBounds.size(); ++j)
+			{
+				NavEdge* edge = bv->mBounds[j];
+				edges.push_back(edge);
+			}
+		}
+		for (unsigned int i = 0; i < edges.size(); ++i)
+		{
+			NavEdge* edge = edges[i];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
@@ -169,6 +186,7 @@ namespace Nav
 			hitPoint.Set(hitInfo.x + offset.x, start.y, hitInfo.y + offset.y);
 			return true;
 		}
+
 		for (unsigned int i = 0; i < mGates.size(); ++i)
 		{
 			NavGate* gate = mGates[i];
@@ -198,9 +216,25 @@ namespace Nav
 		dir.Normalize();
 		Vector2 offset = dir * (-0.1f);
 
+		std::vector<NavEdge*> edges;
 		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 		{
 			NavEdge* edge = mMesh->mBounds[i];
+			edges.push_back(edge);
+		}
+		for (unsigned int i = 0; i < mMesh->mBoundsVolumes.size(); ++i)
+		{
+			NavBoundsVolume* bv = mMesh->mBoundsVolumes[i];
+			if (!bv) continue;
+			for (unsigned int j = 0; j < bv->mBounds.size(); ++j)
+			{
+				NavEdge* edge = bv->mBounds[j];
+				edges.push_back(edge);
+			}
+		}
+		for (unsigned int i = 0; i < edges.size(); ++i)
+		{
+			NavEdge* edge = edges[i];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);
@@ -243,9 +277,25 @@ namespace Nav
 		Vector2 dir = end2D - start2D;
 		dir.Normalize();
 
+		std::vector<NavEdge*> edges;
 		for (unsigned int i = 0; i < mMesh->mBounds.size(); ++i)
 		{
 			NavEdge* edge = mMesh->mBounds[i];
+			edges.push_back(edge);
+		}
+		for (unsigned int i = 0; i < mMesh->mBoundsVolumes.size(); ++i)
+		{
+			NavBoundsVolume* bv = mMesh->mBoundsVolumes[i];
+			if (!bv) continue;
+			for (unsigned int j = 0; j < bv->mBounds.size(); ++j)
+			{
+				NavEdge* edge = bv->mBounds[j];
+				edges.push_back(edge);
+			}
+		}
+		for (unsigned int i = 0; i < edges.size(); ++i)
+		{
+			NavEdge* edge = edges[i];
 			if (!NavPhysics::SegmentAABBSegment2D(start, end, edge->mPoint[0], edge->mPoint[1]))
 				continue;
 			Vector2 v0(edge->mPoint[0].x, edge->mPoint[0].z);

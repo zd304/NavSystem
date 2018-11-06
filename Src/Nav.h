@@ -9,6 +9,7 @@
 #include "NavGraph.h"
 #include "NavGate.h"
 #include "NavSceneTree.h"
+#include "NavBoundsVolume.h"
 #include "NavSystem.h"
 
 #endif

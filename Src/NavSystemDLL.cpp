@@ -525,6 +525,39 @@ extern "C"
 		return true;
 	}
 
+	bool Nav_GetLayerEdges(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* edgeCount)
+	{
+		if (!navSystem) return false;
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph || !graph->mMesh) return false;
+
+		size_t count = graph->mMesh->mBounds.size();
+		(*edgeCount) = (unsigned int)count;
+		(*verticesBuffer) = new NAV_VEC3[count * 2];
+		for (size_t i = 0; i < count; ++i)
+		{
+			Nav::NavEdge* edge = graph->mMesh->mBounds[i];
+
+			NAV_VEC3& v1 = (*verticesBuffer)[count * 2];
+			v1.x = edge->mPoint[0].x;
+			v1.y = edge->mPoint[0].y;
+			v1.z = edge->mPoint[0].z;
+			NAV_VEC3& v2 = (*verticesBuffer)[count * 2 + 1];
+			v2.x = edge->mPoint[1].x;
+			v2.y = edge->mPoint[1].y;
+			v2.z = edge->mPoint[1].z;
+		}
+		return true;
+	}
+
+	bool Nav_ReleaseLayerEdges(NAV_VEC3** verticesBuffer)
+	{
+		if (!verticesBuffer)
+			return false;
+		SAFE_DELETE_ARRAY(*verticesBuffer);
+		return true;
+	}
+
 	bool Nav_ReleaseLayerCloseGates(NAV_VEC3** verticesBuffer)
 	{
 		if (!verticesBuffer)
@@ -551,5 +584,50 @@ extern "C"
 		navSystem->GetBound((Nav::Vector3*)min, (Nav::Vector3*)max);
 
 		return true;
+	}
+
+	bool Nav_SetBoundsVolume(unsigned int layer, char* data, unsigned int len)
+	{
+		if (!navSystem) return false;
+		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
+		if (!graph || !graph->mMesh) return false;
+
+		int ptr = 0;
+
+		Nav::NavBoundsVolume* bv = new Nav::NavBoundsVolume();
+
+		unsigned int nameLen = 0;
+		memcpy(&nameLen, &data[ptr], sizeof(unsigned int));
+		ptr += sizeof(unsigned int);
+
+		char* sz = new char[nameLen + 1];
+		memset(sz, 0, nameLen + 1);
+		memcpy(sz, &data[ptr], nameLen + 1);
+		ptr += nameLen + 1;
+
+		bv->mName = sz;
+		
+		unsigned int lineLen = 0;
+		memcpy(&lineLen, &data[ptr], sizeof(unsigned int));
+		ptr += sizeof(unsigned int);
+
+		for (unsigned int i = 0; i < lineLen; ++i)
+		{
+			Nav::Vector3 p0, p1;
+			memcpy(p0.mem, &data[ptr], sizeof(Nav::Vector3));
+			ptr += sizeof(Nav::Vector3);
+
+			memcpy(p1.mem, &data[ptr], sizeof(Nav::Vector3));
+			ptr += sizeof(Nav::Vector3);
+
+			Nav::NavEdge* edge = new Nav::NavEdge();
+			edge->mPoint[0] = p0;
+			edge->mPoint[1] = p1;
+			bv->mBounds.push_back(edge);
+		}
+
+		SAFE_DELETE_ARRAY(sz);
+
+		graph->mMesh->AddBoundsVolume(bv);
 	}
 }
