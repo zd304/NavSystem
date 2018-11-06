@@ -289,7 +289,14 @@ extern "C"
 	//************************************
 	_DLLExprot bool Nav_GetNavBound(NAV_VEC3* min, NAV_VEC3* max);
 
-	_DLLExprot bool Nav_SetBoundsVolume(unsigned int layer, char* data, unsigned int len);
+	//************************************
+	// Method:    添加边界体;
+	// Returns:   是否添加成功;
+	// Parameter: [layer]指定层索引;
+	// Parameter: [data]边界体数据;
+	// Parameter: [len]边界体数据长度;
+	//************************************
+	_DLLExprot bool Nav_AddBoundsVolume(unsigned int layer, char* data, unsigned int len);
 
 	_DLLExprot bool Nav_GetLayerEdges(unsigned int layer, NAV_VEC3** verticesBuffer, unsigned int* edgeCount);
 

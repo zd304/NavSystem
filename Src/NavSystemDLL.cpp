@@ -586,7 +586,7 @@ extern "C"
 		return true;
 	}
 
-	bool Nav_SetBoundsVolume(unsigned int layer, char* data, unsigned int len)
+	bool Nav_AddBoundsVolume(unsigned int layer, char* data, unsigned int len)
 	{
 		if (!navSystem) return false;
 		Nav::NavGraph* graph = navSystem->GetGraphByID(layer);
